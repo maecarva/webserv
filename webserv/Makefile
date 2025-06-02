@@ -29,7 +29,7 @@ $(NAME): $(OBJ)
 
 $(BUILD)/%.o: $(SRC_DIR)/%.cpp
 	@mkdir -p $(@D)
-	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -Iinc -c $< -o $@
 	@printf "\033[1;32%sm\tCompiled: $(<F)\033[0m\n";
 
 clean:

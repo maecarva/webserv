@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../inc/Webserv.hpp"
+#include "Webserv.hpp"
 
 int main(int argc, char const *argv[])
 {
