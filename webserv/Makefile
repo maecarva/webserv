@@ -2,7 +2,8 @@
 
 NAME	:=	webserv
 
-SRC		:=	main.cpp
+SRC		:=	main.cpp \
+			Request/Request.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
