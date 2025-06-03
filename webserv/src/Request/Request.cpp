@@ -8,15 +8,9 @@ Request::Request() :
 {};
 
 t_METHOD    getMethod(std::string& token) {
-    switch (token)
-    {
-    case constant expression:
-        /* code */
-        break;
-    
-    default:
-        break;
-    }
+    return GET;
+
+    (void)token;
 }
 
 Request::Request(const char *req) {

@@ -6,8 +6,9 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <sstream>
 
-
+#include <csignal>
 #include <cstring>
 #include <cerrno>
 #include <cstdio>
@@ -20,11 +21,19 @@
 #include <sys/epoll.h>
 
 #include "Request.hpp"
+#include "HttpStatusCodes.hpp"
+#include "Server.hpp"
+#include "Logger.hpp"
+#include "Colors.hpp"
 
 
 typedef std::string string;
 
 #define MAX_EVENTS 64
 #define PORT 3000
+
+// Utils
+unsigned long	hashdjb2(unsigned char *str);
+int				setNonBlocking(int fd);
 
 #endif

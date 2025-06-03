@@ -3,7 +3,11 @@
 NAME	:=	webserv
 
 SRC		:=	main.cpp \
-			Request/Request.cpp
+			Request/Request.cpp \
+			Utils/DJB2.cpp \
+			Server/Server.cpp \
+			Utils/setNonBlocking.cpp \
+			Logger/Logger.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
