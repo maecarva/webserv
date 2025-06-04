@@ -11,6 +11,7 @@ void	sig_handler(int sig) {
 	Logger::info("Stopping servers.");
 	(void)sig;
 }
+
 void	set_signals(void)
 {
 	signal(SIGINT, sig_handler);

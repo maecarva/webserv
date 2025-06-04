@@ -35,7 +35,7 @@ Server::Server(unsigned short int	port, const char	*address, const char *label) 
 
 	std::memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET; // IPv4
-	addr.sin_addr.s_addr = inet_addr(this->_address); // interface to listen
+	addr.sin_addr.s_addr = inet_addr(this->_address); // interface to listen 127.0.0.1
 	addr.sin_port = htons(this->_port);
 
 	if (bind(listenfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) { // link listenfd to addr
@@ -50,7 +50,6 @@ Server::Server(unsigned short int	port, const char	*address, const char *label) 
 		throw Server::ServerCreationError();
     }
 	
-	// std::cout << "Server '" << this->_label << "' listening on " << this->_address << ":" << this->_port << std::endl;
 	std::ostringstream oss;
 	oss << "Server '" << this->_label << "' listening on " << this->_address << ":" << this->_port;
 	Logger::debug(oss.str().c_str());
