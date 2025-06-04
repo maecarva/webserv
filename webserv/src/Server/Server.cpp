@@ -1,7 +1,7 @@
-#include "Server.hpp"
 #include "Webserv.hpp"
 
-Server::Server() {};
+Server::Server() {
+};
 
 Server::Server(unsigned short int	port, const char	*address, const char *label) {
 
@@ -122,9 +122,9 @@ void	Server::handler() {
 			}
 
 			this->_clientBuffers[client_fd] = std::vector<char>();
-				std::cout << "Nouvelle connexion: FD=" << client_fd
-							<< " depuis " << inet_ntoa(client_addr.sin_addr)
-							<< ":" << ntohs(client_addr.sin_port) << "\n";
+			// std::cout << "Nouvelle connexion: FD=" << client_fd
+			// 			<< " depuis " << inet_ntoa(client_addr.sin_addr)
+			// 			<< ":" << ntohs(client_addr.sin_port) << "\n";
 		}
 		/// -------
 		else // second case : client socket ready for read
@@ -169,6 +169,7 @@ void	Server::handler() {
 				}
 				else
 				{
+					Request req = Request();
 
 					// Respond to client
 					std::string reqstr;
@@ -178,17 +179,19 @@ void	Server::handler() {
 						reqstr.push_back(*it);
 						it++;
 					}
-					Request req = Request(reqstr.c_str());
 
+					req.parseRequest(reqstr.c_str(), *this);
 
-					const char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 226\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>S.C.E.P</title><img alt=SCEP src=https://m.media-amazon.com/images/I/71s4e9komjL._AC_UF1000,1000_QL80_.jpg>";
-					send(fd, reply, sizeof(reply) - 1, 0);
+					//const char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 226\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>S.C.E.P</title><img alt=SCEP src=https://m.media-amazon.com/images/I/71s4e9komjL._AC_UF1000,1000_QL80_.jpg>";
+					const char	*reply = req.formatResponse(*this);
+					send(fd, reply, std::strlen(reply) - 1, 0);
 					// Close connection
 					if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
 						std::perror("epoll_ctl DEL après send");
 					close(fd);
 					this->_clientBuffers.erase(fd);
-					std::cout << "Réponse envoyée\n";
+
+					req.logRequest(*this);
 				}
 			}
 		}

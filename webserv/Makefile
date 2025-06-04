@@ -7,7 +7,8 @@ SRC		:=	main.cpp \
 			Utils/DJB2.cpp \
 			Server/Server.cpp \
 			Utils/setNonBlocking.cpp \
-			Logger/Logger.cpp
+			Logger/Logger.cpp \
+			Utils/DefaultResponses.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build

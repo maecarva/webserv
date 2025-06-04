@@ -7,6 +7,9 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <fstream>
+#include <algorithm>
+#include <iostream>
 
 #include <csignal>
 #include <cstring>
@@ -19,21 +22,27 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/epoll.h>
+#include <cstdlib>
+#include <sys/time.h>
 
 #include "Request.hpp"
 #include "HttpStatusCodes.hpp"
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "Colors.hpp"
+#include "Hashed.hpp"
 
+#define SPACE << " "
 
 typedef std::string string;
 
 #define MAX_EVENTS 64
-#define PORT 3000
+
+#define DEFAULT_PATH	"./static_pages"
 
 // Utils
-unsigned long	hashdjb2(unsigned char *str);
+unsigned long	hashdjb2(const char *str);
 int				setNonBlocking(int fd);
+const char		*InternalERROR();
 
 #endif
