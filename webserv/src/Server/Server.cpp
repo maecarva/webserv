@@ -182,9 +182,9 @@ void	Server::handler() {
 
 					req.parseRequest(reqstr.c_str(), *this);
 
-					//const char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 226\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>S.C.E.P</title><img alt=SCEP src=https://m.media-amazon.com/images/I/71s4e9komjL._AC_UF1000,1000_QL80_.jpg>";
-					const char	*reply = req.formatResponse(*this);
-					send(fd, reply, std::strlen(reply) - 1, 0);
+					// const char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 226\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>S.C.E.P</title><img alt=SCEP src=https://m.media-amazon.com/images/I/71s4e9komjL._AC_UF1000,1000_QL80_.jpg>";
+					std::string	reply = req.formatResponse(*this);
+					send(fd, reply.c_str(), reply.size(), 0);
 					// Close connection
 					if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
 						std::perror("epoll_ctl DEL après send");
@@ -214,4 +214,13 @@ const char		*Server::getLabel() const {
 
 int				Server::getPort() const {
 	return this->_port;
+};
+
+
+std::string&	Server::getRootDir() {
+	return this->_rootdir;
+};
+
+std::string&	Server::getIndexFile() {
+	return this->_indexfile;
 };

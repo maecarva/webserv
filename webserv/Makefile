@@ -8,7 +8,8 @@ SRC		:=	main.cpp \
 			Server/Server.cpp \
 			Utils/setNonBlocking.cpp \
 			Logger/Logger.cpp \
-			Utils/DefaultResponses.cpp
+			Utils/DefaultResponses.cpp \
+			Utils/IsDirectory.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build

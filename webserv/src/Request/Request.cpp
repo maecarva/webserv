@@ -1,4 +1,5 @@
 #include "Webserv.hpp"
+#include <sstream>
 
 Request::Request() :
     _method(),
@@ -50,7 +51,7 @@ t_METHOD    getMethodByHash(std::string& token) {
 
 void	Request::parseRequest(const char *req, Server& server)
 {
-	// std::cout << "REQUEST : " << req << "\n\n";
+	//std::cout << "REQUEST : \n" << req << "\n\n";
 
 	this->_response_code = HTTP_OK;
 	std::string request(req);
@@ -67,14 +68,21 @@ void	Request::parseRequest(const char *req, Server& server)
 			{
 				t_METHOD	method = getMethodByHash(token);
 				if (method == NONE)
-					return this->setError(HTTP_METHOD_NOT_ALLOWED);
+					return this->setError(HTTP_METHOD_NOT_ALLOWED, __LINE__);
 			}
 			else if (i == 1)
+			{
 				this->_route = token;  // ! ADD check for valid URI
+				if (!ValidateURI(this->_route))
+				{
+					std::cout << "Invalid url\n";
+					return this->setError(HTTP_BAD_REQUEST, __LINE__);
+				}
+			}
 			else
 			{
 				if (token != "HTTP/1.1")
-					return this->setError(HTTP_BAD_REQUEST);
+					return this->setError(HTTP_BAD_REQUEST, __LINE__);
 				this->_protocol = token;
 			}
 			i++;
@@ -97,11 +105,11 @@ void	Request::parseRequest(const char *req, Server& server)
 				std::ostringstream oss;
 				oss << server.getPort();
 				address.append(oss.str().c_str());
-				if (address != pair.second)
-				{
-					Logger::error("Invalid host.");
-					return this->setError(HTTP_BAD_REQUEST);
-				}
+				// if (address != pair.second)
+				// {
+				// 	Logger::error("Invalid host.");
+				// 	return this->setError(HTTP_BAD_REQUEST, __LINE__);
+				// }
 			}
 			else if (key == "CONNECTION:") {
 				std::string second = pair.second;
@@ -111,7 +119,7 @@ void	Request::parseRequest(const char *req, Server& server)
 				else if (second == "CLOSE")
 					this->_keepalive = false;
 				else
-					return this->setError(HTTP_BAD_REQUEST);
+					this->_keepalive = false;
 			}
 			this->_headers.insert(pair);
 		}
@@ -140,7 +148,7 @@ void	Request::logRequest(Server& server) {
 	long time = seconds * 1000000 + micros;
 
 	std::ostringstream oss;
-	oss << this->getMethod() << " " << this->getRoute() << " " << this->getHost()
+	oss << "Server:" SPACE << server.getLabel() SPACE << this->getMethod() << " " << this->getRoute() << " " << this->getHost()
 	<< " " << (this->_keepalive ? "keep-alive" : "close") SPACE;
 
 	if (this->_response_code == HTTP_OK)
@@ -149,34 +157,109 @@ void	Request::logRequest(Server& server) {
 		oss << this->_response_code;
 	oss  << " " << time << " us";
 
-
 	Logger::info(oss.str().c_str());
-	(void) server;
-
 }
 
-const char	*Request::formatResponse(Server& server) {
+std::string	Request::formatResponse(Server& server) {
+	switch (this->_response_code)
+	{
+	case 500:
+		return std::string(InternalERROR(*this));
+	case 400:
+		return std::string(InternalERROR(*this));
+	
+	default:
+		break;
+	}
+
 	std::ostringstream resp;
 
 	std::fstream inputfile;
-	inputfile.open("./static_pages/index.html", std::ios::in);
-	if (inputfile.fail())
+	std::string filepath = DEFAULT_PATH;
+	if (std::string(this->getRoute()) == "/")
 	{
-		std::cout << "Unable to open " << "argv[1]" << std::endl;
-		return InternalERROR();
+		filepath = std::string(DEFAULT_PATH) + std::string(DEFAULT_INDEX);
+
+	}
+	else
+		filepath.append(this->getRoute());
+	// std::cout << filepath << std::endl;
+	inputfile.open(filepath.c_str(), std::ios::in);
+	std::string	extention;
+
+	for (std::string::iterator i = filepath.end(); i != filepath.begin(); i--)
+	{
+		if (*i == '.')
+		{
+			while (i != filepath.end())
+			{
+				extention.push_back(*i);
+				i++;
+			}
+			break ;
+		}
+		else if (*i == '/')
+			break ;
 	}
 
-	std::string str((std::istreambuf_iterator<char>(inputfile)), std::istreambuf_iterator<char>());
+	std::transform(extention.begin(), extention.end(), extention.begin(), ::toupper);
+	if (extention.size() > 0)
+	{
+		switch (hashdjb2(extention.c_str()))
+		{
+		case CSS_DJB2:
+			this->_response_headers.insert(std::make_pair("Content-Type:" ,"text/css; charset=utf-8"));
+			break;
+		case HTML_DJB2:
+			this->_response_headers.insert(std::make_pair("Content-Type:" ,"text/html"));
+			break;
+		
+		default:
+			break;
+		}
+	}
+	
+	
+	std::string str;
 
-	// std::cout << "File content" << str << std::endl << std::endl;
-	resp << "HTTP/1.1 200 OK\r\nContent-Length: " << str.length() << "\r\n\r\n" << str;
-	// std::cout << resp.str() << std::endl;
-	return resp.str().c_str();
+	if (inputfile.fail())
+	{
+		//std::cout << "Unable to open " << "argv[1]" << std::endl;
+		if (access(filepath.c_str(), F_OK | R_OK) == -1)
+			return (inputfile.close(), std::string(ERROR_404(*this)));
+		else if (is_directory(filepath.c_str()))
+			return std::string(InternalERROR(*this));
+	}
+	else
+		str = std::string((std::istreambuf_iterator<char>(inputfile)), std::istreambuf_iterator<char>());
+
+    resp << "HTTP/1.1 " << this->_response_code << " OK\r\n";
+
+	for (std::map<string, string>::iterator it = this->_response_headers.begin(); it != this->_response_headers.end(); it++)
+	{
+		resp << (*it).first SPACE << (*it).second << "\r\n";
+	}
+	
+
+
+    resp << "Content-Length: " << str.length() << "\r\n"
+         << "Connection: close\r\n"
+    	 << "\r\n"
+         << str;
+	
+	inputfile.close();
+
+    return resp.str();
 	(void)server;
 }
 
-void	Request::setError(int code) {
-	Logger::error("setError");
+void	Request::setError(int code, int line) {
+	if (line > 0)
+	{
+		std::ostringstream oss;
+		oss << "LINE: " <<  line;
+		Logger::error(oss.str().c_str());
+	}
 	this->_response_code = code;
 }
 
@@ -226,3 +309,18 @@ const char	*Request::getRoute() {
 const char	*Request::getHost() {
 	return this->_host.c_str();
 };
+
+
+bool	Request::ValidateURI(std::string&	route) {
+	for (std::string::iterator it = route.begin(); it != route.end(); it++)
+	{
+		if (!(std::isalnum(*it)) && !(*it == '$' || *it == '-' || *it == '_' || *it == '.' || *it == '+' || *it == '!' || *it == '*' || *it == '\'' || *it == '(' || *it == ')' || *it == ',' || *it == '/')
+			&& !(*it == ';' || *it == '/' || *it == '?' || *it == ':' || *it == '@' || *it == '=' || *it == '&'))
+		{
+			std::cout << "invalid char : " << *it << std::endl;
+			return false;
+		}
+	}
+	return true;
+}
+

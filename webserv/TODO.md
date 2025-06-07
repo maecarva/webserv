@@ -1,5 +1,6 @@
 # TODO
- - Defines http status codes                OK
- - Clean listening code and comment it
- - Handle multiples listeners				OK
- - logger									OK
+ - parse request MIDOK
+ - validate URI OK
+ - clean code
+ - directory listing
+ - FD leaks

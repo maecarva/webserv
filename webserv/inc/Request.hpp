@@ -52,17 +52,21 @@ private:
     int									_header_len;
 	struct timeval 						_start;
 	struct timeval 						_end;
+
+	// response
+    std::map<std::string, std::string>	_response_headers;
 public:
     Request();
     ~Request();
 
-	void	parseRequest(const char *req, Server& server);
-	void		logRequest(Server& server);
-	const char	*formatResponse(Server& server);
+	void			parseRequest(const char *req, Server& server);
+	void			logRequest(Server& server);
+	std::string		formatResponse(Server& server);
+	bool			ValidateURI(std::string&	route);
 
 
 	// * Setters
-	void	setError(int code);
+	void	setError(int code, int line);
 
 
 
