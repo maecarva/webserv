@@ -11,8 +11,10 @@
 #define CLIENT_MAX_BODY_SIZE_MO 1024
 
 
-struct Route
+struct RouteConfig
 {
+	std::vector<std::string> _methods;
+	std::string _root;
 
 
 
@@ -24,6 +26,17 @@ private:
 	std::vector<std::string> _server_names;
 	std::vector< std::map<std::string, std::string> > _listen;
 	std::map<int, std::string> _error_pages;
-	int _client_max_body_size;
+	int _client_max_body_size;  // À set à -1
+	std::map<std::string, RouteConfig> _routes;
+
+public:
+	Config( void );
+	~Config( void );
+
+	std::vector<std::string> getServerNames( void ) const;
+	std::vector< std::map<std::string, std::string> > getListen( void ) const;
+	std::map<int, std::string> getErrorPages( void );
+	int getClientMaxBodySize( void ) const;
+	std::map<std::string, Route> getRoutes( void ) const;
 
 };

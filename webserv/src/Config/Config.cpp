@@ -183,7 +183,10 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	if ( *end == '\0' )
 	{
 		if ( nb > CLIENT_MAX_BODY_SIZE_O )
+		{
+			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
 			return ( false );
+		}
 		_client_max_body_size = ( ( int ) nb );
 		return ( true );
 	}
@@ -192,7 +195,10 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	if ( ( *end == 'k' || *end == 'K' ) && ( *end + 1 ) == '\0' )
 	{
 		if ( nb > CLIENT_MAX_BODY_SIZE_KO )
+		{
+			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
 			return ( false );
+		}
 		_client_max_body_size = ( ( int ) nb ) * 1024;
 		return ( true );
 	}
@@ -201,7 +207,10 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	if ( ( *end == 'm' || *end == 'M' ) && ( *end + 1 ) == '\0' )
 	{
 		if ( nb > CLIENT_MAX_BODY_SIZE_MO )
+		{
+			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
 			return ( false );
+		}
 		_client_max_body_size = ( ( int ) nb ) * 1024 * 1024;
 		return ( true );
 	}
@@ -228,6 +237,7 @@ void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> 
 	this->isValidClientMaxBodySize( lineSplitted[1] ); // On assigne direct dans la fct.
 }
 
+
 // Parse Config
 bool Config::ParseServerConfig( std::ifstream &configFile )
 {
@@ -247,20 +257,23 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 			continue;
 		}
 
-		else if ( lineSplitted[0] == "listen" )
+		if ( lineSplitted[0] == "listen" ) // checker les doublons avant d'ajouter.
 			this->ParseServerConfigListen( lineSplitted );
 
 		else if ( lineSplitted[0] == "server_names" )
 			this->ParseServerConfigName( lineSplitted );
 
-		else if ( lineSplitted[0] == "error_pages" )
+		else if ( lineSplitted[0] == "error_pages" ) // checker les doublons avant d'ajouter et voir si c'est correct.
 			this->ParseServerConfigErrorPages( lineSplitted );
 
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
-		else if ( lineSplitted[0] == "Route" )
+		else if ( lineSplitted[0] == "Route" ) // A faire
 			this->ParseServerConfigRoute( lineSplitted );
+
+		else
+			std::cerr << "Invalid Server directive \'" << line << "\'." << std::endl;
 
 	}
 
