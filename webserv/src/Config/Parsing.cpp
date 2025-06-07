@@ -161,7 +161,54 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 // Client Max Body Size
 bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 {
-	return ( true );
+	// Cas trop long
+	if ( client_max_body_size.size() > 10 )
+	{
+		std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+		return ( false );
+	}
+
+	char *end;
+	long nb;
+	nb = strtol( client_max_body_size, &end, 10 );
+
+	// Cas negatif
+	if ( nb <= 0 )
+	{
+		std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+		return ( false );
+	}
+
+	// Cas octet
+	if ( *end == '\0' )
+	{
+		if ( nb > CLIENT_MAX_BODY_SIZE_O )
+			return ( false );
+		_client_max_body_size = ( ( int ) nb );
+		return ( true );
+	}
+
+	// Cas kilo octet
+	if ( ( *end == 'k' || *end == 'K' ) && ( *end + 1 ) == '\0' )
+	{
+		if ( nb > CLIENT_MAX_BODY_SIZE_KO )
+			return ( false );
+		_client_max_body_size = ( ( int ) nb ) * 1024;
+		return ( true );
+	}
+
+	// Cas mega octet
+	if ( ( *end == 'm' || *end == 'M' ) && ( *end + 1 ) == '\0' )
+	{
+		if ( nb > CLIENT_MAX_BODY_SIZE_MO )
+			return ( false );
+		_client_max_body_size = ( ( int ) nb ) * 1024 * 1024;
+		return ( true );
+	}
+
+	// Cas autre
+	std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+	return ( false );
 }
 
 void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> &lineSplitted )
@@ -178,8 +225,7 @@ void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> 
 		return ;
 	}
 
-	if ( this->isValidClientMaxBodySize( lineSplitted[1] ) )
-		_client_max_body_size = lineSplitted[1];
+	this->isValidClientMaxBodySize( lineSplitted[1] ); // On assigne direct dans la fct.
 }
 
 // Parse Config
@@ -212,6 +258,9 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
+
+		else if ( lineSplitted[0] == "Route" )
+			this->ParseServerConfigRoute( lineSplitted );
 
 	}
 
