@@ -40,7 +40,7 @@ bool Config::isValidHostPort( const std::string &host, const std::string &port )
 	err = getaddrinfo( host.c_str(), port.c_str(), &hints, &res );
 	if ( err != 0 )
 	{
-		std::cerr << "getaddrinfo error: " << gai_strerror(err) << std::endl;
+		std::cerr << "getaddrinfo error: " << gai_strerror(err) << '.' << std::endl;
 		return ( false );
 	}
 	freeaddrinfo( res );
@@ -48,7 +48,7 @@ bool Config::isValidHostPort( const std::string &host, const std::string &port )
 	return ( true );
 }
 
-void Config::ParseServerConfigListen( std::vector<std::string> lineSplitted )
+void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitted )
 {
 	size_t colon;
 	std::string host;
@@ -75,7 +75,7 @@ bool Config::isValidName( const std::string &name )
 {
 	if ( line.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
 	{
-		std::cerr << "Invalid server name: \'" << lineSplitted[i] << '\'' << std::endl;
+		std::cerr << "Invalid server name: \'" << lineSplitted[i] << "\'." << std::endl;
 		return ( false );
 	}
 
@@ -83,7 +83,7 @@ bool Config::isValidName( const std::string &name )
 	{
 		if ( _name[i] == name )
 		{
-			std::cerr << "Server already has name: \'" << lineSplitted[i] << '\'' << "" << std::endl;
+			std::cerr << "Server already has name: \'" << lineSplitted[i] << "\'." << std::endl;
 			return ( false );
 		}
 	}
@@ -91,7 +91,7 @@ bool Config::isValidName( const std::string &name )
 	return ( true );
 }
 
-void Config::ParseServerConfigName( std::vector<std::string> lineSplitted )
+void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted )
 {
 	for ( size_t i = 1; i < lineSplitted.size(); ++i )
 	{
@@ -111,34 +111,76 @@ bool Config::isValidErrorCode( const std::string &errorCode )
 {
 	if ( errorCode.size() != 3 )
 	{
-		std::cerr << "Invalid error_code \'" << errorCode << '\'' << std::endl;
+		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
 		return ( false )
 	}
 
 	int nbErrorCode = atoi( errorCode.c_str() );
 	if ( nbErrorCode < 400 || nbErrorCode > 599 )
 	{
-		std::cerr << "Invalid error_code \'" << errorCode << '\'' << std::endl;
+		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
 		return ( false )
 	}
 
 	return ( true );
 }
 
-void Config::ParseServerConfigErrorPages( std::vector<std::string> lineSplitted )
+bool Config::isValidErrorCodePage( const std::string &errorCode, const std::string &page ) // On voit si les deux mis ensemble c'est bon
+{
+	return ( true );
+}
+
+void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSplitted )
 {
 	if ( lineSplitted.size() <= 3 )
 	{
-		std::cerr << "error_pages: Not enough arguments" << std::endl;
+		std::cerr << "error_pages: Not enough arguments." << std::endl;
 		return ;
 	}
 
-	for ( size_t i = 1; ( i < lineSplitted(size) - 1 ); ++i )
+	std::string page = lineSplitted( lineSplitted.size() - 1 );
+
+	if ( !this->ParseServerConfigPage( page ) )
 	{
-		if (  )
+		std::cerr << "Invalid error_page \'" << page << "\'." << std::endl;
+		return ( false );
+	}
+
+	int code;
+	for ( size_t i = 1; ( i < lineSplitted.size() - 1 ); ++i )
+	{
+		if ( this->isValidErrorCodePage( lineSplitted[i], page ) )
+		{
+			code = atoi( lineSplitted[i].c_str() );
+			_error_pages[code] = page;
+		}
 	}
 }
 
+
+// Client Max Body Size
+bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
+{
+	return ( true );
+}
+
+void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() > 2 )
+	{
+		std::cerr << "client_max_body_size: Too many arguments." << std::endl;
+		return ;
+	}
+
+	if ( !_client_max_body_size.empty() )
+	{
+		std::cerr << "client_max_body_size is already set." << std::endl;
+		return ;
+	}
+
+	if ( this->isValidClientMaxBodySize( lineSplitted[1] ) )
+		_client_max_body_size = lineSplitted[1];
+}
 
 // Parse Config
 bool Config::ParseServerConfig( std::ifstream &configFile )
@@ -160,17 +202,16 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		}
 
 		else if ( lineSplitted[0] == "listen" )
-			ParseServerConfigListen( lineSplitted );
+			this->ParseServerConfigListen( lineSplitted );
 
 		else if ( lineSplitted[0] == "server_names" )
-			ParseServerConfigName( lineSplitted );
+			this->ParseServerConfigName( lineSplitted );
 
 		else if ( lineSplitted[0] == "error_pages" )
-			ParseServerConfigErrorPages( lineSplitted );
+			this->ParseServerConfigErrorPages( lineSplitted );
 
-
-
-
+		else if ( lineSplitted[0] == "client_max_body_size" )
+			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
 	}
 
