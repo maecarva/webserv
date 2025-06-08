@@ -51,7 +51,7 @@ t_METHOD    getMethodByHash(std::string& token) {
 
 void	Request::parseRequest(const char *req, Server& server)
 {
-	//std::cout << "REQUEST : \n" << req << "\n\n";
+	// std::cout << "REQUEST : \n" << req << "\n\n";
 
 	this->_response_code = HTTP_OK;
 	std::string request(req);
@@ -72,7 +72,8 @@ void	Request::parseRequest(const char *req, Server& server)
 			}
 			else if (i == 1)
 			{
-				this->_route = token;  // ! ADD check for valid URI
+				this->_route = token;
+				// std::cout << "ROUTE: " << token << std::endl;
 				if (!ValidateURI(this->_route))
 				{
 					std::cout << "Invalid url\n";
@@ -129,8 +130,6 @@ void	Request::parseRequest(const char *req, Server& server)
 	// {
 	// 	std::cout << "PAIR : " << (*it).first << " | " << (*it).second << std::endl;
 	// }
-
-
 	(void)server;
 };
 
@@ -179,12 +178,9 @@ std::string	Request::formatResponse(Server& server) {
 	if (std::string(this->getRoute()) == "/")
 	{
 		filepath = std::string(DEFAULT_PATH) + std::string(DEFAULT_INDEX);
-
 	}
 	else
 		filepath.append(this->getRoute());
-	// std::cout << filepath << std::endl;
-	inputfile.open(filepath.c_str(), std::ios::in);
 	std::string	extention;
 
 	for (std::string::iterator i = filepath.end(); i != filepath.begin(); i--)
@@ -219,19 +215,39 @@ std::string	Request::formatResponse(Server& server) {
 		}
 	}
 	
-	
+	//Logger::debug(filepath.c_str());
 	std::string str;
-
-	if (inputfile.fail())
+	if (access(filepath.c_str(), F_OK | R_OK) == 0) // file exist
 	{
-		//std::cout << "Unable to open " << "argv[1]" << std::endl;
-		if (access(filepath.c_str(), F_OK | R_OK) == -1)
-			return (inputfile.close(), std::string(ERROR_404(*this)));
-		else if (is_directory(filepath.c_str()))
-			return std::string(InternalERROR(*this));
+		if (is_directory(filepath.c_str()))
+		{
+			if (server.getDirectoryListing())
+			{
+				std::vector<std::string> files;
+				if (!getAllFilesFromDirectory(files, filepath.c_str()))
+					return std::string(ERROR_404(*this));
+				return formatDirectoryListing(files);
+			}
+			else 
+				return std::string(ERROR_404(*this));
+		}
+		else
+		{
+			inputfile.open(filepath.c_str(), std::ios::in);
+			//std::cout << "file exist\n";
+			if (inputfile.fail())
+			{
+				//std::cout << "Unable to open " << "argv[1]" << std::endl;
+				if (access(filepath.c_str(), F_OK | R_OK) == -1)
+					return (inputfile.close(), std::string(ERROR_404(*this)));
+			}
+			else
+				str = std::string((std::istreambuf_iterator<char>(inputfile)), std::istreambuf_iterator<char>());
+		}
 	}
 	else
-		str = std::string((std::istreambuf_iterator<char>(inputfile)), std::istreambuf_iterator<char>());
+		return (std::string(ERROR_404(*this)));
+	
 
     resp << "HTTP/1.1 " << this->_response_code << " OK\r\n";
 
@@ -309,6 +325,11 @@ const char	*Request::getRoute() {
 const char	*Request::getHost() {
 	return this->_host.c_str();
 };
+
+
+bool		Request::getConnectionStatus() {
+	return this->_keepalive;
+}
 
 
 bool	Request::ValidateURI(std::string&	route) {

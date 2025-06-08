@@ -22,6 +22,9 @@ private:
 	// parsed config
 	std::string							_indexfile;
 	std::string							_rootdir;
+	bool								_directory_listing;
+	std::string							_upload_folder;
+	std::map<int, std::string>			_error_pages;
 
 	class ServerCreationError : public std::exception {
 		virtual const char *what() const throw() {
@@ -44,6 +47,7 @@ public:
 	int				getPort() const;
 	std::string&	getRootDir();
 	std::string&	getIndexFile();
+	bool			getDirectoryListing();
 };
 
 #endif

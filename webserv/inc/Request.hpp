@@ -38,6 +38,7 @@ typedef enum e_METHOD {
 	NONE
 }   t_METHOD;
 
+
 class Request
 {
 private:
@@ -74,6 +75,7 @@ public:
 	const char	*getMethod();
 	const char	*getRoute();
 	const char	*getHost();
+	bool		getConnectionStatus();
 };
 
 

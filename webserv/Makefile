@@ -9,7 +9,8 @@ SRC		:=	main.cpp \
 			Utils/setNonBlocking.cpp \
 			Logger/Logger.cpp \
 			Utils/DefaultResponses.cpp \
-			Utils/IsDirectory.cpp
+			Utils/IsDirectory.cpp \
+			Utils/getAllFilesFromDirectory.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
