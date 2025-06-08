@@ -27,3 +27,4 @@ document.addEventListener('DOMContentLoaded', function() {
 		document.querySelector("img").src = newattribute
 	})
 });
+

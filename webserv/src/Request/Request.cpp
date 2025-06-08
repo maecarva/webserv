@@ -153,10 +153,14 @@ void	Request::logRequest(Server& server) {
 	if (this->_response_code == HTTP_OK)
 		oss << GRN << this->_response_code << reset;
 	else
-		oss << this->_response_code;
+		oss << YEL << this->_response_code << reset;
 	oss  << " " << time << " us";
 
-	Logger::info(oss.str().c_str());
+	if (this->_response_code == HTTP_OK)
+		Logger::info(oss.str().c_str());
+	else
+		Logger::warn(oss.str().c_str());
+
 }
 
 std::string	Request::formatResponse(Server& server) {

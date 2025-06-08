@@ -28,7 +28,7 @@ std::string	formatDirectoryListing(std::vector<std::string>& files) {
 
 	resp2 << "<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Directory</title><ul>";
 	for (std::vector<string>::iterator it = files.begin(); it != files.end(); it++)
-		resp2 << "<li>" << *it;
+		resp2 << "<li>" << *it << "</li>";
 	resp2 << "</ul>";
 
 	resp << resp2.str().size() << "\r\n\r\n" << resp2.str();
