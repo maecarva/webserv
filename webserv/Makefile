@@ -10,7 +10,8 @@ SRC		:=	main.cpp \
 			Logger/Logger.cpp \
 			Utils/DefaultResponses.cpp \
 			Utils/IsDirectory.cpp \
-			Utils/getAllFilesFromDirectory.cpp
+			Utils/getAllFilesFromDirectory.cpp \
+			Config/Config.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
