@@ -287,3 +287,7 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 
 	return ( true );
 }
+
+void	Config::PrintConfig() {
+	std::cout << "Test\n";
+}

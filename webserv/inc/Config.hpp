@@ -72,6 +72,9 @@ public:
 // Parse Config
 	bool ParseServerConfig( std::ifstream &configFile );
 
+
+	void	PrintConfig();
+
 };
 
 // Useful Functions
