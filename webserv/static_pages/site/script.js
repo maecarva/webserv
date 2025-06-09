@@ -23,7 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		while (newattribute == attribute) {
 			newattribute = imageslinks[Math.floor(Math.random() * (imageslinks.length))]
 		}
-
 		document.querySelector("img").src = newattribute
 	})
 });
