@@ -7,7 +7,7 @@ SRC		:=	main.cpp \
 			Utils/DJB2.cpp \
 			Server/Server.cpp \
 			Utils/setNonBlocking.cpp \
-			Logger/Logger.cpp
+			Logger/Logger.cpp \
 			Config/Config.cpp
 
 SRC_DIR	:=	src

@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Config::Config( void )
+Config::Config( void ) : _client_max_body_size( -1 )
 {
 	std::cout << "Creating Server Config" << std::endl;
 }
@@ -17,17 +17,17 @@ std::vector<std::string> splitFromCharset( const std::string &str, const std::st
 
 	while ( start < str.size() )
 	{
-		while ( start < str.size() && ( delimiters.find( line[start] ) != std::string::npos ) )
+		while ( start < str.size() && ( delimiters.find( str[start] ) != std::string::npos ) )
 			++start;
 
 		if ( start >= str.size() )
 			break;
 
 		end = start;
-		while ( end < str.size() && !( delimiters.find( line[end] ) != std::string::npos ) )
+		while ( end < str.size() && !( delimiters.find( str[end] ) != std::string::npos ) )
 			++end;
 
-		tokens.push_back( substr() );
+		tokens.push_back( str.substr( start, end ) );
 		start = end;
 	}
 
@@ -38,6 +38,12 @@ std::vector<std::string> splitFromCharset( const std::string &str, const std::st
 // Listen
 bool Config::isValidHostPort( const std::string &host, const std::string &port )
 {
+	if ( !_host.empty() && !_port.empty() )
+	{
+		std::cerr << "host:port is already filled." << std::endl;
+		return ( false );
+	}
+
 	struct addrinfo hints, *res = NULL;
 	int err;
 
@@ -48,7 +54,7 @@ bool Config::isValidHostPort( const std::string &host, const std::string &port )
 	err = getaddrinfo( host.c_str(), port.c_str(), &hints, &res );
 	if ( err != 0 )
 	{
-		std::cerr << "getaddrinfo error: " << gai_strerror(err) << '.' << std::endl;
+		std::cerr << "getaddrinfo error: " << gai_strerror( err ) << '.' << std::endl;
 		return ( false );
 	}
 	freeaddrinfo( res );
@@ -61,7 +67,6 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 	size_t colon;
 	std::string host;
 	std::string port;
-	std::map<std::string, std::string> entry;
 
 	for ( size_t i = 1; i < lineSplitted.size(); ++i )
 	{
@@ -70,9 +75,8 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 		port = ( colon != std::string::npos ) ? lineSplitted[i].substr( colon + 1 ) : lineSplitted[i];
 		if ( this->isValidHostPort( host, port ) )
 		{
-			data["host"] = host;
-			data["port"] = port;
-			_listen.push_back( entry );
+			_host = host;
+			_port = port;
 		}
 	}
 }
@@ -81,17 +85,17 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 // Name
 bool Config::isValidName( const std::string &name )
 {
-	if ( line.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
+	if ( name.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
 	{
-		std::cerr << "Invalid server name: \'" << lineSplitted[i] << "\'." << std::endl;
+		std::cerr << "Invalid server name: \'" << name << "\'." << std::endl;
 		return ( false );
 	}
 
-	for ( size_t i = 0; i < _name.size(); ++i ) // Nom deja existant
+	for ( size_t i = 0; i < _server_names.size(); ++i ) // Nom deja existant
 	{
-		if ( _name[i] == name )
+		if ( _server_names[i] == name )
 		{
-			std::cerr << "Server already has name: \'" << lineSplitted[i] << "\'." << std::endl;
+			std::cerr << "Server already has name: \'" << name << "\'." << std::endl;
 			return ( false );
 		}
 	}
@@ -112,6 +116,7 @@ void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted
 // Error Pages
 bool Config::isValidPage( const std::string &page )
 {
+	(void)page;
 	return ( true );
 }
 
@@ -120,21 +125,16 @@ bool Config::isValidErrorCode( const std::string &errorCode )
 	if ( errorCode.size() != 3 )
 	{
 		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
-		return ( false )
+		return ( false );
 	}
 
 	int nbErrorCode = atoi( errorCode.c_str() );
 	if ( nbErrorCode < 400 || nbErrorCode > 599 )
 	{
 		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
-		return ( false )
+		return ( false );
 	}
 
-	return ( true );
-}
-
-bool Config::isValidErrorCodePage( const std::string &errorCode, const std::string &page ) // On voit si les deux mis ensemble c'est bon
-{
 	return ( true );
 }
 
@@ -146,18 +146,18 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 		return ;
 	}
 
-	std::string page = lineSplitted( lineSplitted.size() - 1 );
+	std::string page = lineSplitted[lineSplitted.size() - 1];
 
-	if ( !this->ParseServerConfigPage( page ) )
+	if ( !this->isValidPage( page ) )
 	{
 		std::cerr << "Invalid error_page \'" << page << "\'." << std::endl;
-		return ( false );
+		return ;
 	}
 
 	int code;
 	for ( size_t i = 1; ( i < lineSplitted.size() - 1 ); ++i )
 	{
-		if ( this->isValidErrorCodePage( lineSplitted[i], page ) )
+		if ( this->isValidErrorCode( lineSplitted[i] ) )
 		{
 			code = atoi( lineSplitted[i].c_str() );
 			_error_pages[code] = page;
@@ -178,7 +178,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 
 	char *end;
 	long nb;
-	nb = strtol( client_max_body_size, &end, 10 );
+	nb = strtol( client_max_body_size.c_str(), &end, 10 );
 
 	// Cas negatif
 	if ( nb <= 0 )
@@ -236,7 +236,7 @@ void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> 
 		return ;
 	}
 
-	if ( !_client_max_body_size.empty() )
+	if ( _client_max_body_size == -1 )
 	{
 		std::cerr << "client_max_body_size is already set." << std::endl;
 		return ;
