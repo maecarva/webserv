@@ -68,6 +68,12 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 	std::string host;
 	std::string port;
 
+	if ( lineSplitted.size() > 2 )
+	{
+		std::cerr << "listen: Too many arguments." << std::endl;
+		return ;
+	}
+
 	for ( size_t i = 1; i < lineSplitted.size(); ++i )
 	{
 		colon = lineSplitted[i].find(':');
