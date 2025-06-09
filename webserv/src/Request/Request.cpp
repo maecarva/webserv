@@ -2,10 +2,17 @@
 #include <sstream>
 
 Request::Request() :
-    _method(),
-    _route(),
-    _headers(),
-    _header_len()
+	_response_code(),
+	_method(),
+	_route(),
+	_protocol(),
+	_host(),
+	_keepalive(),
+	_headers(),
+	_header_len(),
+	_start(),
+	_end(),
+	_response_headers()
 {
 	gettimeofday(&this->_start, NULL);
 };
