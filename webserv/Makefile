@@ -8,6 +8,7 @@ SRC		:=	main.cpp \
 			Server/Server.cpp \
 			Utils/setNonBlocking.cpp \
 			Logger/Logger.cpp
+			Config/Config.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build

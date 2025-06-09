@@ -277,8 +277,8 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
-		else if ( lineSplitted[0] == "Route" ) // A faire
-			this->ParseServerConfigRoute( lineSplitted );
+		// else if ( lineSplitted[0] == "Route" ) // A faire
+		// 	this->ParseServerConfigRoute( lineSplitted );
 
 		else
 			std::cerr << "Invalid Server directive \'" << line << "\'." << std::endl;
