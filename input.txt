@@ -1,17 +1,6 @@
-
-Server
 listen 127.0.0.1:8080
 server_names hello bob 123sq!@ 123sq
 error_pages 404 505 error.html
 error_pages 405 hubert.html
 client_max_body_size 100M
 client_max_body_size 150k
-
-route /location
-allowed_methods GET POST DELETE
-allowed_methods GET POST
-listen 127.0.0.1:8080 127.0.0.1:8080 127.0.0.1:8080 127.0.0.1:8080
-allowed_methods GET POST
-
-Server
-
