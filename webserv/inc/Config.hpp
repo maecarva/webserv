@@ -13,8 +13,9 @@
 
 struct RouteConfig
 {
-	std::vector<std::string> _methods;
-	std::string _root;
+	std::vector<std::string> allowed_methods;
+	std::string root;
+
 
 
 
@@ -29,14 +30,42 @@ private:
 	int _client_max_body_size;  // À set à -1
 	std::map<std::string, RouteConfig> _routes;
 
-public:
-	Config( void );
-	~Config( void );
-
+// Getters
 	std::vector<std::string> getServerNames( void ) const;
 	std::vector< std::map<std::string, std::string> > getListen( void ) const;
 	std::map<int, std::string> getErrorPages( void );
 	int getClientMaxBodySize( void ) const;
 	std::map<std::string, Route> getRoutes( void ) const;
 
+// Parsing
+
+// Listen
+	bool Config::isValidHostPort( const std::string &host, const std::string &port )
+	void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitted )
+
+// Name
+	bool Config::isValidName( const std::string &name )
+	void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted )
+
+// Error Pages
+	bool Config::isValidPage( const std::string &page )
+	bool Config::isValidErrorCode( const std::string &errorCode )
+	bool Config::isValidErrorCodePage( const std::string &errorCode, const std::string &page ) // On voit si les deux mis ensemble c'est bon
+	void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSplitted )
+
+// Client Max Body Size
+	bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
+	void ParseServerConfigClientMaxBodySize( const std::vector<std::string> &lineSplitted )
+
+public:
+// Default constructor and Destructor
+	Config( void );
+	~Config( void );
+
+// Parse Config
+	bool ParseServerConfig( std::ifstream &configFile )
+
 };
+
+// Useful Functions
+std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters )

@@ -1,5 +1,13 @@
 #include "Config.hpp"
 
+// Default constructor and Destructor
+Config::Config( void )
+{
+	std::cout << "Creating Server Config" << std::endl;
+}
+
+Config::~Config( void ) {}
+
 
 // Useful Functions
 std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters )
