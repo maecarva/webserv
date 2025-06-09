@@ -1,13 +1,20 @@
-#include "Server.hpp"
 #include "Webserv.hpp"
 
-Server::Server() {};
+Server::Server() {
+};
 
 Server::Server(unsigned short int	port, const char	*address, const char *label) {
 
 	this->_port = port;
 	this->_address = address;
 	this->_label = label;
+	this->_directory_listing = true;
+	this->_rootdir = DEFAULT_PATH;
+	this->_indexfile = DEFAULT_INDEX;
+
+	string::iterator eit = this->_rootdir.end() -1;
+	if (*eit == '/')
+		this->_rootdir.erase(eit);
 
 	int		listenfd = -1;
     struct	sockaddr_in addr;
@@ -122,9 +129,6 @@ void	Server::handler() {
 			}
 
 			this->_clientBuffers[client_fd] = std::vector<char>();
-				std::cout << "Nouvelle connexion: FD=" << client_fd
-							<< " depuis " << inet_ntoa(client_addr.sin_addr)
-							<< ":" << ntohs(client_addr.sin_port) << "\n";
 		}
 		/// -------
 		else // second case : client socket ready for read
@@ -154,7 +158,6 @@ void	Server::handler() {
 					else // handle bytes read
 					{
 						this->_clientBuffers[fd].insert(this->_clientBuffers[fd].end(), buf, buf + count);
-						//std::cout << "Reçu sur FD=" << fd << ": " << std::string(buf, buf + count) << "\n";
 					}
 				}
 
@@ -169,6 +172,7 @@ void	Server::handler() {
 				}
 				else
 				{
+					Request req = Request();
 
 					// Respond to client
 					std::string reqstr;
@@ -178,17 +182,20 @@ void	Server::handler() {
 						reqstr.push_back(*it);
 						it++;
 					}
-					Request req = Request(reqstr.c_str());
 
+					req.parseRequest(reqstr.c_str(), *this);
 
-					const char reply[] = "HTTP/1.1 200 OK\r\nContent-Length: 226\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>S.C.E.P</title><img alt=SCEP src=https://m.media-amazon.com/images/I/71s4e9komjL._AC_UF1000,1000_QL80_.jpg>";
-					send(fd, reply, sizeof(reply) - 1, 0);
+					std::string	reply = req.formatResponse(*this);
+					send(fd, reply.c_str(), reply.size(), 0);
 					// Close connection
+					// if (req.getConnectionStatus() == CLOSE)
+					// {
+					// }
 					if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
 						std::perror("epoll_ctl DEL après send");
 					close(fd);
 					this->_clientBuffers.erase(fd);
-					std::cout << "Réponse envoyée\n";
+					req.logRequest(*this);
 				}
 			}
 		}
@@ -212,3 +219,16 @@ const char		*Server::getLabel() const {
 int				Server::getPort() const {
 	return this->_port;
 };
+
+
+std::string&	Server::getRootDir() {
+	return this->_rootdir;
+};
+
+std::string&	Server::getIndexFile() {
+	return this->_indexfile;
+};
+
+bool			Server::getDirectoryListing() {
+	return this->_directory_listing;
+}

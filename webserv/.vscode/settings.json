@@ -50,6 +50,7 @@
 		"map": "cpp",
 		"sstream": "cpp",
 		"ctime": "cpp",
-		"csignal": "cpp"
+		"csignal": "cpp",
+		"fstream": "cpp"
 	}
 }

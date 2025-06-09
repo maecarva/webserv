@@ -19,6 +19,13 @@ private:
 	struct epoll_event					_ev;
 	std::map<int, std::vector<char> >	_clientBuffers;
 
+	// parsed config
+	std::string							_indexfile;
+	std::string							_rootdir;
+	bool								_directory_listing;
+	std::string							_upload_folder;
+	std::map<int, std::string>			_error_pages;
+
 	class ServerCreationError : public std::exception {
 		virtual const char *what() const throw() {
 			return "Can't create server.";
@@ -38,6 +45,9 @@ public:
 	const char		*getAddress() const;
 	const char		*getLabel() const;
 	int				getPort() const;
+	std::string&	getRootDir();
+	std::string&	getIndexFile();
+	bool			getDirectoryListing();
 };
 
 #endif

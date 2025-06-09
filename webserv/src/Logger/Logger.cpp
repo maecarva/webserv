@@ -58,7 +58,6 @@ void Logger::warn(const char *message) {
 	std::cout << " " << message << std::endl;
 }
 
-
 void Logger::error(const char *message) {
 	PRINTC(RED, "[ERROR] ");
 	printTimestamp();
