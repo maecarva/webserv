@@ -18,10 +18,12 @@
 
 struct Route
 {
+	std::string route;
 	std::vector<std::string> allowed_methods;
 	std::string root;
 	bool autoindex;   // a set a true ou false des le debut
 	std::string index;
+	std::string redirection;
 
 
 
@@ -35,7 +37,7 @@ private:
 	std::string _port;
 	std::map<int, std::string> _error_pages;
 	int _client_max_body_size;  // À set à -1
-	std::map<std::string, Route> _routes;
+	std::vector<Route> _routes;
 
 // Getters
 	std::vector<std::string> getServerNames( void ) const;
@@ -57,12 +59,18 @@ private:
 // Error Pages
 	bool isValidPage( const std::string &page );
 	bool isValidErrorCode( const std::string &errorCode );
-	bool isValidErrorCodePage( const std::string &errorCode, const std::string &page ); // On voit si les deux mis ensemble c'est bon
 	void ParseServerConfigErrorPages( const std::vector<std::string> &lineSplitted );
 
 // Client Max Body Size
 	bool isValidClientMaxBodySize( const std::string &client_max_body_size );
 	void ParseServerConfigClientMaxBodySize( const std::vector<std::string> &lineSplitted );
+
+// Route
+	void ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted );
+
+// Allowed Methods
+	bool isValidMethod( const std::string &method );
+	void ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted );
 
 public:
 // Default constructor and Destructor

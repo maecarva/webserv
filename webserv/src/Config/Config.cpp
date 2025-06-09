@@ -24,10 +24,10 @@ std::vector<std::string> splitFromCharset( const std::string &str, const std::st
 			break;
 
 		end = start;
-		while ( end < str.size() && !( delimiters.find( str[end] ) != std::string::npos ) )
+		while ( end < str.size() && ( delimiters.find( str[end] ) == std::string::npos ) )
 			++end;
 
-		tokens.push_back( str.substr( start, end ) );
+		tokens.push_back( str.substr( start, ( end - start ) ) );
 		start = end;
 	}
 

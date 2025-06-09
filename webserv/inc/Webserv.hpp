@@ -40,7 +40,7 @@ typedef std::string string;
 
 #define MAX_EVENTS 64
 
-#define DEFAULT_PATH	"/home/maecarva/Desktop/mongithub/webserv/webserv/static_pages"
+#define DEFAULT_PATH	"/home/ebonutto/Documents/webserv/webserv/static_pages"
 #define DEFAULT_INDEX	"/index.html"
 #define CLOSE false
 #define KEEP_ALIVE true
