@@ -27,7 +27,7 @@ bool Route::isValidMethod( const std::string &method )
 	return ( true );
 }
 
-void Route::ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted )
+void Route::ParseServerConfigRouteAllow( std::vector<std::string> &lineSplitted )
 {
 	for ( size_t i = 1; i < lineSplitted.size(); ++i )
 	{
@@ -172,3 +172,32 @@ std::string					Route::getIndexFile() {
 std::map<int, std::string>	Route::getErrorPages() {
 	return this->_return_code;
 };
+
+
+void	Route::printRoute() {
+	PRINTCLN(MAG, "Path:");
+	std::cout << this->getName() << std::endl;
+
+	PRINTCLN(MAG, "Allowed methods:");
+	for (std::vector<std::string>::iterator it = this->_allowed_methods.begin(); it != this->_allowed_methods.end(); it++)
+	{
+		std::cout << (*it) SPACE;
+	}
+	NEWLINE;
+
+	PRINTCLN(MAG, "Root directory:");
+	std::cout << this->getRootDir() << std::endl;
+	
+	PRINTC(MAG, "Auto Index: ");
+	std::cout << (this->getAutoIndex() == true ? "true" : "false") << std::endl;
+
+	PRINTCLN(MAG, "Index file:");
+	std::cout << this->getIndexFile() << std::endl;
+	PRINTCLN(MAG, "Error pages:");
+
+	for (std::map<int, std::string>::iterator it = this->_return_code.begin(); it != this->_return_code.end(); it++)
+	{
+		std::cout << "\t" << (*it).first SPACE << (*it).second << std::endl;
+	}
+	
+}

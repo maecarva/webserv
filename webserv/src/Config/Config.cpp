@@ -334,7 +334,21 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 	return ( true );
 }
 
-void	Config::PrintConfig() {
+void	Config::PrintConfig(std::vector<Config>& configs) {
+
+	for (std::vector<Config>::iterator it = configs.begin(); it != configs.end(); it++)
+	{
+		std::vector<Route> routes = (*it).getRoutes();
+		(*it).PrintConfig();
+		NEWLINE;
+		for (std::vector<Route>::iterator it = routes.begin(); it != routes.end(); it++)
+		{
+			(*it).printRoute();
+		}
+		
+		NEWLINE;
+		NEWLINE;
+	}
 	PRINTCLN(GRN, "CONFIG:");
 
 	PRINTCLN(BLU, "SERVER_NAMES = ");
