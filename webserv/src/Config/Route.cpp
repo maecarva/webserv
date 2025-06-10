@@ -132,11 +132,11 @@ void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSpl
 		return ;
 	}
 
-	if ( access( lineSplitted[1].c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
-	{
-		std::perror( lineSplitted[1].c_str() );
-		return ;
-	}
+	// if ( access( lineSplitted[1].c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
+	// {
+	// 	std::perror( lineSplitted[1].c_str() );
+	// 	return ;
+	// }
 
 	_index = lineSplitted[1];
 }
