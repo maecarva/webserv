@@ -188,9 +188,12 @@ std::string	Request::formatResponse(Server& server) {
 
 	bool	valid = false;
 	std::vector<Route>::iterator i = routes.begin();
+	
+
+
 	while (i != routes.end())
 	{
-		if ((*i).getName() == this->getRoute())
+		if (std::strncmp((*i).getName().c_str(), this->getRoute(), (*i).getName().size()) == 0)
 		{
 			valid = true;
 			break ;
@@ -201,15 +204,18 @@ std::string	Request::formatResponse(Server& server) {
 	if (!valid)
 		return std::string(ERROR_404(*this));
 
+
+	std::string subroute = this->_route.substr((*i).getName().size(), this->_route.size());
+	//std::cout << "subroute : " << subroute << std::endl;
 	
 	// std::cout << filepath << std::endl;
-	std::string filepath = (*i).getRootDir();
+	std::string filepath = (*i).getRootDir() + subroute;
 	if (std::string(this->getRoute()) == (*i).getName())
 	{
-		filepath = filepath + (*i).getIndexFile();
+		filepath = filepath + "/" + (*i).getIndexFile();
 	}
-	else
-		filepath.append(this->getRoute());
+	// else
+	// 	filepath.append(this->getRoute());
 	std::string	extention;
 
 	for (std::string::iterator i = filepath.end(); i != filepath.begin(); i--)
@@ -244,7 +250,7 @@ std::string	Request::formatResponse(Server& server) {
 		}
 	}
 	
-	Logger::debug(filepath.c_str());
+	//Logger::debug(filepath.c_str());
 	std::string str;
 	if (access(filepath.c_str(), F_OK | R_OK) == 0) // file exist
 	{

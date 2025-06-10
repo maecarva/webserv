@@ -8,11 +8,14 @@ client_max_body_size 100m
 location /locate
 allow GET POST DELETE
 autoindex on
-index ./static_pages/index.html
+index index.html
 root ./static_pages
 
-location /labas
-allow GET POST
+location /site
+allow GET POST DELETE
+autoindex on
+index index.html
+root ./static_pages/site
 
 
 Server
