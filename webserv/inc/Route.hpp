@@ -31,4 +31,12 @@ public:
 
 	// Index
 	void ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted );
+
+	std::string&				getName();
+	std::vector<std::string>& 	getAllowedMethods();
+	std::string					getRootDir();
+	bool						getAutoIndex();
+	std::string					getIndexFile();
+	std::map<int, std::string>	getErrorPages();
+
 };

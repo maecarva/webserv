@@ -1,7 +1,7 @@
 #include "Webserv.hpp"
 #include "Config.hpp"
 
-bool	running = true;
+//bool	running = true;
 
 // socket = bidirectionnal fd
 // setsockopt = change socket behavior, here we use ipv4 address and allow reuse after
@@ -63,6 +63,12 @@ int main( void )
 	Config config;
 
 	std::ifstream infile( "input.txt" );
-	config.ParseServerConfig( infile );
-	config.PrintConfig();
+	std::vector<Config> vec = CreateConfigs(infile);
+
+	// config.PrintConfig();
+	for (std::vector<Config>::iterator it = vec.begin(); it != vec.end(); it++)
+	{
+		std::cout << (*it).
+	}
+	
 }
