@@ -56,4 +56,5 @@ const char		*InternalERROR(Request& request);
 const char		*ERROR_404(Request& request);
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
+
 #endif

@@ -9,6 +9,7 @@
 #include <cstdlib> // atoi()
 #include <iostream>
 #include <cstring>
+#include "Route.hpp"
 
 #define BLANK_CHARACTERS " \t"
 #define FORBIDDEN_NAME_CHARACTERS " \t\n\r\f\v/\\@!#$%^&*()=+[]{}|;:'\",<>?"
@@ -16,18 +17,7 @@
 #define CLIENT_MAX_BODY_SIZE_KO 1048576 // 1 Go / 1024
 #define CLIENT_MAX_BODY_SIZE_MO 1024
 
-struct Route
-{
-	std::string route;
-	std::vector<std::string> allowed_methods;
-	std::string root;
-	bool autoindex;   // a set a true ou false des le debut
-	std::string index;
-	std::string redirection;
-
-
-
-};
+class Route;
 
 class Config
 {
@@ -68,10 +58,6 @@ private:
 // Route
 	void ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted );
 
-// Allowed Methods
-	bool isValidMethod( const std::string &method );
-	void ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted );
-
 public:
 // Default constructor and Destructor
 	Config( void );
@@ -79,8 +65,9 @@ public:
 
 // Parse Config
 	bool ParseServerConfig( std::ifstream &configFile );
-
 };
 
 // Useful Functions
 std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters );
+
+std::vector<Config> CreateConfigs( std::ifstream &configFile );

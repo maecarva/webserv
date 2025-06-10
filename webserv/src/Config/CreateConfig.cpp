@@ -1,0 +1,33 @@
+#include "Config.hpp"
+
+std::vector<Config> CreateConfigs( std::ifstream &configFile )
+{
+	std::vector<Config> configs;
+	std::string line;
+	std::vector<std::string> lineSplitted;
+
+	while ( std::getline( configFile, line ) )
+	{
+		lineSplitted = splitFromCharset( line, BLANK_CHARACTERS );
+
+		if ( lineSplitted.size() == 0 )
+			continue;
+
+		if ( lineSplitted[1] == "server" )
+		{
+			Config config;
+
+			config.ParseServerConfig( configFile );
+			// checker si c est bon bg
+			configs.push_back( config );
+		}
+
+		else
+		{
+			std::cerr << "Invalid ta mere" << std::endl;
+			break;
+		}
+	}
+
+	return ( configs );
+}

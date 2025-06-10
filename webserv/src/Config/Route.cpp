@@ -1,7 +1,13 @@
 #include "Config.hpp"
 
+// Route
+void Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted ) // revoir la fct
+{
+	_name = lineSplitted[1];
+}
+
 // Allowed Methods
-bool Config::isValidMethod( const std::string &method )
+bool Route::isValidMethod( const std::string &method )
 {
 	if ( method.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
 	{
@@ -9,9 +15,9 @@ bool Config::isValidMethod( const std::string &method )
 		return ( false );
 	}
 
-	for ( size_t i = 0; i < ( _routes[_routes.size() - 1].allowed_methods.size() ); ++i ) // Nom deja existant
+	for ( size_t i = 0; i < _allowed_methods.size(); ++i ) // Nom deja existant
 	{
-		if ( _routes[_routes.size() - 1].allowed_methods[i] == method )
+		if ( _allowed_methods[i] == method )
 		{
 			std::cerr << "Route already has method: \'" << method << "\'." << std::endl;
 			return ( false );
@@ -21,16 +27,82 @@ bool Config::isValidMethod( const std::string &method )
 	return ( true );
 }
 
-void Config::ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted )
+void Route::ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted )
 {
 	for ( size_t i = 1; i < lineSplitted.size(); ++i )
 	{
 		std::transform( lineSplitted[i].begin(), lineSplitted[i].end(), lineSplitted[i].begin(), ::toupper );
 		if ( isValidMethod( lineSplitted[i] ) )
-			_routes[_routes.size() - 1].allowed_methods.push_back( lineSplitted[i] );
+			_allowed_methods.push_back( lineSplitted[i] );
 	}
 }
 
+
+// Root
+bool Route::isValidRoot( const std::string &root )
+{
+	struct stat info;
+
+	if ( stat( root.c_str(), &info ) != 0 ) // Verifie si le dossier existe et s'il y'a un erreur d'accès.
+	{
+		std::cerr << "Root: \'" << root << "\' does not exist." << std::endl;
+		return ( false );
+	}
+
+	if ( !( info.st_mode & S_IFDIR ) ) // Verifie si c'est un dossier
+	{
+		std::cerr << "Root: \'" << root << "\' is not a directory." << std::endl;
+		return ( false ); // Ce n'est pas un dossier
+	}
+
+	if ( access( root.c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
+	{
+		std::cerr << "Root: \'" << root << "\' has an invalid access." << std::endl;
+		return ( false );
+	}
+
+	return ( true );
+}
+
+void Route::ParseServerConfigRouteRoot( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "Root: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( this->isValidRoot( lineSplitted[1] ) )
+	{
+		_root = lineSplitted[1];
+	}
+}
+
+// AutoIndex
+void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "Autoindex: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( lineSplitted[1] == "on" )
+		_autoindex = true;
+
+	else if ( lineSplitted[1] == "off" )
+		_autoindex = false;
+
+	else
+		std::cerr << "AutoIndex: \'" << lineSplitted[1] << "\' is Invalid." << std::endl;
+}
+
+
+// Index
+void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted )
+{
+	_index = lineSplitted[1];
+}
 
 
 // Parse Route
@@ -40,11 +112,12 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 
 	if ( lineSplitted.size() != 2 )
 	{
+		std::cerr << "Route: Invalid number of arguments." << std::endl;
 		// Skip tous les elements de la route
 		return ;
 	}
 
-	route.route = lineSplitted[1]; // check si le nom est bon
+	route.ParseServerConfigRouteName( lineSplitted ); //! renvoyeru un booleen.
 
 	while ( std::getline( configFile, line ) )
 	{
@@ -60,11 +133,16 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 		}
 
 		if ( lineSplitted[0] == "allow" )
-			this->ParseServerConfigRouteAllow( lineSplitted );
+			route.ParseServerConfigRouteAllow( lineSplitted );
+
+		else if ( lineSplitted[0] == "root" )
+			route.ParseServerConfigRouteRoot( lineSplitted );
+
+		else if ( lineSplitted[0] == "autoindex" )
+			route.ParseServerConfigRouteAutoindex( lineSplitted );
 
 		else if ( lineSplitted[0] == "index" )
-
-		else if (  )
+			route.ParseServerConfigRouteIndex( lineSplitted );
 	}
 	_routes.push_back( route );
 }
