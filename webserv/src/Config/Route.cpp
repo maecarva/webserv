@@ -18,11 +18,11 @@ bool Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSpli
 		return ( false );
 	}
 
-	if ( lineSplitted[1].find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
-	{
-		std::cerr << "Invalid route name: \'" << lineSplitted[1] << "\'." << std::endl;
-		return ( false );
-	}
+	// if ( lineSplitted[1].find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
+	// {
+	// 	std::cerr << "Invalid route name: \'" << lineSplitted[1] << "\'." << std::endl;
+	// 	return ( false );
+	// }
 
 	_name = lineSplitted[1];
 
@@ -149,7 +149,7 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 
 	if ( lineSplitted.size() != 2 )
 	{
-		std::cerr << "Route: Invalid number of arguments." << std::endl;
+		std::cerr << "Location: Invalid number of arguments." << std::endl;
 		// Skip tous les elements de la route
 		return ;
 	}
