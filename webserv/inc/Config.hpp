@@ -60,7 +60,7 @@ public:
 
 // Parse Config
 	bool ParseServerConfig( std::ifstream &configFile );
-	void PrintConfig(std::vector<Config>& configs);
+	static void PrintConfig(std::vector<Config>& configs);
 
 
 	// Getters
