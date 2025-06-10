@@ -15,6 +15,9 @@ private:
 	std::map<int, std::string> _return_code;
 
 public:
+
+	Route();
+	~Route();
 	// Name
 	void ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
 

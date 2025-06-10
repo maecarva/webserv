@@ -333,41 +333,46 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 	return ( true );
 }
 
+void	printMini(Config& config)
+{
+	PRINTCLN(GRN, "CONFIG:");
+
+	PRINTCLN(BLU, "SERVER_NAMES = ");
+	std::vector<string> servernamesit = config.getServerNames();
+	for (size_t i = 0; i < servernamesit.size(); i++)
+		std::cout << "\'aa" << servernamesit[i] << "\' ";
+	NEWLINE;
+
+	PRINTCLN(BLU, "HOST:PORT = ");
+	std::cout << config.getListen() << std::endl;
+
+	PRINTCLN(BLU, "ERROR -> PAGE = ");
+	std::map<int, std::string> errorpages = config.getErrorPages();
+	for (std::map<int, std::string>::iterator it = errorpages.begin(); it != errorpages.end(); it++)
+	{
+		std::cout << (*it).first << " -> " << (*it).second << std::endl;
+	}
+	PRINTCLN(BLU, "Max body size = ");
+	std::cout << config.getClientMaxBodySize() << std::endl;
+
+
+	PRINTCLN(BLU, "ROUTES = ");
+}
+
 void	Config::PrintConfig(std::vector<Config>& configs) {
 
 	for (std::vector<Config>::iterator it = configs.begin(); it != configs.end(); it++)
 	{
 		std::vector<Route> routes = (*it).getRoutes();
-		(*it).PrintConfig();
+		printMini(*it);
 		NEWLINE;
-		for (std::vector<Route>::iterator it = routes.begin(); it != routes.end(); it++)
-		{
-			(*it).printRoute();
-		}
+		// for (std::vector<Route>::iterator it = routes.begin(); it != routes.end(); it++)
+		// {
+		// 	(*it).printRoute();
+		// }
 		
 		NEWLINE;
 		NEWLINE;
 	}
-	PRINTCLN(GRN, "CONFIG:");
-
-	PRINTCLN(BLU, "SERVER_NAMES = ");
-	for (std::vector<string>::iterator i = this->_server_names.begin(); i != this->_server_names.end(); i++)
-	{
-		std::cout << "\'" << *i << "\' ";
-	}
-	NEWLINE;
-
-	PRINTCLN(BLU, "HOST:PORT = ");
-	std::cout << this->_host << ":" << this->_port << std::endl;
-
-	PRINTCLN(BLU, "ERROR -> PAGE = ");
-	for (std::map<int, std::string>::iterator it = this->_error_pages.begin(); it != this->_error_pages.end(); it++)
-	{
-		std::cout << (*it).first << " -> " << (*it).second << std::endl;
-	}
-	PRINTCLN(BLU, "Max body size = ");
-	std::cout << this->_client_max_body_size << std::endl;
-
-
-	PRINTCLN(BLU, "ROUTES = ");
+	
 }
