@@ -29,14 +29,7 @@ private:
 	int _client_max_body_size;  // À set à -1
 	std::vector<Route> _routes;
 
-// Getters
-	std::vector<std::string> getServerNames( void ) const;
-	std::string getListen( void ) const;
-	std::string getServerHost( void ) const;
-	std::string getServerPort( void ) const;
-	std::map<int, std::string> getErrorPages( void );
-	int getClientMaxBodySize( void ) const;
-	std::vector<Route> getRoutes( void ) const;
+
 
 // Parsing
 
@@ -68,6 +61,16 @@ public:
 // Parse Config
 	bool ParseServerConfig( std::ifstream &configFile );
 	void	PrintConfig();
+
+
+	// Getters
+	std::vector<std::string> getServerNames( void ) const;
+	std::string getListen( void ) const;
+	std::string getServerHost( void ) const;
+	std::string getServerPort( void ) const;
+	std::map<int, std::string> getErrorPages( void );
+	int getClientMaxBodySize( void ) const;
+	std::vector<Route> getRoutes( void ) const;
 };
 
 // Useful Functions

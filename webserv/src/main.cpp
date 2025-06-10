@@ -24,7 +24,7 @@
 // 	std::vector<Server*> servers;
 
 // 	set_signals();
-// 	try
+// 	tryConfig::
 // 	{
 // 		Server *server1 = new Server(3000, "127.0.0.1", "server1");
 // 		servers.push_back(server1);
@@ -68,7 +68,8 @@ int main( void )
 	// config.PrintConfig();
 	for (std::vector<Config>::iterator it = vec.begin(); it != vec.end(); it++)
 	{
-		std::cout << (*it).
+		std::vector<Route> routes = (*it).getRoutes();
+		(*it).PrintConfig();
 	}
 	
 }
