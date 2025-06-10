@@ -13,7 +13,7 @@ std::vector<Config> CreateConfigs( std::ifstream &configFile )
 		if ( lineSplitted.size() == 0 )
 			continue;
 
-		if ( lineSplitted[1] == "server" )
+		if ( lineSplitted[0] == "Server" )
 		{
 			Config config;
 
