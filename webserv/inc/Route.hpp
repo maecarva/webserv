@@ -19,7 +19,7 @@ public:
 	Route();
 	~Route();
 	// Name
-	void ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
+	bool ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
 
 	// Allowed Methods
 	bool isValidMethod( const std::string &method );

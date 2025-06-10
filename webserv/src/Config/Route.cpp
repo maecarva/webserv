@@ -8,11 +8,27 @@ Route::Route( void ) : _autoindex( false )
 
 Route::~Route( void ) {}
 
+
 // Route
-void Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted ) // revoir la fct
+bool Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted ) // revoir la fct
 {
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "locate: Invalid number of arguments." << std::endl;
+		return ( false );
+	}
+
+	if ( lineSplitted[1].find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
+	{
+		std::cerr << "Invalid route name: \'" << lineSplitted[1] << "\'." << std::endl;
+		return ( false );
+	}
+
 	_name = lineSplitted[1];
+
+	return ( true );
 }
+
 
 // Allowed Methods
 bool Route::isValidMethod( const std::string &method )
@@ -86,6 +102,7 @@ void Route::ParseServerConfigRouteRoot( const std::vector<std::string> &lineSpli
 	}
 }
 
+
 // AutoIndex
 void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lineSplitted )
 {
@@ -109,6 +126,18 @@ void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lin
 // Index
 void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted )
 {
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "Index: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( access( lineSplitted[1].c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
+	{
+		std::cerr << "Root: \'" << lineSplitted[1] << "\' has an invalid access." << std::endl;
+		return ;
+	}
+
 	_index = lineSplitted[1];
 }
 
@@ -125,7 +154,10 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 		return ;
 	}
 
-	route.ParseServerConfigRouteName( lineSplitted ); //! renvoyeru un booleen.
+	if ( !route.ParseServerConfigRouteName( lineSplitted ) ) //! renvoyer un booleen.
+	{
+		return ;
+	}
 
 	while ( std::getline( configFile, line ) )
 	{
