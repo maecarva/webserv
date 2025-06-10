@@ -322,7 +322,7 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
-		else if ( lineSplitted[0] == "locate" ) // A faire
+		else if ( lineSplitted[0] == "location" ) // A faire
 			this->ParseServerConfigRoute( configFile, line, lineSplitted );
 
 		else
@@ -340,7 +340,7 @@ void	printMini(Config& config)
 	PRINTCLN(BLU, "SERVER_NAMES = ");
 	std::vector<string> servernamesit = config.getServerNames();
 	for (size_t i = 0; i < servernamesit.size(); i++)
-		std::cout << "\'aa" << servernamesit[i] << "\' ";
+		std::cout << "\'" << servernamesit[i] << "\' ";
 	NEWLINE;
 
 	PRINTCLN(BLU, "HOST:PORT = ");
@@ -366,10 +366,10 @@ void	Config::PrintConfig(std::vector<Config>& configs) {
 		std::vector<Route> routes = (*it).getRoutes();
 		printMini(*it);
 		NEWLINE;
-		// for (std::vector<Route>::iterator it = routes.begin(); it != routes.end(); it++)
-		// {
-		// 	(*it).printRoute();
-		// }
+		for (std::vector<Route>::iterator it2 = routes.begin(); it2 != routes.end(); it2++)
+		{
+			(*it2).printRoute();
+		}
 		
 		NEWLINE;
 		NEWLINE;
