@@ -12,7 +12,8 @@ SRC		:=	main.cpp \
 			Utils/IsDirectory.cpp \
 			Utils/getAllFilesFromDirectory.cpp \
 			Config/Config.cpp \
-			Config/CreateConfig.cpp
+			Config/CreateConfig.cpp \
+			Config/Route.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
