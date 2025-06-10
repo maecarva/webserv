@@ -31,10 +31,12 @@ private:
 
 // Getters
 	std::vector<std::string> getServerNames( void ) const;
-	std::vector< std::map<std::string, std::string> > getListen( void ) const;
+	std::string getListen( void ) const;
+	std::string getServerHost( void ) const;
+	std::string getServerPort( void ) const;
 	std::map<int, std::string> getErrorPages( void );
 	int getClientMaxBodySize( void ) const;
-	std::map<std::string, Route> getRoutes( void ) const;
+	std::vector<Route> getRoutes( void ) const;
 
 // Parsing
 

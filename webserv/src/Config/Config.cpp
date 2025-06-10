@@ -8,6 +8,44 @@ Config::Config( void ) : _client_max_body_size( -1 )
 
 Config::~Config( void ) {}
 
+
+// Getters
+std::vector<std::string> Config::getServerNames( void ) const
+{
+	return ( _server_names );
+}
+
+std::string Config::getListen( void ) const
+{
+	return ( _host + ':' + "port" );
+}
+
+std::string Config::getServerHost( void ) const
+{
+	return ( _host );
+}
+
+std::string Config::getServerPort( void ) const
+{
+	return ( _port );
+}
+
+std::map<int, std::string> Config::getErrorPages( void )
+{
+	return ( _error_pages );
+}
+
+int Config::getClientMaxBodySize( void ) const
+{
+	return ( _client_max_body_size );
+}
+
+std::vector<Route> Config::getRoutes( void ) const
+{
+	return ( _routes );
+}
+
+
 // Useful Functions
 std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters )
 {
