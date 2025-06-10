@@ -20,7 +20,7 @@ public:
 
 	// Allowed Methods
 	bool isValidMethod( const std::string &method );
-	void ParseServerConfigRouteAllow( const std::vector<std::string> &lineSplitted );
+	void ParseServerConfigRouteAllow( std::vector<std::string> &lineSplitted );
 
 	// root
 	bool isValidRoot( const std::string &root );
@@ -39,4 +39,6 @@ public:
 	std::string					getIndexFile();
 	std::map<int, std::string>	getErrorPages();
 
+
+	void						printRoute();
 };

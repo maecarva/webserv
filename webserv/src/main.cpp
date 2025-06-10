@@ -60,16 +60,23 @@
 
 int main( void )
 {
-	Config config;
 
 	std::ifstream infile( "input.txt" );
 	std::vector<Config> vec = CreateConfigs(infile);
 
-	// config.PrintConfig();
 	for (std::vector<Config>::iterator it = vec.begin(); it != vec.end(); it++)
 	{
 		std::vector<Route> routes = (*it).getRoutes();
 		(*it).PrintConfig();
+		NEWLINE;
+		for (std::vector<Route>::iterator it = routes.begin(); it != routes.end(); it++)
+		{
+			(*it).printRoute();
+		}
+		
+		NEWLINE;
+		NEWLINE;
 	}
-	
+
+	return 0;
 }
