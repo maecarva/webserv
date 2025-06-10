@@ -1,25 +1,23 @@
 Server
-listen 127.0.0.1:8080
+listen 127.0.0.1:3001
 server_names hellohubert
 error_pages 404 505 error.html
 error_pages 405 hubert.html
 client_max_body_size 100
 location /locate
-allow GET POST aba
+allow GET POST DELETE
 autoindex on
-root /etc/
+index ./static_pages/index.html
+root ./static_pages
 
 location /labas
 allow GET POST
 
 
 Server
-listen 127.0.0.2:8080
+listen 127.0.0.1:3000
 server_names asdasdasdasd
 error_pages 404 505 error2.html
 error_pages 405 hubert2.html
-client_max_body_size 100009
-
-
-asadad
+client_max_body_size 500
 

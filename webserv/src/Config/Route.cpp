@@ -3,7 +3,7 @@
 // Default constructor and Destructor
 Route::Route( void ) : _autoindex( false )
 {
-	std::cout << "Creating Route" << std::endl;
+	Logger::debug("Creating Route");
 }
 
 Route::~Route( void ) {}
@@ -240,4 +240,11 @@ void	Route::printRoute() {
 		std::cout << "\t" << (*it).first SPACE << (*it).second << std::endl;
 	}
 	
+}
+
+
+// * setters
+
+void Route::setRootDir(std::string str) {
+	this->_root = str;
 }

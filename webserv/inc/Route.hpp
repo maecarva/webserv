@@ -42,6 +42,8 @@ public:
 	std::string					getIndexFile();
 	std::map<int, std::string>	getErrorPages();
 
+	void						setRootDir(std::string str);
+
 
 	void						printRoute();
 };

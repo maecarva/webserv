@@ -1,30 +1,21 @@
 #ifndef SERVER
 #define SERVER
 
-#include <exception>
-#include <map>
-#include <vector>
-#include <sys/epoll.h>
+
+#include "Webserv.hpp"
+
+class Config;
 
 class Server
 {
 private:
-	const char							*_label;
-    unsigned short int					_port;
-    const char							*_address;
-	int									_socketfd;
+	// Config								_config;
 
-	// events
+	// events / sockets
+	int									_socketfd;
 	int									_epoll_fd;
 	struct epoll_event					_ev;
 	std::map<int, std::vector<char> >	_clientBuffers;
-
-	// parsed config
-	std::string							_indexfile;
-	std::string							_rootdir;
-	bool								_directory_listing;
-	std::string							_upload_folder;
-	std::map<int, std::string>			_error_pages;
 
 	class ServerCreationError : public std::exception {
 		virtual const char *what() const throw() {
@@ -35,13 +26,15 @@ private:
 
     Server();
 public:
-    Server(unsigned short int port, const char *address, const char *label);
+    Server(Config& config);
+	Server& operator=(const Server&);
     ~Server();
 
 	void	handler();
 
 
 	// getters
+	Config&			getConfig();
 	const char		*getAddress() const;
 	const char		*getLabel() const;
 	int				getPort() const;

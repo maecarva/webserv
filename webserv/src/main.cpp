@@ -1,23 +1,7 @@
 #include "Webserv.hpp"
 #include "Config.hpp"
 
-//bool	running = true;
 
-// socket = bidirectionnal fd
-// setsockopt = change socket behavior, here we use ipv4 address and allow reuse after
-
-// bool	running = true;
-
-// void	sig_handler(int sig) {
-// 	running = false;
-// 	Logger::info("Stopping servers.");
-// 	(void)sig;
-// }
-
-// void	set_signals(void)
-// {
-// 	signal(SIGINT, sig_handler);
-// }
 
 // int main(int argc, char const *argv[])
 // {
@@ -58,6 +42,20 @@
 // 	return (0 * argc * argv[0][0]);
 // }
 
+
+bool	running = true;
+
+void	sig_handler(int sig) {
+	running = false;
+	Logger::info("Stopping servers.");
+	(void)sig;
+}
+
+void	set_signals(void)
+{
+	signal(SIGINT, sig_handler);
+}
+
 int main( void )
 {
 
@@ -65,6 +63,35 @@ int main( void )
 	std::vector<Config> vec = CreateConfigs(infile);
 
 	Config::PrintConfig(vec);
+
+	
+	std::vector<Server> servers;
+	set_signals();
+
+	try
+	{
+		servers = CreateServerPool(vec);
+	}
+	catch(const std::exception& e)
+	{
+		std::cerr << e.what() << '\n';
+		goto _CLEAN;
+	}
+	
+	while (running) {
+		for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+		{
+			(*it).handler();
+		}
+	}
+
+_CLEAN:
+	// clear servers
+	for (std::vector<Server>::iterator it = servers.begin(); it != servers.end(); ++it)
+	{
+		Logger::info("Closing server.");
+	}
+	servers.clear();
 
 	return 0;
 }

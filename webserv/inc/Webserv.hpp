@@ -21,18 +21,22 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/epoll.h>
 #include <cstdlib>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <dirent.h>
+#include <exception>
+#include <map>
+#include <vector>
+#include <sys/epoll.h>
 
-#include "Request.hpp"
 #include "HttpStatusCodes.hpp"
-#include "Server.hpp"
+#include "Server2.hpp"
 #include "Logger.hpp"
 #include "Colors.hpp"
 #include "Hashed.hpp"
+#include "Config.hpp"
+#include "Request.hpp"
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)
@@ -55,7 +59,10 @@ bool			getAllFilesFromDirectory(std::vector<string>& files, const char *path);
 // default error pages
 const char		*InternalERROR(Request& request);
 const char		*ERROR_404(Request& request);
+const char		*BadRequest(Request& request);
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
+
+std::vector<Server>	CreateServerPool(std::vector<Config>& configs);
 
 #endif

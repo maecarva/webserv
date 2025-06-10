@@ -3,9 +3,7 @@
 NAME	:=	webserv
 
 SRC		:=	main.cpp \
-			Request/Request.cpp \
 			Utils/DJB2.cpp \
-			Server/Server.cpp \
 			Utils/setNonBlocking.cpp \
 			Logger/Logger.cpp \
 			Utils/DefaultResponses.cpp \
@@ -13,7 +11,10 @@ SRC		:=	main.cpp \
 			Utils/getAllFilesFromDirectory.cpp \
 			Config/Config.cpp \
 			Config/CreateConfig.cpp \
-			Config/Route.cpp
+			Config/Route.cpp \
+			Server/Server2.cpp \
+			Server/CreateServerPool.cpp \
+			Request/Request.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
