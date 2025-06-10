@@ -12,7 +12,8 @@ private:
 	std::string _root;
 	bool _autoindex;   // a set a true ou false des le debut
 	std::string _index;
-	std::map<int, std::string> _return_code;
+	std::map<int, std::string> _return;
+	bool _uploads;
 
 public:
 
@@ -35,15 +36,23 @@ public:
 	// Index
 	void ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted );
 
+	// Return
+	void ParseServerConfigRouteReturn( const std::vector<std::string> &lineSplitted );
+
+	// Uploads
+	void ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted );
+
+
 	std::string&				getName();
 	std::vector<std::string>& 	getAllowedMethods();
 	std::string					getRootDir();
 	bool						getAutoIndex();
 	std::string					getIndexFile();
-	std::map<int, std::string>	getErrorPages();
 
 	void						setRootDir(std::string str);
 
+	std::map<int, std::string>	getReturn();
+	bool						getUploads( void );
 
 	void						printRoute();
 };

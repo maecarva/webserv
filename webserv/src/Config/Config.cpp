@@ -162,7 +162,12 @@ void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted
 // Error Pages
 bool Config::isValidPage( const std::string &page )
 {
-	(void)page;
+	if ( access( page.c_str(), R_OK | X_OK ) != 0 )
+	{
+		perror( page.c_str() );
+		return ( false );
+	}
+
 	return ( true );
 }
 
@@ -206,7 +211,10 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 		if ( this->isValidErrorCode( lineSplitted[i] ) )
 		{
 			code = atoi( lineSplitted[i].c_str() );
-			_error_pages[code] = page;
+			if ( _error_pages.find( code ) == _error_pages.end() ) //  N'est pas dedans
+				_error_pages[code] = page;
+			else
+				std::cerr << "error_pages: code \'" << code << "\' is already set." << std::endl;
 		}
 	}
 }
@@ -246,7 +254,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	}
 
 	// Cas kilo octet
-	if ( ( *end == 'k' || *end == 'K' ) && ( *end + 1 ) == '\0' )
+	if ( ( *end == 'k' || *end == 'K' ) && *( end + 1 ) == '\0' )
 	{
 		if ( nb > CLIENT_MAX_BODY_SIZE_KO )
 		{
@@ -258,7 +266,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	}
 
 	// Cas mega octet
-	if ( ( *end == 'm' || *end == 'M' ) && ( *end + 1 ) == '\0' )
+	if ( ( *end == 'm' || *end == 'M' ) && *( end + 1 ) == '\0' )
 	{
 		if ( nb > CLIENT_MAX_BODY_SIZE_MO )
 		{
@@ -310,23 +318,26 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 			continue;
 		}
 
-		if ( lineSplitted[0] == "listen" ) // checker les doublons avant d'ajouter.
+		if ( lineSplitted[0] == "listen" )
 			this->ParseServerConfigListen( lineSplitted );
 
 		else if ( lineSplitted[0] == "server_names" )
 			this->ParseServerConfigName( lineSplitted );
 
-		else if ( lineSplitted[0] == "error_pages" ) // checker les doublons avant d'ajouter et voir si c'est correct.
+		else if ( lineSplitted[0] == "error_pages" )
 			this->ParseServerConfigErrorPages( lineSplitted );
 
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
-		else if ( lineSplitted[0] == "location" ) // A faire
+		else if ( lineSplitted[0] == "location" )
 			this->ParseServerConfigRoute( configFile, line, lineSplitted );
 
 		else
+		{
 			std::cerr << "Invalid Server directive \'" << line << "\'." << std::endl;
+			break;
+		}
 
 	}
 

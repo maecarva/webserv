@@ -3,7 +3,8 @@ listen 127.0.0.1:3001
 server_names hellohubert
 error_pages 404 505 error.html
 error_pages 405 hubert.html
-client_max_body_size 100
+error_pages 405 input.txt
+client_max_body_size 100m
 location /locate
 allow GET POST DELETE
 autoindex on

@@ -53,6 +53,9 @@ private:
 // Route
 	void ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted );
 
+// Uploads
+	void ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted );
+
 public:
 // Default constructor and Destructor
 	Config( void );

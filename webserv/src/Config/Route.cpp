@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Route::Route( void ) : _autoindex( false )
+Route::Route( void ) : _autoindex( false ), _uploads( false )
 {
 	Logger::debug("Creating Route");
 }
@@ -134,11 +134,65 @@ void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSpl
 
 	if ( access( lineSplitted[1].c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
 	{
-		std::cerr << "Root: \'" << lineSplitted[1] << "\' has an invalid access." << std::endl;
+		std::perror( lineSplitted[1].c_str() );
 		return ;
 	}
 
 	_index = lineSplitted[1];
+}
+
+
+// Return
+void Route::ParseServerConfigRouteReturn( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 3 )
+	{
+		std::cerr << "Return: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( lineSplitted[1].size() != 3 )
+	{
+		std::cerr << "Invalid return code \'" <<  lineSplitted[1] << "\'." << std::endl;
+		return ;
+	}
+
+	char *end;
+	long returnCode = strtol( lineSplitted[1].c_str(), &end, 10 );
+
+	if ( *end != '\0' )
+	{
+		std::cerr << "Invalid return code \'" <<  lineSplitted[1] << "\'." << std::endl;
+		return ;
+	}
+
+	if ( returnCode < 0 || returnCode > 599 )
+	{
+		std::cerr << "Invalid error_code \'" << returnCode << "\'." << std::endl;
+		return ;
+	}
+
+	_return[( int ) returnCode] = lineSplitted[2];
+}
+
+
+// Uploads
+void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "uploads: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( lineSplitted[1] == "on" )
+		_uploads = true;
+
+	else if ( lineSplitted[1] == "off" )
+		_uploads = false;
+
+	else
+		std::cerr << "Uploads: \'" << lineSplitted[1] << "\' is Invalid." << std::endl;
 }
 
 
@@ -183,6 +237,18 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 
 		else if ( lineSplitted[0] == "index" )
 			route.ParseServerConfigRouteIndex( lineSplitted );
+		
+		else if ( lineSplitted[0] == "return" )
+			route.ParseServerConfigRouteReturn( lineSplitted );
+
+		else if ( lineSplitted[0] == "uploads" )
+			route.ParseServerConfigRouteUploads( lineSplitted );
+
+		else
+		{
+			std::cerr << "Invalid Route directive \'" << line << "\'." << std::endl;
+			break;
+		}
 	}
 	_routes.push_back( route );
 }
@@ -209,9 +275,11 @@ std::string					Route::getIndexFile() {
 	return this->_index;
 };
 
-std::map<int, std::string>	Route::getErrorPages() {
-	return this->_return_code;
+std::map<int, std::string>	Route::getReturn() {
+	return this->_return;
 };
+
+bool Route::getUploads( void ) { return ( _uploads ); }
 
 
 void	Route::printRoute() {
@@ -233,12 +301,15 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Index file:");
 	std::cout << this->getIndexFile() << std::endl;
-	PRINTCLN(MAG, "Error pages:");
+	PRINTCLN(MAG, "Return:");
 
-	for (std::map<int, std::string>::iterator it = this->_return_code.begin(); it != this->_return_code.end(); it++)
+	for (std::map<int, std::string>::iterator it = this->_return.begin(); it != this->_return.end(); it++)
 	{
 		std::cout << "\t" << (*it).first SPACE << (*it).second << std::endl;
 	}
+
+	PRINTCLN(MAG, "Uploads");
+	std::cout << (this->getUploads() == true ? "true" : "false") << std::endl;
 	
 }
 
