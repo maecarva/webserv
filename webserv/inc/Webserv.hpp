@@ -40,7 +40,7 @@ typedef std::string string;
 
 #define MAX_EVENTS 64
 
-#define DEFAULT_PATH	"/home/maecarva/Desktop/mongithub/webserv/webserv/static_pages"
+#define DEFAULT_PATH	"/home/ebonutto/Documents/webserv/webserv/static_pages"
 #define DEFAULT_INDEX	"/index.html"
 #define CLOSE false
 #define KEEP_ALIVE true
@@ -56,4 +56,5 @@ const char		*InternalERROR(Request& request);
 const char		*ERROR_404(Request& request);
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
+
 #endif

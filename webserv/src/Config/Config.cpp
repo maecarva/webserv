@@ -24,10 +24,10 @@ std::vector<std::string> splitFromCharset( const std::string &str, const std::st
 			break;
 
 		end = start;
-		while ( end < str.size() && !( delimiters.find( str[end] ) != std::string::npos ) )
+		while ( end < str.size() && ( delimiters.find( str[end] ) == std::string::npos ) )
 			++end;
 
-		tokens.push_back( str.substr( start, end ) );
+		tokens.push_back( str.substr( start, ( end - start ) ) );
 		start = end;
 	}
 
@@ -74,16 +74,19 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 		return ;
 	}
 
-	for ( size_t i = 1; i < lineSplitted.size(); ++i )
+	if ( !_host.empty() )
 	{
-		colon = lineSplitted[i].find(':');
-		host = ( colon != std::string::npos ) ? lineSplitted[i].substr( 0, colon ) : "0.0.0.0";
-		port = ( colon != std::string::npos ) ? lineSplitted[i].substr( colon + 1 ) : lineSplitted[i];
-		if ( this->isValidHostPort( host, port ) )
-		{
-			_host = host;
-			_port = port;
-		}
+		std::cerr << "listen: already filled." << std::endl;
+		return ;
+	}
+
+	colon = lineSplitted[1].find(':');
+	host = ( colon != std::string::npos ) ? lineSplitted[1].substr( 0, colon ) : "0.0.0.0";
+	port = ( colon != std::string::npos ) ? lineSplitted[1].substr( colon + 1 ) : lineSplitted[1];
+	if ( this->isValidHostPort( host, port ) )
+	{
+		_host = host;
+		_port = port;
 	}
 }
 
