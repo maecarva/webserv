@@ -3,7 +3,7 @@
 // Default constructor and Destructor
 Config::Config( void ) : _client_max_body_size( -1 )
 {
-	std::cout << "Creating Config" << std::endl;
+	Logger::debug("Creating Config");
 }
 
 Config::~Config( void ) {}

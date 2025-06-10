@@ -48,6 +48,9 @@ public:
 	std::string					getRootDir();
 	bool						getAutoIndex();
 	std::string					getIndexFile();
+
+	void						setRootDir(std::string str);
+
 	std::map<int, std::string>	getReturn();
 	bool						getUploads( void );
 

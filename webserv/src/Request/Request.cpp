@@ -95,6 +95,7 @@ void	Request::parseRequest(const char *req, Server& server)
 			}
 			i++;
 		}
+		firstline = false;
 
 		while (iss2 >> token) {
 			std::pair<std::string, std::string> pair = std::make_pair(token, "");
@@ -106,12 +107,12 @@ void	Request::parseRequest(const char *req, Server& server)
 			std::transform(key.begin(), key.end(), key.begin(), ::toupper);
 			if (key == "HOST:")
 			{
-				std::string address;
-				address.append(server.getAddress());
-				address.push_back(':');
-				std::ostringstream oss;
-				oss << server.getPort();
-				address.append(oss.str().c_str());
+				// std::string address;
+				// address.append(server.getAddress());
+				// address.push_back(':');
+				// std::ostringstream oss;
+				// oss << server.getPort();
+				// address.append(oss.str().c_str());
 			}
 			else if (key == "CONNECTION:") {
 				std::string second = pair.second;
@@ -148,7 +149,7 @@ void	Request::logRequest(Server& server) {
 	long time = seconds * 1000000 + micros;
 
 	std::ostringstream oss;
-	oss << "Server:" SPACE << server.getLabel() SPACE << this->getMethod() << " " << this->getRoute() << " " << this->getHost()
+	oss << "Server:" SPACE << server.getConfig().getServerNames()[0] SPACE << this->getMethod() << " " << this->getRoute() << " " << this->getHost()
 	<< " " << (this->_keepalive ? "keep-alive" : "close") SPACE;
 
 	if (this->_response_code == HTTP_OK)
@@ -170,7 +171,7 @@ std::string	Request::formatResponse(Server& server) {
 	case 500:
 		return std::string(InternalERROR(*this));
 	case 400:
-		return std::string(InternalERROR(*this));
+		return std::string(BadRequest(*this));
 	
 	default:
 		break;
@@ -179,10 +180,33 @@ std::string	Request::formatResponse(Server& server) {
 	std::ostringstream resp;
 
 	std::fstream inputfile;
-	std::string filepath = DEFAULT_PATH;
-	if (std::string(this->getRoute()) == "/")
+	Config& config = server.getConfig();
+	std::vector<Route> routes = config.getRoutes();
+
+	if (routes.size() == 0)
+		return std::string(ERROR_404(*this));
+
+	bool	valid = false;
+	std::vector<Route>::iterator i = routes.begin();
+	while (i != routes.end())
 	{
-		filepath = std::string(DEFAULT_PATH) + std::string(DEFAULT_INDEX);
+		if ((*i).getName() == this->getRoute())
+		{
+			valid = true;
+			break ;
+		}
+		i++;
+	}
+
+	if (!valid)
+		return std::string(ERROR_404(*this));
+
+	
+	// std::cout << filepath << std::endl;
+	std::string filepath = (*i).getRootDir();
+	if (std::string(this->getRoute()) == (*i).getName())
+	{
+		filepath = filepath + (*i).getIndexFile();
 	}
 	else
 		filepath.append(this->getRoute());
@@ -220,13 +244,13 @@ std::string	Request::formatResponse(Server& server) {
 		}
 	}
 	
-	//Logger::debug(filepath.c_str());
+	Logger::debug(filepath.c_str());
 	std::string str;
 	if (access(filepath.c_str(), F_OK | R_OK) == 0) // file exist
 	{
 		if (is_directory(filepath.c_str()))
 		{
-			if (server.getDirectoryListing())
+			if (true)
 			{
 				std::vector<std::string> files;
 				if (!getAllFilesFromDirectory(files, filepath.c_str()))

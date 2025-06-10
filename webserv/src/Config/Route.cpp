@@ -3,7 +3,7 @@
 // Default constructor and Destructor
 Route::Route( void ) : _autoindex( false ), _uploads( false )
 {
-	std::cout << "Creating Route" << std::endl;
+	Logger::debug("Creating Route");
 }
 
 Route::~Route( void ) {}
@@ -311,4 +311,11 @@ void	Route::printRoute() {
 	PRINTCLN(MAG, "Uploads");
 	std::cout << (this->getUploads() == true ? "true" : "false") << std::endl;
 	
+}
+
+
+// * setters
+
+void Route::setRootDir(std::string str) {
+	this->_root = str;
 }

@@ -1,86 +1,115 @@
 #include "Webserv.hpp"
 
-// Server::Server() {
-// };
+Server::Server(Config& config) : _config(config) {
 
-// Server::Server(unsigned short int	port, const char	*address, const char *label) {
+	// * erase last / of rootdir
+	std::vector<Route> routes = this->getConfig().getRoutes();
+	for (std::vector<Route>::iterator i = routes.begin(); i != routes.end(); i++)
+	{
+		std::string str = (*i).getRootDir();
+		std::string::iterator eit = str.end() - 1;
+		if (*eit == '/')
+		{
+			str.erase(eit);
+			(*i).setRootDir(str);
+		}
+		
+	}
 
-// 	this->_port = port;
-// 	this->_address = address;
-// 	this->_label = label;
-// 	this->_directory_listing = true;
-// 	this->_rootdir = DEFAULT_PATH;
-// 	this->_indexfile = DEFAULT_INDEX;
+	// * create socket
+	int		listenfd = -1;
+    struct	sockaddr_in addr;
+	int		opt = 1;
+	int		epoll_fd = -1;
 
-// 	string::iterator eit = this->_rootdir.end() -1;
-// 	if (*eit == '/')
-// 		this->_rootdir.erase(eit);
+	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+	{
+		std::perror("Socket creation failed");
+		throw Server::ServerCreationError();
+	}
 
-// 	int		listenfd = -1;
-//     struct	sockaddr_in addr;
-// 	int		opt = 1;
-// 	int		epoll_fd = -1;
+	// * set non blocking
+	if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
+	{
+		std::perror("setsockopt failed");
+		close(listenfd);
+		throw Server::ServerCreationError();
+	}
 
-// 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-// 	{
-// 		std::perror("Socket creation failed");
-// 		throw Server::ServerCreationError();
-// 	}
+	if (setNonBlocking(listenfd) < 0)
+	{
+		std::perror("setNonBlocking failed");
+		throw Server::ServerCreationError();
+	}
 
-// 	if (setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt)) < 0)
-// 	{
-// 		std::perror("setsockopt failed");
-// 		close(listenfd);
-// 		throw Server::ServerCreationError();
-// 	}
+	// * set address of socket
+	std::string hostaddr = config.getListen();
 
-// 	if (setNonBlocking(listenfd) < 0)
-// 	{
-// 		std::perror("setNonBlocking failed");
-// 		throw Server::ServerCreationError();
-// 	}
-
-// 	std::memset(&addr, 0, sizeof(addr));
-// 	addr.sin_family = AF_INET; // IPv4
-// 	addr.sin_addr.s_addr = inet_addr(this->_address); // interface to listen 127.0.0.1
-// 	addr.sin_port = htons(this->_port);
-
-// 	if (bind(listenfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) { // link listenfd to addr
-//         std::perror("bind failed");
-//         close(listenfd);
-// 		throw Server::ServerCreationError();
-//     }
-
-// 	if (listen(listenfd, 10) < 0) { // start listening
-//         std::perror("listen failed");
-//         close(listenfd);
-// 		throw Server::ServerCreationError();
-//     }
+	size_t pos = hostaddr.find(':');
+	if (pos == std::string::npos)
+		throw Server::ServerCreationError();
 	
-// 	std::ostringstream oss;
-// 	oss << "Server '" << this->_label << "' listening on " << this->_address << ":" << this->_port;
-// 	Logger::debug(oss.str().c_str());
+	std::string host = hostaddr.substr(0, pos);
+	std::string port = hostaddr.substr(pos + 1, hostaddr.size());
+	std::memset(&addr, 0, sizeof(addr));
+	addr.sin_family = AF_INET; // IPv4
+	addr.sin_addr.s_addr = inet_addr(host.c_str());
+	addr.sin_port = htons(std::atoi(port.c_str()));
 
-// 	epoll_fd = epoll_create(1); // create epoll instance
-// 	struct epoll_event ev;
-// 	std::memset(&ev, 0, sizeof(ev));
+	if (bind(listenfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) { // link listenfd to addr
+        std::perror("bind failed");
+        close(listenfd);
+		throw Server::ServerCreationError();
+    }
 
-// 	ev.events = EPOLLIN;
-// 	ev.data.fd = listenfd;
+	if (listen(listenfd, 10) < 0) { // start listening
+        std::perror("listen failed");
+        close(listenfd);
+		throw Server::ServerCreationError();
+    }
+	
+	std::ostringstream oss;
+	oss << "Server is listening on " << hostaddr;
+	Logger::debug(oss.str().c_str());
 
-// 	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listenfd, &ev) < 0) {
-// 		std::perror("epoll_ctl failed");
-// 		close(listenfd);
-// 		close(epoll_fd);
-// 		throw Server::ServerCreationError();
-// 		return ;
-// 	}
+	epoll_fd = epoll_create(1); // create epoll instance
+	struct epoll_event ev;
+	std::memset(&ev, 0, sizeof(ev));
 
-// 	std::memset(&this->_ev, 0, sizeof(this->_ev));
+	ev.events = EPOLLIN;
+	ev.data.fd = listenfd;
 
-// 	this->_epoll_fd = epoll_fd;
-// 	this->_socketfd = listenfd;
-// };
+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listenfd, &ev) < 0) {
+		std::perror("epoll_ctl failed");
+		close(listenfd);
+		close(epoll_fd);
+		throw Server::ServerCreationError();
+		return ;
+	}
+
+	std::memset(&this->_ev, 0, sizeof(this->_ev));
+
+	this->_epoll_fd = epoll_fd;
+	this->_socketfd = listenfd;
+}
+
+Server::~Server() {
+};
+
+Server& Server::operator=(const Server& server) {
+	if (this != &server) {
+		this->_config 			= server._config;
+		this->_socketfd 		= server._socketfd;
+		this->_epoll_fd 		= server._epoll_fd;
+		this->_ev				= server._ev;
+		this->_clientBuffers	= server._clientBuffers;
+	}
+	return *this;
+}
+
+Config&	Server::getConfig() {
+	return this->_config;
+}
 
 void	Server::handler() {
 
@@ -201,11 +230,3 @@ void	Server::handler() {
 		}
 	}
 }
-
-Server::~Server() {
-	close(this->_epoll_fd);
-	close(this->_socketfd);
-};
-
-
-
