@@ -8,7 +8,6 @@ Config::Config( void ) : _client_max_body_size( -1 )
 
 Config::~Config( void ) {}
 
-
 // Useful Functions
 std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters )
 {
@@ -24,13 +23,13 @@ std::vector<std::string> splitFromCharset( const std::string &str, const std::st
 			break;
 
 		end = start;
-		while ( end < str.size() && !( delimiters.find( str[end] ) != std::string::npos ) )
+		while ( end < str.size() && ( delimiters.find( str[end] ) == std::string::npos ) )
 			++end;
 
-		tokens.push_back( str.substr( start, end ) );
+		tokens.push_back( str.substr( start, ( end - start ) ) );
 		start = end;
 	}
-
+	
 	return ( tokens );
 }
 
@@ -146,7 +145,7 @@ bool Config::isValidErrorCode( const std::string &errorCode )
 
 void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSplitted )
 {
-	if ( lineSplitted.size() <= 3 )
+	if ( lineSplitted.size() < 3 )
 	{
 		std::cerr << "error_pages: Not enough arguments." << std::endl;
 		return ;
@@ -242,7 +241,7 @@ void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> 
 		return ;
 	}
 
-	if ( _client_max_body_size == -1 )
+	if ( _client_max_body_size != -1 )
 	{
 		std::cerr << "client_max_body_size is already set." << std::endl;
 		return ;
@@ -295,5 +294,26 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 }
 
 void	Config::PrintConfig() {
-	std::cout << "Test\n";
+	PRINTCLN(GRN, "CONFIG:");
+
+	PRINTCLN(BLU, "SERVER_NAMES = ");
+	for (std::vector<string>::iterator i = this->_server_names.begin(); i != this->_server_names.end(); i++)
+	{
+		std::cout << "\'" << *i << "\' ";
+	}
+	NEWLINE;
+
+	PRINTCLN(BLU, "HOST:PORT = ");
+	std::cout << this->_host << ":" << this->_port << std::endl;
+
+	PRINTCLN(BLU, "ERROR -> PAGE = ");
+	for (std::map<int, std::string>::iterator it = this->_error_pages.begin(); it != this->_error_pages.end(); it++)
+	{
+		std::cout << (*it).first << " -> " << (*it).second << std::endl;
+	}
+	PRINTCLN(BLU, "Max body size = ");
+	std::cout << this->_client_max_body_size << std::endl;
+
+
+	PRINTCLN(BLU, "ROUTES = ");
 }

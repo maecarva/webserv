@@ -61,6 +61,7 @@ int main( void )
 {
 	Config config;
 
-	std::ifstream infile( input.txt );
+	std::ifstream infile( "input.txt" );
 	config.ParseServerConfig( infile );
+	config.PrintConfig();
 }
