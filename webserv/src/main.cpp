@@ -1,6 +1,7 @@
 #include "Webserv.hpp"
 #include "Config.hpp"
 
+bool	running = true;
 
 // socket = bidirectionnal fd
 // setsockopt = change socket behavior, here we use ipv4 address and allow reuse after

@@ -9,6 +9,7 @@
 #include <cstdlib> // atoi()
 #include <iostream>
 #include <cstring>
+#include "Route.hpp"
 
 #define BLANK_CHARACTERS " \t"
 #define FORBIDDEN_NAME_CHARACTERS " \t\n\r\f\v/\\@!#$%^&*()=+[]{}|;:'\",<>?"
@@ -16,16 +17,7 @@
 #define CLIENT_MAX_BODY_SIZE_KO 1048576 // 1 Go / 1024
 #define CLIENT_MAX_BODY_SIZE_MO 1024
 
-struct Route
-{
-	std::vector<std::string> allowed_methods;
-	std::string root;
-	bool autoindex;   // a set a true ou false des le debut
-	std::string index;
-
-
-
-};
+class Route;
 
 class Config
 {
@@ -35,7 +27,7 @@ private:
 	std::string _port;
 	std::map<int, std::string> _error_pages;
 	int _client_max_body_size;  // À set à -1
-	std::map<std::string, Route> _routes;
+	std::vector<Route> _routes;
 
 // Getters
 	std::vector<std::string> getServerNames( void ) const;
@@ -57,12 +49,14 @@ private:
 // Error Pages
 	bool isValidPage( const std::string &page );
 	bool isValidErrorCode( const std::string &errorCode );
-	bool isValidErrorCodePage( const std::string &errorCode, const std::string &page ); // On voit si les deux mis ensemble c'est bon
 	void ParseServerConfigErrorPages( const std::vector<std::string> &lineSplitted );
 
 // Client Max Body Size
 	bool isValidClientMaxBodySize( const std::string &client_max_body_size );
 	void ParseServerConfigClientMaxBodySize( const std::vector<std::string> &lineSplitted );
+
+// Route
+	void ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted );
 
 public:
 // Default constructor and Destructor
@@ -71,11 +65,10 @@ public:
 
 // Parse Config
 	bool ParseServerConfig( std::ifstream &configFile );
-
-
 	void	PrintConfig();
-
 };
 
 // Useful Functions
 std::vector<std::string> splitFromCharset( const std::string &str, const std::string &delimiters );
+
+std::vector<Config> CreateConfigs( std::ifstream &configFile );
