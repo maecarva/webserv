@@ -3,14 +3,4 @@ listen 127.0.0.1:8080
 server_names hello
 error_pages 404 505 error.html
 error_pages 405 hubert.html
-client_max_body_size 100
-
-
-Server
-listen 127.0.0.2:8080
-server_names asdasdasdasd
-error_pages 404 505 error2.html
-error_pages 405 hubert2.html
-client_max_body_size 100009
-
-asadad
+client_max_body_size 100m

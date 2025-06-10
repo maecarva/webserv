@@ -3,7 +3,7 @@
 // Default constructor and Destructor
 Config::Config( void ) : _client_max_body_size( -1 )
 {
-	std::cout << "Creating Server Config" << std::endl;
+	std::cout << "Creating Config" << std::endl;
 }
 
 Config::~Config( void ) {}
@@ -17,7 +17,7 @@ std::vector<std::string> Config::getServerNames( void ) const
 
 std::string Config::getListen( void ) const
 {
-	return ( _host + ':' + "port" );
+	return ( _host + ':' + _port );
 }
 
 std::string Config::getServerHost( void ) const
@@ -268,7 +268,6 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 		_client_max_body_size = ( ( int ) nb ) * 1024 * 1024;
 		return ( true );
 	}
-
 	// Cas autre
 	std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
 	return ( false );
@@ -323,8 +322,8 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		else if ( lineSplitted[0] == "client_max_body_size" )
 			this->ParseServerConfigClientMaxBodySize( lineSplitted );
 
-		// else if ( lineSplitted[0] == "Route" ) // A faire
-		// 	this->ParseServerConfigRoute( lineSplitted );
+		else if ( lineSplitted[0] == "locate" ) // A faire
+			this->ParseServerConfigRoute( configFile, line, lineSplitted );
 
 		else
 			std::cerr << "Invalid Server directive \'" << line << "\'." << std::endl;

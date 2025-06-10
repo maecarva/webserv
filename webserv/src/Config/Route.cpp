@@ -1,5 +1,13 @@
 #include "Config.hpp"
 
+// Default constructor and Destructor
+Route::Route( void ) : _autoindex( false )
+{
+	std::cout << "Creating Route" << std::endl;
+}
+
+Route::~Route( void ) {}
+
 // Route
 void Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted ) // revoir la fct
 {
