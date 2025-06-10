@@ -162,11 +162,12 @@ void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted
 // Error Pages
 bool Config::isValidPage( const std::string &page )
 {
-	if ( access( page.c_str(), R_OK | X_OK ) != 0 )
-	{
-		perror( page.c_str() );
-		return ( false );
-	}
+	// if ( access( page.c_str(), R_OK | X_OK ) != 0 )
+	// {
+	// 	perror( page.c_str() );
+	// 	return ( false );
+	// }
+	(void)page;
 
 	return ( true );
 }
