@@ -35,6 +35,7 @@
 #include "Hashed.hpp"
 
 #define SPACE << " "
+#define NEWLINE (std::cout << std::endl)
 
 typedef std::string string;
 
