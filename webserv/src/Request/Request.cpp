@@ -83,7 +83,7 @@ void	Request::parseRequest(const char *req, Server& server)
 				// std::cout << "ROUTE: " << token << std::endl;
 				if (!ValidateURI(this->_route))
 				{
-					std::cout << "Invalid url\n";
+					std::cerr << "Invalid url\n";
 					return this->setError(HTTP_BAD_REQUEST, __LINE__);
 				}
 			}
@@ -95,7 +95,6 @@ void	Request::parseRequest(const char *req, Server& server)
 			}
 			i++;
 		}
-		firstline = false;
 
 		while (iss2 >> token) {
 			std::pair<std::string, std::string> pair = std::make_pair(token, "");
@@ -113,11 +112,6 @@ void	Request::parseRequest(const char *req, Server& server)
 				std::ostringstream oss;
 				oss << server.getPort();
 				address.append(oss.str().c_str());
-				// if (address != pair.second)
-				// {
-				// 	Logger::error("Invalid host.");
-				// 	return this->setError(HTTP_BAD_REQUEST, __LINE__);
-				// }
 			}
 			else if (key == "CONNECTION:") {
 				std::string second = pair.second;

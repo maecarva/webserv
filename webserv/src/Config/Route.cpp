@@ -146,3 +146,29 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 	}
 	_routes.push_back( route );
 }
+
+
+// * GETTERS
+std::string&				Route::getName() {
+	return this->_name;
+};
+
+std::vector<std::string>& 	Route::getAllowedMethods() {
+	return this->_allowed_methods;
+};
+
+std::string					Route::getRootDir() {
+	return this->_root;
+};
+
+bool						Route::getAutoIndex() {
+	return this->_autoindex;
+};
+
+std::string					Route::getIndexFile() {
+	return this->_index;
+};
+
+std::map<int, std::string>	Route::getErrorPages() {
+	return this->_return_code;
+};
