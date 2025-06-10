@@ -14,6 +14,8 @@ private:
 	std::string _index;
 	std::map<int, std::string> _return;
 	bool _uploads;
+	std::vector<std::string> cgis_paths; // /usr/bin/python3 /bin/bash;               
+    std::vector<std::string> cgi_ext; // .py .sh;   
 
 public:
 
