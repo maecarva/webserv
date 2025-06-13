@@ -64,10 +64,12 @@ public:
 	void			parseRequest(const char *req, Server& server);
 	void			logRequest(Server& server);
 	std::string		formatResponse(Server& server);
+	std::string		CreateResponse();
 	bool			ValidateURI(std::string&	route);
 
 	// * Setters
 	void	setError(int code, int line, const char *filename);
+	void	setResponseCode(int code);
 
 	// * Getters
 	Server&			getServer() const;

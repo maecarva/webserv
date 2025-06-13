@@ -35,3 +35,21 @@ bool    Response::CheckErrors() {
 	}
     return false;
 }
+
+
+// TODO : respond with error pages
+const char  *Response::ErrorResponse(int code) {
+    this->getRequest().setResponseCode(code);
+    switch (code)
+	{
+	case 500:
+		return InternalERROR();
+	case 400:
+		return BadRequest();
+    case 404:
+		return ERROR_404();
+	default:
+		return InternalERROR();
+		break;
+	}
+}

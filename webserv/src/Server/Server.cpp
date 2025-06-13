@@ -212,8 +212,7 @@ void	Server::handler() {
 					}
 
 					req.parseRequest(reqstr.c_str(), *this);
-
-					std::string	reply = req.formatResponse(*this);
+					std::string	reply = req.CreateResponse();
 					send(fd, reply.c_str(), reply.size(), 0);
 					// Close connection
 					if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)

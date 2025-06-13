@@ -21,7 +21,11 @@ Request::Request(Server& server) :
 Request::~Request() {};
 
 
+std::string	Request::CreateResponse() {
+	Response	res(*this);
 
+	return std::string(res.BuildResponse());
+}
 
 
 

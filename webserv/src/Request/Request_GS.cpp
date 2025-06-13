@@ -10,6 +10,10 @@ void	Request::setError(int code, int line, const char *filename) {
 	this->_response_code = code;
 }
 
+void	Request::setResponseCode(int code) {
+	this->_response_code = code;
+}
+
 const char	*Request::getMethod() const {
 
 	switch (this->_method)
