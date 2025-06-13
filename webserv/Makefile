@@ -12,9 +12,15 @@ SRC		:=	main.cpp \
 			Config/Config.cpp \
 			Config/CreateConfig.cpp \
 			Config/Route.cpp \
-			Server/Server2.cpp \
+			Server/Server.cpp \
 			Server/CreateServerPool.cpp \
-			Request/Request.cpp
+			Request/Request_GS.cpp \
+			Request/Request.cpp \
+			Request/RequestParser.cpp \
+			Request/RequestUtils.cpp \
+			Request/Response/Response.cpp \
+			Request/Response/Response_GS.cpp \
+			Request/Response/Response_error.cpp
 
 SRC_DIR	:=	src
 BUILD	:=	.build
