@@ -2,47 +2,17 @@
 #include "Webserv.hpp"
 #include <sstream>
 
-// TODO :
-// check if error page is set
-// return default if not
-bool    Response::CheckErrors() {
-    const Request&              req                 = this->getRequest();
-    int                         set_response_code   = req.getResponseCode();
-    Server&                     current_server      = req.getServer();
-    Config&                     current_config      = current_server.getConfig();
-    std::map<int, std::string>  error_pages         = current_config.getErrorPages();
-    std::string                 page                = "";
-
-    if (set_response_code != 200)
-        page = error_pages[set_response_code];
-    if (page != "")
-    {
-		this->_default_response =  page;
-        return true;
-    }
-
-    switch (set_response_code)
-	{
-	case 500:
-		this->_default_response =  std::string(InternalERROR());
-        return true;
-	case 400:
-		this->_default_response =  std::string(BadRequest());
-        return true;
-    case 404:
-		this->_default_response =  std::string(ERROR_404());
-        return true;
-	default:
-		break;
-	}
-    return false;
-}
-
 std::string	HttpMessageByCode(int code) {
 	std::string message = "Invalid error code";
 
 	switch (code)
 	{
+	case 200:
+		message = HTTP_MESSAGE_OK;
+		break;
+	case 302:
+		message = HTTP_MESSAGE_FOUND;
+		break;
 	case 404:
 		message =  HTTP_MESSAGE_NOT_FOUND;
 		break;
@@ -65,10 +35,11 @@ std::string	Response::ErrorResponse(int code) {
     Config&                     current_config      = current_server.getConfig();
     std::map<int, std::string>  error_pages         = current_config.getErrorPages();
     std::string                 page                = "";
-	std::ostringstream resp;
+	std::ostringstream			resp;
+	std::string					mime_type			= "";
 
     this->getRequest().setResponseCode(code);
-	if (!ReadFile(current_config.getErrorPages()[code].c_str(), page))
+	if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type))
 	{
 		return InternalERROR();
 	}

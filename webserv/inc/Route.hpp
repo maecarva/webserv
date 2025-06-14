@@ -7,14 +7,16 @@ class Config;
 class Route
 {
 private:
-	std::string _name;
-	std::vector<std::string> _allowed_methods;
-	std::string _root;
-	bool _autoindex;   // a set a true ou false des le debut
-	std::string _index;
-	std::map<int, std::string> _return;
-	bool _uploads;
-	std::map< std::string, std::vector<std::string> > _cgi;
+	std::string 										_name;
+	std::vector<std::string> 							_allowed_methods;
+	std::string 										_root;
+	bool 												_autoindex;   // a set a true ou false des le debut
+	std::string 										_index;
+	bool												_redirect;
+	std::string 										_return;
+	bool 												_uploads;
+	std::map< std::string, std::vector<std::string> > 	_cgi;
+	bool												_directory_listing;
 
 public:
 	Route();
@@ -55,10 +57,13 @@ public:
 	std::string					getRootDir();
 	bool						getAutoIndex();
 	std::string					getIndexFile();
+	bool						getDirectoryListing();
+
 
 	void						setRootDir(std::string str);
  
-	std::map<int, std::string>	getReturn();
+	bool						isRedirect();
+	std::string					getReturn();
 	bool						getUploads( void );
 
 	void						printRoute();

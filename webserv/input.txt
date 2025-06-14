@@ -1,5 +1,5 @@
 Server
-listen 127.0.0.1:3001
+listen 127.0.0.1:3000
 server_names hellohubert
 error_pages 404 505 error.html
 error_pages 405 hubert.html
