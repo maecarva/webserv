@@ -29,6 +29,7 @@
 #include <map>
 #include <vector>
 #include <sys/epoll.h>
+#include <sys/wait.h>
 
 #include "HttpStatusCodes.hpp"
 #include "Server2.hpp"
@@ -64,5 +65,8 @@ const char		*BadRequest(Request& request);
 std::string		formatDirectoryListing(std::vector<std::string>& files);
 
 std::vector<Server>	CreateServerPool(std::vector<Config>& configs);
+
+// cgi
+void executeCgi( std::vector< std::string > command, char **envp, const std::string& input );
 
 #endif
