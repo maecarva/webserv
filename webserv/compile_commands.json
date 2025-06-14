@@ -1,0 +1,362 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/main.o",
+      "src/main.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/main.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Utils/DJB2.o",
+      "src/Utils/DJB2.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Utils/DJB2.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Utils/DJB2.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Utils/setNonBlocking.o",
+      "src/Utils/setNonBlocking.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Utils/setNonBlocking.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Utils/setNonBlocking.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Logger/Logger.o",
+      "src/Logger/Logger.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Logger/Logger.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Logger/Logger.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Utils/DefaultResponses.o",
+      "src/Utils/DefaultResponses.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Utils/DefaultResponses.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Utils/DefaultResponses.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Utils/IsDirectory.o",
+      "src/Utils/IsDirectory.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Utils/IsDirectory.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Utils/IsDirectory.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Utils/getAllFilesFromDirectory.o",
+      "src/Utils/getAllFilesFromDirectory.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Utils/getAllFilesFromDirectory.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Utils/getAllFilesFromDirectory.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Config/Config.o",
+      "src/Config/Config.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Config/Config.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Config/Config.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Config/CreateConfig.o",
+      "src/Config/CreateConfig.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Config/CreateConfig.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Config/CreateConfig.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Config/Route.o",
+      "src/Config/Route.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Config/Route.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Config/Route.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Server/Server.o",
+      "src/Server/Server.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Server/Server.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Server/Server.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Server/CreateServerPool.o",
+      "src/Server/CreateServerPool.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Server/CreateServerPool.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Server/CreateServerPool.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Request_GS.o",
+      "src/Request/Request_GS.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Request_GS.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Request_GS.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Request.o",
+      "src/Request/Request.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Request.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Request.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/RequestParser.o",
+      "src/Request/RequestParser.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/RequestParser.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/RequestParser.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/RequestUtils.o",
+      "src/Request/RequestUtils.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/RequestUtils.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/RequestUtils.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Response/Response.o",
+      "src/Request/Response/Response.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Response/Response.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Response/Response.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Response/Response_GS.o",
+      "src/Request/Response/Response_GS.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Response/Response_GS.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Response/Response_GS.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Response/Response_error.o",
+      "src/Request/Response/Response_error.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Response/Response_error.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Response/Response_error.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-Wall",
+      "-Werror",
+      "-Wextra",
+      "-std=c++98",
+      "-g",
+      "-Iinc",
+      "-c",
+      "-o",
+      ".build/Request/Response/Response_utils.o",
+      "src/Request/Response/Response_utils.cpp"
+    ],
+    "directory": "/home/mael/Desktop/mon_github/webserv/webserv",
+    "file": "/home/mael/Desktop/mon_github/webserv/webserv/src/Request/Response/Response_utils.cpp",
+    "output": "/home/mael/Desktop/mon_github/webserv/webserv/.build/Request/Response/Response_utils.o"
+  }
+]

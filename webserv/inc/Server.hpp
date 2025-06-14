@@ -1,46 +1,33 @@
-#ifndef SERVER
-#define SERVER
+#pragma once
 
-
-#include "Webserv.hpp"
+#include "Config.hpp"
 
 class Config;
+
 
 class Server
 {
 private:
-	// Config								_config;
-
+	Config&	_config;
+	
 	// events / sockets
 	int									_socketfd;
 	int									_epoll_fd;
 	struct epoll_event					_ev;
 	std::map<int, std::vector<char> >	_clientBuffers;
+public:
+	Server(Config& config);
+	Server& operator=(const Server& server);
+	~Server();
+
+
+	void	handler();
+
+	Config&		getConfig();
 
 	class ServerCreationError : public std::exception {
 		virtual const char *what() const throw() {
 			return "Can't create server.";
 		}
 	};
-
-
-    Server();
-public:
-    Server(Config& config);
-	Server& operator=(const Server&);
-    ~Server();
-
-	void	handler();
-
-
-	// getters
-	Config&			getConfig();
-	const char		*getAddress() const;
-	const char		*getLabel() const;
-	int				getPort() const;
-	std::string&	getRootDir();
-	std::string&	getIndexFile();
-	bool			getDirectoryListing();
 };
-
-#endif

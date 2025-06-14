@@ -42,10 +42,11 @@ typedef enum e_METHOD {
 class Request
 {
 private:
+	Server&								_server;
 	unsigned short						_response_code;
-
     t_METHOD							_method;
     std::string							_route;
+	std::string							_clean_route;
 	std::string							_protocol;
 	std::string							_host;
 	bool								_keepalive;
@@ -57,26 +58,32 @@ private:
 	// response
     std::map<std::string, std::string>	_response_headers;
 public:
-    Request();
+    Request(Server& server);
     ~Request();
 
 	void			parseRequest(const char *req, Server& server);
 	void			logRequest(Server& server);
 	std::string		formatResponse(Server& server);
+	std::string		CreateResponse();
 	bool			ValidateURI(std::string&	route);
 
-
 	// * Setters
-	void	setError(int code, int line);
-
-
+	void	setError(int code, int line, const char *filename);
+	void	setResponseCode(int code);
 
 	// * Getters
-	const char	*getMethod();
-	const char	*getRoute();
-	const char	*getHost();
-	bool		getConnectionStatus();
+	Server&			getServer() const;
+	const char		*getMethod()	const;
+	const char		*getRoute()	const;
+	const char		*getCleanRoute()	const;
+	const char		*getHost()	const;
+	const char		*getProtocol()	const;
+	unsigned short	getResponseCode()	const;
+	bool			isKeepAlive()	const;
 };
 
+
+// utils functions
+t_METHOD    getMethodByHash(std::string& token);
 
 #endif
