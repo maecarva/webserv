@@ -80,3 +80,11 @@ unsigned short	Request::getResponseCode() const {
 Server&			Request::getServer() const {
 	return this->_server;
 }
+
+Route			Request::getCorrespondingRoute() {
+	return this->_corresponding_route;
+}
+
+std::string		Request::getRequestedRessource() {
+	return this->_ressource_requested;
+}

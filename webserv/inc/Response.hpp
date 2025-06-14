@@ -17,9 +17,9 @@ public:
     Response(Request& req);
     ~Response();
 
-    const char      *BuildResponse();
+    std::string		BuildResponse();
     bool            CheckErrors();
-    const char      *ErrorResponse(int code);
+	std::string		ErrorResponse(int code);
 
 
 
@@ -31,3 +31,4 @@ public:
 
 bool    checkMatchingRoutes(std::vector<Route>& routes, Response& res, Route **route, bool *indexRequested);
 bool    checkMatchingMethod(Response& res, Route *route);
+bool	ReadFile(const char *path, std::string& resultfile);

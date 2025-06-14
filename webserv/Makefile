@@ -32,7 +32,7 @@ OBJ 	:=	$(patsubst $(SRC_DIR)/%.cpp, $(BUILD)/%.o, $(SRC))
 DEP		:=	$(OBJ:.o=.d)
 
 CC		:=	g++
-CFLAGS	:=	-Wall -Werror -Wextra -std=c++98
+CFLAGS	:=	-Wall -Werror -Wextra -std=c++98 -g
 
 all: create_dir $(NAME)
 

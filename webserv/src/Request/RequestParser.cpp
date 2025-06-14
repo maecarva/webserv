@@ -1,5 +1,81 @@
 #include "Webserv.hpp"
 
+// int	match_pattern_len(std::string& routename, std::string& routerequested)
+// {
+
+// }
+
+// Route	Request::FindCorrespondingRoute(std::string& requestedressource) {
+// 	std::vector<Route> routes = this->getServer().getConfig().getRoutes();
+// 	size_t	matched_len = 0;
+// 	size_t	routeindex = 0;
+// 	size_t	vecindex = 0;
+
+// 	while (vecindex < routes.size())
+// 	{
+// 		size_t	mlen = 0;
+// 		std::string::iterator i = (routes[vecindex]).getName().begin();
+// 		std::string::iterator j = requestedressource.begin();
+// 		while (i != (routes[vecindex]).getName().end() && j != requestedressource.end() && *i == *j)
+// 		{
+// 			i++;
+// 			j++;
+// 			mlen++;
+// 		}
+// 		if (mlen > matched_len)
+// 		{
+// 			matched_len = mlen;
+// 			routeindex  = vecindex;
+
+// 		}
+// 		vecindex++;
+// 	}
+// 	return routes[routeindex];
+// }
+
+Route	Request::FindCorrespondingRoute(std::string& requestedressource, bool *failed) {
+	std::vector<Route> routes = this->getServer().getConfig().getRoutes();
+	std::vector<Route>::iterator routeit = routes.begin();
+	size_t	pos = std::string::npos;
+	Route	route;
+	while (routeit != routes.end())
+	{
+		pos = requestedressource.find((*routeit).getName());
+		if (pos != std::string::npos && pos == 0) {
+			if (*failed)
+			{
+				if (route.getName().size() < (*routeit).getName().size())
+				route = *routeit;
+			}
+			else {
+				*failed = true;
+				route = *routeit;
+			}
+		}
+		routeit++;
+	}
+	return route;
+}
+
+
+std::string		Request::ExtractRessource(std::string& route) {
+	std::string::iterator it = this->_corresponding_route.getName().begin();
+	std::string::iterator it2 = route.begin();
+	while (it != this->_corresponding_route.getName().end() 
+			&& it2 != route.end() && *it == *it2)
+	{
+		it++;
+		it2++;
+	}
+	std::string ressource = "";
+	while (it2 != route.end())
+	{
+		ressource.push_back(*it2);
+		it2++;
+	}
+	return ressource;
+}
+
 void	Request::parseRequest(const char *req, Server& server)
 {
 #ifdef DEBUG
@@ -31,21 +107,15 @@ void	Request::parseRequest(const char *req, Server& server)
         Logger::warn("Invalid url");
         return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
     }
-    std::string cleaned = "";
-    int        slash = 0;
-    
-    for (   std::string::iterator it = splitted[1].begin();
-            it != splitted[1].end();
-            it++
-        )
-    {
-        if (*it == '/')
-            slash++;
-        if (slash >= 2)
-            break ;
-        cleaned.push_back(*it);
-    }
-    this->_clean_route = cleaned;
+
+	bool	failed = false;
+	Route matchedroute = this->FindCorrespondingRoute(splitted[1], &failed);
+	if (!failed)
+		return this->setError(HTTP_NOT_FOUND, __LINE__, __FILENAME__);
+
+	this->_corresponding_route = matchedroute;
+	this->_clean_route = matchedroute.getName();
+	this->_ressource_requested = this->ExtractRessource(splitted[1]);
 
     // * Parse Protocol
     if (splitted[2] != "HTTP/1.1")

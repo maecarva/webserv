@@ -31,6 +31,7 @@
 #include <sys/epoll.h>
 
 #include "HttpStatusCodes.hpp"
+#include "HttpStatusMessages.hpp"
 #include "Server.hpp"
 #include "Logger.hpp"
 #include "Colors.hpp"
@@ -38,6 +39,7 @@
 #include "Config.hpp"
 #include "Request.hpp"
 #include "Response.hpp"
+#include "Route.hpp"
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)

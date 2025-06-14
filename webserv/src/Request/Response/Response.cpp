@@ -1,3 +1,4 @@
+#include "Response.hpp"
 #include "Webserv.hpp"
 
 
@@ -150,13 +151,14 @@ Response::~Response() {};
 
 
 // TODO:
-// * - Check if route_clean match any routes in config
+// * - Check if route_clean match any routes in config /site
 // * - Check if Method is valid for route OK
 // - Check if route == index route => return index file if autoindex
 // - Check if file requested exist ? file : 404
 // - Set MIME type
+// - return Formated HTTP Response
 
-const char   *Response::BuildResponse() {
+std::string	Response::BuildResponse() {
 #ifdef DEBUG
 	Logger::debug("Response::BuildResponse");
 #endif
@@ -164,25 +166,45 @@ const char   *Response::BuildResponse() {
 	if (this->CheckErrors())
 		return this->_default_response.c_str();
 
-	Server&				server 				= this->getRequest().getServer();
-	Config&				config 				= server.getConfig();
-	std::vector<Route>	routes 				= config.getRoutes();
-	Route				*route				= NULL;
+	// Server&				server 				= this->getRequest().getServer();
+	// Config&				config 				= server.getConfig();
+	Route				route				= this->getRequest().getCorrespondingRoute();
 	bool				indexRequested		= false;
+	std::string			responseFileContent = "";
 
-	if (!checkMatchingRoutes(routes, *this, &route, &indexRequested) || route == NULL)
-		return (ErrorResponse(HTTP_NOT_FOUND));
 
-	if (!checkMatchingMethod(*this, route)) {
+	if (this->_req.getRequestedRessource() == "/" || this->_req.getRequestedRessource() == "")
+		indexRequested = true;
+
+	if (!checkMatchingMethod(*this, &route)) {
 		return (ErrorResponse(HTTP_BAD_REQUEST));
 	}
 
-	//if (indexRequested && route->getAutoIndex())
-		// return index file;
+	if (indexRequested && route.getAutoIndex()) {
+		if (!ReadFile(BuildFilePath(route.getRootDir(), route.getIndexFile()).c_str(), responseFileContent))
+			return (ErrorResponse(404));
+		
+		std::ostringstream oss;
 
+		oss << "HTTP/1.1 200 OK\r\nContent-Length: " << responseFileContent.size() << "\r\nContent-type: text/html\r\n\r\n";
+		oss << responseFileContent;
+
+		return oss.str();
+	} else {
+		if (!ReadFile(BuildFilePath(route.getRootDir(), this->getRequest().getRequestedRessource()).c_str(), responseFileContent))
+			return (ErrorResponse(404));
+		
+		std::ostringstream oss;
+
+		oss << "HTTP/1.1 200 OK\r\nContent-Length: " << responseFileContent.size() << "\r\nContent-type: text/css\r\n\r\n";
+		oss << responseFileContent;
+
+		return oss.str();
+
+	}
 	
+	//std::string	file_requested = extractFileFromRoute(route->getName(), this->getRequest().getCleanRoute())
 	// Make a function which takes a path to a file and build proper HTTP response;
-
-
-	return "HTTP/1.1 200 OK\r\nContent-Length: 26\r\nContent-type: application/json\r\n\r\n{\"message\": \"hello world\"}";
+	
 }
+

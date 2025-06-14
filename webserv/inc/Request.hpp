@@ -8,6 +8,9 @@
 #include <iostream>
 #include "Webserv.hpp"
 
+#include "Route.hpp"
+
+
 // Exemple request :
 // GET / HTTP/1.1
 // Host: google.fr
@@ -45,8 +48,10 @@ private:
 	Server&								_server;
 	unsigned short						_response_code;
     t_METHOD							_method;
+	Route								_corresponding_route;
     std::string							_route;
 	std::string							_clean_route;
+	std::string							_ressource_requested;
 	std::string							_protocol;
 	std::string							_host;
 	bool								_keepalive;
@@ -66,6 +71,9 @@ public:
 	std::string		formatResponse(Server& server);
 	std::string		CreateResponse();
 	bool			ValidateURI(std::string&	route);
+	std::string		ExtractRessource(std::string& route);
+	Route			FindCorrespondingRoute(std::string& requestedressource, bool *failed);
+
 
 	// * Setters
 	void	setError(int code, int line, const char *filename);
@@ -80,10 +88,13 @@ public:
 	const char		*getProtocol()	const;
 	unsigned short	getResponseCode()	const;
 	bool			isKeepAlive()	const;
+	Route			getCorrespondingRoute();
+	std::string		getRequestedRessource();
 };
 
 
+class Route;
 // utils functions
 t_METHOD    getMethodByHash(std::string& token);
-
+std::string	BuildFilePath(std::string rootdir, std::string ressource);
 #endif

@@ -21,6 +21,8 @@ public:
 
 	Route();
 	~Route();
+	Route&	operator=(const Route& route);
+	Route(const Route& route);
 	// Name
 	bool ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
 
