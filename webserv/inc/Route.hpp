@@ -14,7 +14,7 @@ private:
 	std::string _index;
 	std::map<int, std::string> _return;
 	bool _uploads;
-	std::map< std::string, std::vector<string> > _cgi;
+	std::map< std::string, std::vector<std::string> > _cgi;
 
 public:
 	Route();
@@ -43,8 +43,8 @@ public:
 	void ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted );
 
 // Cgi
-	bool Route::isValidExtension( const std::string &extension );
-	bool Route::isValidCommand( const std::string &command );
+	bool isValidExtension( const std::string &extension );
+	bool isValidCommand( const std::string &command );
 	void ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted );
 
 
@@ -55,7 +55,7 @@ public:
 	std::string					getIndexFile();
 
 	void						setRootDir(std::string str);
-
+ 
 	std::map<int, std::string>	getReturn();
 	bool						getUploads( void );
 

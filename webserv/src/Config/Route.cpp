@@ -199,7 +199,7 @@ void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineS
 // Cgi
 bool Route::isValidExtension( const std::string &extension )
 {
-	if ( extension.empty() || extension.size() < 2 || extension.find_last_of( FORBIDDEN_NAME_CHARACTERS ) != 0 )
+	if ( extension.empty() || extension.size() < 2 || extension.find_first_of( FORBIDDEN_NAME_CHARACTERS ) == std::string::npos )
 		return ( false );
 
 	return ( true );
@@ -351,7 +351,7 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Root directory:");
 	std::cout << this->getRootDir() << std::endl;
-	
+
 	PRINTC(MAG, "Auto Index: ");
 	std::cout << (this->getAutoIndex() == true ? "true" : "false") << std::endl;
 
@@ -366,7 +366,15 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Uploads");
 	std::cout << (this->getUploads() == true ? "true" : "false") << std::endl;
-	
+
+	PRINTCLN(MAG, "Cgi:");
+	for ( std::map< std::string, std::vector< std::string> >::iterator it = _cgi.begin(); it != _cgi.end(); ++it )
+	{
+		std::cout << it->first << " ";
+		for ( size_t i = 0; i < it->second.size(); ++i )
+			std::cout << it->second[i] << " ";
+		std::cout << std::endl;
+	}
 }
 
 
