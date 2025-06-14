@@ -32,15 +32,20 @@
 #include <sys/wait.h>
 
 #include "HttpStatusCodes.hpp"
-#include "Server2.hpp"
+#include "HttpStatusMessages.hpp"
+#include "Server.hpp"
 #include "Logger.hpp"
 #include "Colors.hpp"
 #include "Hashed.hpp"
 #include "Config.hpp"
 #include "Request.hpp"
+#include "Response.hpp"
+#include "Route.hpp"
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)
+
+#define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
 typedef std::string string;
 
@@ -58,9 +63,9 @@ int				is_directory(const char *path);
 bool			getAllFilesFromDirectory(std::vector<string>& files, const char *path);
 
 // default error pages
-const char		*InternalERROR(Request& request);
-const char		*ERROR_404(Request& request);
-const char		*BadRequest(Request& request);
+const char		*InternalERROR();
+const char		*ERROR_404();
+const char		*BadRequest();
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
 

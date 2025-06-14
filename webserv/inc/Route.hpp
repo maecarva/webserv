@@ -19,7 +19,9 @@ private:
 public:
 	Route();
 	~Route();
-// Name
+	Route&	operator=(const Route& route);
+	Route(const Route& route);
+	// Name
 	bool ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
 
 // Allowed Methods

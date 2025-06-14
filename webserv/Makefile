@@ -12,10 +12,18 @@ SRC		:=	main.cpp \
 			Config/Config.cpp \
 			Config/CreateConfig.cpp \
 			Config/Route.cpp \
+			Server/Server.cpp \
 			Config/CGI.cpp \
-			Server/Server2.cpp \
 			Server/CreateServerPool.cpp \
-			Request/Request.cpp
+			Request/Request_GS.cpp \
+			Request/Request.cpp \
+			Request/RequestParser.cpp \
+			Request/RequestUtils.cpp \
+			Request/Response/Response.cpp \
+			Request/Response/Response_GS.cpp \
+			Request/Response/Response_error.cpp \
+			Request/Response/Response_utils.cpp
+
 
 SRC_DIR	:=	src
 BUILD	:=	.build
@@ -25,7 +33,7 @@ OBJ 	:=	$(patsubst $(SRC_DIR)/%.cpp, $(BUILD)/%.o, $(SRC))
 DEP		:=	$(OBJ:.o=.d)
 
 CC		:=	g++
-CFLAGS	:=	-Wall -Werror -Wextra -std=c++98 -MMD -g
+CFLAGS	:=	-Wall -Werror -Wextra -std=c++98 -g
 
 all: create_dir $(NAME)
 

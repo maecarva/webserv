@@ -9,6 +9,30 @@ Route::Route( void ) : _autoindex( false ), _uploads( false )
 Route::~Route( void ) {}
 
 
+Route&	Route::operator=(const Route& route) {
+	if (this != &route) {
+		_name = route._name;
+		_allowed_methods = route._allowed_methods;
+		_root = route._root;
+		_autoindex = route._autoindex;
+		_index = route._index;
+		_return = route._return;
+		_uploads = route._uploads;
+		cgis_paths = route.cgis_paths;
+		cgi_ext = route.cgi_ext;
+	}
+	return *this;
+}
+
+Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._allowed_methods), _root(route._root)
+		,_autoindex(route._autoindex)
+		,_index(route._index)
+		,_return(route._return)
+		,_uploads(route._uploads)
+		,cgis_paths(route.cgis_paths)
+		,cgi_ext(route.cgi_ext)
+{}
+
 // Route
 bool Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted ) // revoir la fct
 {

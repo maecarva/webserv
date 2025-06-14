@@ -1,3 +1,4 @@
 webserv/.build
 webserv/webserv
 webserv/.vscode/
+.cache/
