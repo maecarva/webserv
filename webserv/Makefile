@@ -13,6 +13,7 @@ SRC		:=	main.cpp \
 			Config/CreateConfig.cpp \
 			Config/Route.cpp \
 			Server/Server.cpp \
+			Config/CGI.cpp \
 			Server/CreateServerPool.cpp \
 			Request/Request_GS.cpp \
 			Request/Request.cpp \

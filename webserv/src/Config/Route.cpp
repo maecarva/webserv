@@ -220,6 +220,59 @@ void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineS
 }
 
 
+// Cgi
+bool Route::isValidExtension( const std::string &extension )
+{
+	if ( extension.empty() || extension.size() < 2 || extension.find_first_of( FORBIDDEN_NAME_CHARACTERS ) == std::string::npos )
+		return ( false );
+
+	return ( true );
+}
+
+bool Route::isValidCommand( const std::string &command )
+{
+	if ( access( command.c_str(), F_OK | X_OK ) != 0 )
+		return ( false );
+
+	return ( true );
+}
+
+void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() < 3 )
+	{
+		std::cerr << "cgi: Invalid number of arguments." << std::endl;
+		return ;
+	}
+
+	if ( _cgi.find( lineSplitted[1] ) != _cgi.end() )
+	{
+		std::cerr << "cgi: Extension already exists" << std::endl;
+		return ;
+	}
+
+	std::string extension = lineSplitted[1];
+
+	if ( this->isValidExtension( extension ) )
+	{
+		std::cerr << "cgi: Invalid extension: " << extension << std::endl;
+		return;
+	}
+
+	if ( this->isValidCommand( lineSplitted[2] ) )
+	{
+		std::cerr << "cgi: Invalid command: " << extension << std::endl;
+		return;
+	}
+
+	std::vector<std::string> command;
+	for ( size_t i = 2; i < lineSplitted.size(); ++i )
+		command.push_back( lineSplitted[i] );
+
+	_cgi[extension] = command;
+}
+
+
 // Parse Route
 void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted )
 {
@@ -267,6 +320,9 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 
 		else if ( lineSplitted[0] == "uploads" )
 			route.ParseServerConfigRouteUploads( lineSplitted );
+
+		else if ( lineSplitted[0] == "cgi_extension" )
+			route.ParseServerConfigRouteCgi( lineSplitted );
 
 		else
 		{
@@ -319,7 +375,7 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Root directory:");
 	std::cout << this->getRootDir() << std::endl;
-	
+
 	PRINTC(MAG, "Auto Index: ");
 	std::cout << (this->getAutoIndex() == true ? "true" : "false") << std::endl;
 
@@ -334,7 +390,15 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Uploads");
 	std::cout << (this->getUploads() == true ? "true" : "false") << std::endl;
-	
+
+	PRINTCLN(MAG, "Cgi:");
+	for ( std::map< std::string, std::vector< std::string> >::iterator it = _cgi.begin(); it != _cgi.end(); ++it )
+	{
+		std::cout << it->first << " ";
+		for ( size_t i = 0; i < it->second.size(); ++i )
+			std::cout << it->second[i] << " ";
+		std::cout << std::endl;
+	}
 }
 
 

@@ -12,7 +12,7 @@
 #include "Route.hpp"
 
 #define BLANK_CHARACTERS " \t"
-#define FORBIDDEN_NAME_CHARACTERS " \t\n\r\f\v/\\@!#$%^&*()=+[]{}|;:'\",<>?"
+#define FORBIDDEN_NAME_CHARACTERS " \t\n\r\f\v/\\@!#$%^&*()=+[]{}|;:'\",<>?" // Pas de . car www.google.fr est valide
 #define CLIENT_MAX_BODY_SIZE_O 1073741824 // 1 Go
 #define CLIENT_MAX_BODY_SIZE_KO 1048576 // 1 Go / 1024
 #define CLIENT_MAX_BODY_SIZE_MO 1024

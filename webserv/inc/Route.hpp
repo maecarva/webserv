@@ -14,11 +14,9 @@ private:
 	std::string _index;
 	std::map<int, std::string> _return;
 	bool _uploads;
-	std::vector<std::string> cgis_paths; // /usr/bin/python3 /bin/bash;               
-    std::vector<std::string> cgi_ext; // .py .sh;   
+	std::map< std::string, std::vector<std::string> > _cgi;
 
 public:
-
 	Route();
 	~Route();
 	Route&	operator=(const Route& route);
@@ -26,25 +24,30 @@ public:
 	// Name
 	bool ParseServerConfigRouteName( const std::vector<std::string> &lineSplitted );
 
-	// Allowed Methods
+// Allowed Methods
 	bool isValidMethod( const std::string &method );
 	void ParseServerConfigRouteAllow( std::vector<std::string> &lineSplitted );
 
-	// root
+// root
 	bool isValidRoot( const std::string &root );
 	void ParseServerConfigRouteRoot( const std::vector<std::string> &lineSplitted );
 
-	// Autoindex
+// Autoindex
 	void ParseServerConfigRouteAutoindex( const std::vector<std::string> &lineSplitted );
 
-	// Index
+// Index
 	void ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted );
 
-	// Return
+// Return
 	void ParseServerConfigRouteReturn( const std::vector<std::string> &lineSplitted );
 
-	// Uploads
+// Uploads
 	void ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted );
+
+// Cgi
+	bool isValidExtension( const std::string &extension );
+	bool isValidCommand( const std::string &command );
+	void ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted );
 
 
 	std::string&				getName();
@@ -54,7 +57,7 @@ public:
 	std::string					getIndexFile();
 
 	void						setRootDir(std::string str);
-
+ 
 	std::map<int, std::string>	getReturn();
 	bool						getUploads( void );
 
