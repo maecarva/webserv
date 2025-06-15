@@ -213,13 +213,40 @@ std::string		Response::formatRedirectResponse() {
 	return oss.str();
 }
 
+std::string		Response::handleUploadResponse() {
+	//std::cout << "Body size: " << this->getRequest().getBody().size() << std::endl;
+	std::string ressource =  this->getRequest().getRequestedRessource();
+	std::string uploaddir = this->getRequest().getCorrespondingRoute().getUploadDir();
+
+	std::string filepath = BuildFilePath(uploaddir, ressource);
+	std::string filecontent = "";
+
+	for (std::vector<unsigned char>::iterator i = this->getRequest().getBody().begin(); i != this->getRequest().getBody().end(); i++)
+	{
+		filecontent.push_back(*i);
+	}
+
+	std::ofstream(filepath.c_str(), std::ios::binary).write(filecontent.c_str(), filecontent.size()); 
+
+	std::ostringstream oss;
+
+	oss << "HTTP/1.1 ";
+	oss << HTTP_OK << " " << HttpMessageByCode(HTTP_OK) << "\r\n";
+	oss << "Content-Type: text/plain\r\n";
+	oss << "Content-Length: 13\r\n\r\n";
+	oss << "File created.";
+
+	return oss.str();
+};
+
 // TODO :
 // * - Check if route_clean match any routes in config /site
 // * - Check if Method is valid for route
-// - Check if route == index route => return index file if autoindex
+// * - Check if route == index route => return index file if autoindex
 // * - Check if file requested exist ? file : 404
-// - Set MIME type
-// - return Formated HTTP Response
+// * - Set MIME type
+// * - return Formated HTTP Response
+// - Change body to be a byte vector and not a string to prevent 0x00 anywhere in the file.
 
 std::string	Response::BuildResponse() {
 #ifdef DEBUG
@@ -241,10 +268,11 @@ std::string	Response::BuildResponse() {
 		return (ErrorResponse(HTTP_BAD_REQUEST));
 	}
 
-
 	// format
 	if (this->getRequest().getCorrespondingRoute().isRedirect())
 		return this->formatRedirectResponse();
+	else if (this->getRequest().getCorrespondingRoute().getUploads())
+		return this->handleUploadResponse();
 	else if (indexRequested && route.getAutoIndex()) {
 		if (!this->ReadFile(BuildFilePath(route.getRootDir(), route.getIndexFile()).c_str(), responseFileContent, mime_type))
 			return (ErrorResponse(404));

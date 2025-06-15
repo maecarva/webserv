@@ -26,7 +26,7 @@ private:
 	std::string _host;
 	std::string _port;
 	std::map<int, std::string> _error_pages;
-	int _client_max_body_size;  // À set à -1
+	long _client_max_body_size;  // À set à -1
 	std::vector<Route> _routes;
 
 
@@ -72,7 +72,7 @@ public:
 	std::string getServerHost( void ) const;
 	std::string getServerPort( void ) const;
 	std::map<int, std::string> getErrorPages( void );
-	int getClientMaxBodySize( void ) const;
+	long getClientMaxBodySize( void ) const;
 	std::vector<Route> getRoutes( void ) const;
 };
 

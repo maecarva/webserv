@@ -15,6 +15,7 @@ private:
 	bool												_redirect;
 	std::string 										_return;
 	bool 												_uploads;
+	std::string											_uploadfolder;
 	std::map< std::string, std::vector<std::string> > 	_cgi;
 	bool												_directory_listing;
 
@@ -58,6 +59,7 @@ public:
 	bool						getAutoIndex();
 	std::string					getIndexFile();
 	bool						getDirectoryListing();
+	std::string					getUploadDir();
 
 
 	void						setRootDir(std::string str);

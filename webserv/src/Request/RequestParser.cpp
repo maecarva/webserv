@@ -47,9 +47,11 @@ std::string		Request::ExtractRessource(std::string& route) {
 	return ressource;
 }
 
-void	Request::parseRequest(const char *req, Server& server)
+
+void	Request::parseRequest(std::string& req, Server& server)
 {
 #ifdef DEBUG
+	std::cout << "request size: " << req << std::endl;
 	std::cout << "REQUEST : \n" << req << "\n\n";
 #endif
 
@@ -127,15 +129,19 @@ void	Request::parseRequest(const char *req, Server& server)
         }
     }
 
-	std::string body;
+
+
+
+	std::vector<unsigned char> body;
 	size_t pos = request.find("\r\n\r\n");
+
 	if (pos != std::string::npos)
 	{
 		int tmppos = pos + 4;
-		while (static_cast<size_t>(tmppos) < request.size())
+		while (static_cast<size_t>(tmppos) <= request.size())
 		{
 			body.push_back(request[tmppos]);
-			if (tmppos - (int)pos >= server.getConfig().getClientMaxBodySize())
+			if (tmppos - (long)pos > server.getConfig().getClientMaxBodySize())
 			{
 				PRINTCLN(RED, "max body size reached");
 				return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);

@@ -89,10 +89,10 @@ std::string		Request::getRequestedRessource() {
 	return this->_ressource_requested;
 }
 
-std::string		Request::getBody() {
+std::vector<unsigned char>		Request::getBody() {
 	return this->_body;
 }
 
-void			Request::pushBody(std::string& newpart) {
-	this->_body.append(newpart);
+void			Request::pushBody(std::vector<unsigned char>& newpart) {
+	this->_body.insert(this->_body.end(), newpart.begin(), newpart.end());
 }

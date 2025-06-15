@@ -35,7 +35,7 @@ std::map<int, std::string> Config::getErrorPages( void )
 	return ( _error_pages );
 }
 
-int Config::getClientMaxBodySize( void ) const
+long Config::getClientMaxBodySize( void ) const
 {
 	return ( _client_max_body_size );
 }
@@ -250,7 +250,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
 			return ( false );
 		}
-		_client_max_body_size = ( ( int ) nb );
+		_client_max_body_size = (  nb );
 		return ( true );
 	}
 
