@@ -234,7 +234,7 @@ std::string		Response::handleUploadResponse() {
 		if ( !ofs.is_open() )
 		{
 			std::cerr << "Erreur: impossible d'écrire dans " << filepath << std::endl;
-			return ( ErrorResponse(500) );
+			return ( ErrorResponse(413) );
 		}
 		
 		ofs.write( reinterpret_cast<const char*>( body.data() ), body.size() );
