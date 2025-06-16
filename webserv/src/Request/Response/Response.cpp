@@ -218,19 +218,34 @@ std::string		Response::formatRedirectResponse() {
 }
 
 std::string		Response::handleUploadResponse() {
-	//std::cout << "Body size: " << this->getRequest().getBody().size() << std::endl;
 	std::string ressource =  this->getRequest().getRequestedRessource();                  // c est quoi corresponding route ??
 	std::string uploaddir = this->getRequest().getCorrespondingRoute().getUploadDir();
-	std::string fromdir = this->getRequest().getCorrespondingRoute().getRootDir();
+	size_t max_body_size = this->getRequest().getServer().getConfig().getClientMaxBodySize();
+	std::string filepath = BuildFilePath( uploaddir, ressource );
 
-	std::string oldfilepath =  BuildFilePath( fromdir, ressource );
-	std::string newfilepath = BuildFilePath( uploaddir, ressource );
+	const std::vector<unsigned char>& body = this->getRequest().getBody();
 
-    std::ifstream src(oldfilepath.c_str(), std::ios::binary);
+	std::cout << body.size() << std::endl;
+	std::cout << max_body_size << std::endl;
 
-    std::ofstream dst(newfilepath.c_str(), std::ios::binary);
+	if ( max_body_size >= body.size() )          // verifier si le fichier existe
+	{
+		std::ofstream ofs( filepath.c_str(), std::ios::binary );
+		if ( !ofs.is_open() )
+		{
+			std::cerr << "Erreur: impossible d'écrire dans " << filepath << std::endl;
+			return ( ErrorResponse(500) );
+		}
+		
+		ofs.write( reinterpret_cast<const char*>( body.data() ), body.size() );
+		ofs.close();
+	}
+	else
+	{
+		std::cout << "File to big" << std::endl;
+		return ( ErrorResponse(500) );
+	}
 
-    dst << src.rdbuf();
 
 	std::ostringstream oss;
 
