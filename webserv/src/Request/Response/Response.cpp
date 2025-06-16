@@ -181,8 +181,12 @@ std::string	Response::getMIMEtype() {
 	case JS_DJB2:
 		return "Content-type: text/javascript";
 		break;
-	
+	case PNG_DJB2:
+		return "Content-type: image/png";
+		break;
+
 	default:
+		return "Content-type: image/png";
 		return "Content-type: text/plain";
 		break;
 	}
