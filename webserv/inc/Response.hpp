@@ -18,17 +18,19 @@ public:
     ~Response();
 
     std::string		BuildResponse();
-    bool            CheckErrors();
 	std::string		ErrorResponse(int code);
+	std::string		formatResponse(std::string& responseFileContent, int responseCode, std::string& mimetype);
+	std::string		formatRedirectResponse();
+	std::string		handleUploadResponse();
 
+	bool			ReadFile(const char *path, std::string& resultfile, std::string& mimetype);
+	std::string		getMIMEtype();
 
 
     // * Getters / setters
     Request&  getRequest();
-    const char      *getDefaultResponse();
 };
 
 
-bool    checkMatchingRoutes(std::vector<Route>& routes, Response& res, Route **route, bool *indexRequested);
-bool    checkMatchingMethod(Response& res, Route *route);
-bool	ReadFile(const char *path, std::string& resultfile);
+bool   			checkMatchingMethod(Response& res, Route *route);
+std::string		HttpMessageByCode(int code);

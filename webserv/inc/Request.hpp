@@ -12,7 +12,7 @@
 
 
 // Exemple request :
-// GET / HTTP/1.1
+// GET /site/index.html HTTP/1.1
 // Host: google.fr
 // User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0
 // Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
@@ -57,6 +57,7 @@ private:
 	bool								_keepalive;
     std::map<std::string, std::string>	_headers;
     int									_header_len;
+	std::vector<unsigned char>			_body;
 	struct timeval 						_start;
 	struct timeval 						_end;
 
@@ -66,7 +67,7 @@ public:
     Request(Server& server);
     ~Request();
 
-	void			parseRequest(const char *req, Server& server);
+	void			parseRequest(std::string& req, Server& server);
 	void			logRequest(Server& server);
 	std::string		formatResponse(Server& server);
 	std::string		CreateResponse();
@@ -79,17 +80,20 @@ public:
 	void	setError(int code, int line, const char *filename);
 	void	setResponseCode(int code);
 
+	void	pushBody(std::vector<unsigned char>& newpart);
+
 	// * Getters
-	Server&			getServer() const;
-	const char		*getMethod()	const;
-	const char		*getRoute()	const;
-	const char		*getCleanRoute()	const;
-	const char		*getHost()	const;
-	const char		*getProtocol()	const;
-	unsigned short	getResponseCode()	const;
-	bool			isKeepAlive()	const;
-	Route			getCorrespondingRoute();
-	std::string		getRequestedRessource();
+	Server&							getServer() const;
+	const char						*getMethod()	const;
+	const char						*getRoute()	const;
+	const char						*getCleanRoute()	const;
+	const char						*getHost()	const;
+	const char						*getProtocol()	const;
+	unsigned short					getResponseCode()	const;
+	bool							isKeepAlive()	const;
+	Route							getCorrespondingRoute();
+	std::string						getRequestedRessource();
+	std::vector<unsigned char>		getBody();
 };
 
 

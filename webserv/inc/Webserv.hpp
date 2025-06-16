@@ -10,6 +10,8 @@
 #include <fstream>
 #include <algorithm>
 #include <iostream>
+#include <ostream>
+#include <fstream>
 
 #include <csignal>
 #include <cstring>

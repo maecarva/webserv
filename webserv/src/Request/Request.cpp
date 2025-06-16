@@ -11,6 +11,7 @@ Request::Request(Server& server) :
 	_keepalive(),
 	_headers(),
 	_header_len(),
+	_body(),
 	_start(),
 	_end(),
 	_response_headers()
@@ -27,6 +28,3 @@ std::string	Request::CreateResponse() {
 
 	return response;
 }
-
-
-

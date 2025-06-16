@@ -14,10 +14,14 @@ void	set_signals(void)
 	signal(SIGINT, sig_handler);
 }
 
-int main( void )
+int main( int ac, char **av )
 {
-
-	std::ifstream infile( "miniconfig.txt" );
+	if (ac != 2)
+	{
+		std::cerr << "Usage: ./webserv <configfile>" << std::endl;
+		return -1;
+	}
+	std::ifstream infile( av[1] );
 	std::vector<Config> vec = CreateConfigs(infile);
 
 	Config::PrintConfig(vec);

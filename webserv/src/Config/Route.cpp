@@ -1,13 +1,10 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Route::Route( void ) : _autoindex( false ), _uploads( false )
-{
-	Logger::debug("Creating Route");
-}
+Route::Route( void ) : _autoindex( false ), _redirect( false ), _uploads( false ), _directory_listing( true )
+{}
 
 Route::~Route( void ) {}
-
 
 Route&	Route::operator=(const Route& route) {
 	if (this != &route) {
@@ -16,10 +13,12 @@ Route&	Route::operator=(const Route& route) {
 		_root = route._root;
 		_autoindex = route._autoindex;
 		_index = route._index;
+		_redirect = route._redirect;
 		_return = route._return;
 		_uploads = route._uploads;
-		cgis_paths = route.cgis_paths;
-		cgi_ext = route.cgi_ext;
+		_uploadfolder = route._uploadfolder;
+		_cgi = route._cgi;
+		_directory_listing = route._directory_listing;
 	}
 	return *this;
 }
@@ -27,10 +26,12 @@ Route&	Route::operator=(const Route& route) {
 Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._allowed_methods), _root(route._root)
 		,_autoindex(route._autoindex)
 		,_index(route._index)
+		,_redirect(route._redirect)
 		,_return(route._return)
 		,_uploads(route._uploads)
-		,cgis_paths(route.cgis_paths)
-		,cgi_ext(route.cgi_ext)
+		,_uploadfolder(route._uploadfolder)
+		,_cgi(route._cgi)
+		,_directory_listing(route._directory_listing)
 {}
 
 // Route
@@ -126,7 +127,6 @@ void Route::ParseServerConfigRouteRoot( const std::vector<std::string> &lineSpli
 	}
 }
 
-
 // AutoIndex
 void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lineSplitted )
 {
@@ -145,7 +145,6 @@ void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lin
 	else
 		std::cerr << "AutoIndex: \'" << lineSplitted[1] << "\' is Invalid." << std::endl;
 }
-
 
 // Index
 void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSplitted )
@@ -169,54 +168,30 @@ void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSpl
 // Return
 void Route::ParseServerConfigRouteReturn( const std::vector<std::string> &lineSplitted )
 {
-	if ( lineSplitted.size() != 3 )
+	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Return: Invalid number of arguments." << std::endl;
 		return ;
 	}
-
-	if ( lineSplitted[1].size() != 3 )
-	{
-		std::cerr << "Invalid return code \'" <<  lineSplitted[1] << "\'." << std::endl;
-		return ;
-	}
-
-	char *end;
-	long returnCode = strtol( lineSplitted[1].c_str(), &end, 10 );
-
-	if ( *end != '\0' )
-	{
-		std::cerr << "Invalid return code \'" <<  lineSplitted[1] << "\'." << std::endl;
-		return ;
-	}
-
-	if ( returnCode < 0 || returnCode > 599 )
-	{
-		std::cerr << "Invalid error_code \'" << returnCode << "\'." << std::endl;
-		return ;
-	}
-
-	_return[( int ) returnCode] = lineSplitted[2];
+	_redirect = true;
+	_return = lineSplitted[1];
 }
 
 
 // Uploads
 void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted )
 {
+	std::cout << lineSplitted[0] SPACE << lineSplitted[1] << std::endl;
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "uploads: Invalid number of arguments." << std::endl;
 		return ;
 	}
 
-	if ( lineSplitted[1] == "on" )
-		_uploads = true;
-
-	else if ( lineSplitted[1] == "off" )
-		_uploads = false;
-
-	else
-		std::cerr << "Uploads: \'" << lineSplitted[1] << "\' is Invalid." << std::endl;
+	// if (!is_directory(lineSplitted[1].c_str()))
+	// 	std::cerr << "Error: " << lineSplitted[1] << " is not a directory" << std::endl;
+	_uploadfolder = lineSplitted[1];
+	_uploads = true;
 }
 
 
@@ -355,15 +330,30 @@ std::string					Route::getIndexFile() {
 	return this->_index;
 };
 
-std::map<int, std::string>	Route::getReturn() {
+
+bool						Route::getDirectoryListing() {
+	return this->_directory_listing;
+}
+
+std::string					Route::getReturn() {
 	return this->_return;
 };
 
-bool Route::getUploads( void ) { return ( _uploads ); }
+bool Route::getUploads( void ) { 
+	return ( this->_uploads );
+}
 
+bool						Route::isRedirect() {
+	return _redirect;
+}
+
+std::string		Route::getUploadDir() {
+	return this->_uploadfolder;
+}
 
 void	Route::printRoute() {
-	PRINTCLN(MAG, "Path:");
+
+	PRINTCLN(MAG, "\n\nPath:");
 	std::cout << this->getName() << std::endl;
 
 	PRINTCLN(MAG, "Allowed methods:");
@@ -381,15 +371,15 @@ void	Route::printRoute() {
 
 	PRINTCLN(MAG, "Index file:");
 	std::cout << this->getIndexFile() << std::endl;
-	PRINTCLN(MAG, "Return:");
-
-	for (std::map<int, std::string>::iterator it = this->_return.begin(); it != this->_return.end(); it++)
-	{
-		std::cout << "\t" << (*it).first SPACE << (*it).second << std::endl;
-	}
+	
+	PRINTCLN(MAG, "Redirection:");
+	std::cout << this->getReturn() << std::endl;
 
 	PRINTCLN(MAG, "Uploads");
-	std::cout << (this->getUploads() == true ? "true" : "false") << std::endl;
+	if (this->getUploads())
+		std::cout << this->getUploadDir() << std::endl;
+	else
+		std::cout << "false" << std::endl;
 
 	PRINTCLN(MAG, "Cgi:");
 	for ( std::map< std::string, std::vector< std::string> >::iterator it = _cgi.begin(); it != _cgi.end(); ++it )
@@ -400,7 +390,6 @@ void	Route::printRoute() {
 		std::cout << std::endl;
 	}
 }
-
 
 // * setters
 

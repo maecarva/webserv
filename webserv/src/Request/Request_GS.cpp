@@ -88,3 +88,11 @@ Route			Request::getCorrespondingRoute() {
 std::string		Request::getRequestedRessource() {
 	return this->_ressource_requested;
 }
+
+std::vector<unsigned char>		Request::getBody() {
+	return this->_body;
+}
+
+void			Request::pushBody(std::vector<unsigned char>& newpart) {
+	this->_body.insert(this->_body.end(), newpart.begin(), newpart.end());
+}

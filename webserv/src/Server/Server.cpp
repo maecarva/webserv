@@ -210,8 +210,7 @@ void	Server::handler() {
 						reqstr.push_back(*it);
 						it++;
 					}
-
-					req.parseRequest(reqstr.c_str(), *this);
+					req.parseRequest(reqstr, *this);
 					std::string	reply = req.CreateResponse();
 					send(fd, reply.c_str(), reply.size(), 0);
 					// Close connection
