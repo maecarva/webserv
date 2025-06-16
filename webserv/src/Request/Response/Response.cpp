@@ -186,7 +186,7 @@ std::string	Response::getMIMEtype() {
 		break;
 
 	default:
-		return "Content-type: image/png";
+		return "Content-type: image/png";      // a enlever et a gerer proprement stp
 		return "Content-type: text/plain";
 		break;
 	}
@@ -219,18 +219,18 @@ std::string		Response::formatRedirectResponse() {
 
 std::string		Response::handleUploadResponse() {
 	//std::cout << "Body size: " << this->getRequest().getBody().size() << std::endl;
-	std::string ressource =  this->getRequest().getRequestedRessource();
+	std::string ressource =  this->getRequest().getRequestedRessource();                  // c est quoi corresponding route ??
 	std::string uploaddir = this->getRequest().getCorrespondingRoute().getUploadDir();
+	std::string fromdir = this->getRequest().getCorrespondingRoute().getRootDir();
 
-	std::string filepath = BuildFilePath(uploaddir, ressource);
-	std::string filecontent = "";
+	std::string oldfilepath =  BuildFilePath( fromdir, ressource );
+	std::string newfilepath = BuildFilePath( uploaddir, ressource );
 
-	for (std::vector<unsigned char>::iterator i = this->getRequest().getBody().begin(); i != this->getRequest().getBody().end(); i++)
-	{
-		filecontent.push_back(*i);
-	}
+    std::ifstream src(oldfilepath.c_str(), std::ios::binary);
 
-	std::ofstream(filepath.c_str(), std::ios::binary).write(filecontent.c_str(), filecontent.size()); 
+    std::ofstream dst(newfilepath.c_str(), std::ios::binary);
+
+    dst << src.rdbuf();
 
 	std::ostringstream oss;
 
@@ -271,6 +271,9 @@ std::string	Response::BuildResponse() {
 	if (!checkMatchingMethod(*this, &route)) {
 		return (ErrorResponse(HTTP_BAD_REQUEST));
 	}
+
+	for ( int i = 0; i < this->getRequest().getBody()[i]; ++i )
+		std::cout << this->getRequest().getBody()[i] << std::endl;
 
 	// format
 	if (this->getRequest().getCorrespondingRoute().isRedirect())

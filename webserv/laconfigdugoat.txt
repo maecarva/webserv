@@ -10,3 +10,9 @@ allow GET
 root ./static_pages
 autoindex off
 index index.html
+
+location /uploads/
+allow POST
+root ./static_pages/dir/
+uploads ./upload/
+
