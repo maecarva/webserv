@@ -83,12 +83,12 @@ std::string	Request::formatResponse(Server& server) {
 		case HTML_DJB2:
 			this->_response_headers.insert(std::make_pair("Content-Type:" ,"text/html"));
 			break;
-		
+
 		default:
 			break;
 		}
 	}
-	
+
 	//Logger::debug(filepath.c_str());
 	std::string str;
 	if (access(filepath.c_str(), F_OK | R_OK) == 0) // file exist
@@ -186,7 +186,7 @@ std::string	Response::getMIMEtype() {
 		break;
 
 	default:
-		return "Content-type: image/png";      // a enlever et a gerer proprement stp
+		return "Content-type: image/png";      // a enlever et a gerer proprement
 		return "Content-type: text/plain";
 		break;
 	}
@@ -300,7 +300,13 @@ std::string	Response::BuildResponse() {
 			return (ErrorResponse(404));
 
 		return this->formatResponse(responseFileContent, HTTP_OK, mime_type);
-	} else {
+	}
+	else if ( this->getRequest().getCorrespondingRoute(). )
+	{
+
+	}
+
+	else {
 		if (!this->ReadFile(BuildFilePath(route.getRootDir(), this->getRequest().getRequestedRessource()).c_str(), responseFileContent, mime_type))
 			return (ErrorResponse(404));
 		
