@@ -1,7 +1,7 @@
 #include "Webserv.hpp"
 #include <sstream>
 
-Request::Request(Server& server) :
+Request::Request(Server& server, int fd) :
 	_server(server),
 	_response_code(),
 	_method(),
@@ -14,6 +14,7 @@ Request::Request(Server& server) :
 	_body(),
 	_start(),
 	_end(),
+	_fd(fd),
 	_response_headers()
 {
 	gettimeofday(&this->_start, NULL);

@@ -1,6 +1,7 @@
 #include "Webserv.hpp"
 
-Server::Server(Config& config) : _config(config) {
+Server::Server(Config &config) : _config(config)
+{
 	// * erase last / of rootdir
 	std::vector<Route> routes = this->getConfig().getRoutes();
 	for (std::vector<Route>::iterator i = routes.begin(); i != routes.end(); i++)
@@ -12,14 +13,13 @@ Server::Server(Config& config) : _config(config) {
 			str.erase(eit);
 			(*i).setRootDir(str);
 		}
-		
 	}
 
 	// * create socket
-	int		listenfd = -1;
-    struct	sockaddr_in addr;
-	int		opt = 1;
-	int		epoll_fd = -1;
+	int listenfd = -1;
+	struct sockaddr_in addr;
+	int opt = 1;
+	int epoll_fd = -1;
 
 	if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 	{
@@ -47,7 +47,7 @@ Server::Server(Config& config) : _config(config) {
 	size_t pos = hostaddr.find(':');
 	if (pos == std::string::npos)
 		throw Server::ServerCreationError();
-	
+
 	std::string host = hostaddr.substr(0, pos);
 	std::string port = hostaddr.substr(pos + 1, hostaddr.size());
 	std::memset(&addr, 0, sizeof(addr));
@@ -55,18 +55,20 @@ Server::Server(Config& config) : _config(config) {
 	addr.sin_addr.s_addr = inet_addr(host.c_str());
 	addr.sin_port = htons(std::atoi(port.c_str()));
 
-	if (bind(listenfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) { // link listenfd to addr
-        std::perror("bind failed");
-        close(listenfd);
+	if (bind(listenfd, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+	{ // link listenfd to addr
+		std::perror("bind failed");
+		close(listenfd);
 		throw Server::ServerCreationError();
-    }
+	}
 
-	if (listen(listenfd, 10) < 0) { // start listening
-        std::perror("listen failed");
-        close(listenfd);
+	if (listen(listenfd, 10) < 0)
+	{ // start listening
+		std::perror("listen failed");
+		close(listenfd);
 		throw Server::ServerCreationError();
-    }
-	
+	}
+
 	std::ostringstream oss;
 	oss << "Server is listening on " << hostaddr;
 	Logger::debug(oss.str().c_str());
@@ -78,12 +80,13 @@ Server::Server(Config& config) : _config(config) {
 	ev.events = EPOLLIN;
 	ev.data.fd = listenfd;
 
-	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listenfd, &ev) < 0) {
+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, listenfd, &ev) < 0)
+	{
 		std::perror("epoll_ctl failed");
 		close(listenfd);
 		close(epoll_fd);
 		throw Server::ServerCreationError();
-		return ;
+		return;
 	}
 
 	std::memset(&this->_ev, 0, sizeof(this->_ev));
@@ -95,29 +98,33 @@ Server::Server(Config& config) : _config(config) {
 Server::~Server() {
 };
 
-Server& Server::operator=(const Server& server) {
-	if (this != &server) {
-		this->_config 			= server._config;
-		this->_socketfd 		= server._socketfd;
-		this->_epoll_fd 		= server._epoll_fd;
-		this->_ev				= server._ev;
-		this->_clientBuffers	= server._clientBuffers;
+Server &Server::operator=(const Server &server)
+{
+	if (this != &server)
+	{
+		this->_config = server._config;
+		this->_socketfd = server._socketfd;
+		this->_epoll_fd = server._epoll_fd;
+		this->_ev = server._ev;
+		this->_clientBuffers = server._clientBuffers;
 	}
 	return *this;
 }
 
-Config&	Server::getConfig() {
+Config &Server::getConfig()
+{
 	return this->_config;
 }
 
-void	Server::handler() {
+void Server::handler()
+{
 
-	struct epoll_event	events[MAX_EVENTS];
-	int					nready = epoll_wait(this->_epoll_fd, events, MAX_EVENTS, 0); // return number of events to handle, 0 to prevent blocking for connexion
+	struct epoll_event events[MAX_EVENTS];
+	int nready = epoll_wait(this->_epoll_fd, events, MAX_EVENTS, 0); // return number of events to handle, 0 to prevent blocking for connexion
 	if (nready < 0)
 	{
 		std::perror("epoll_wait failed");
-		return ;
+		return;
 	}
 
 	for (int i = 0; i < nready; i++) // loop for each events
@@ -128,13 +135,15 @@ void	Server::handler() {
 		{
 			struct sockaddr_in client_addr;
 			socklen_t client_len = sizeof(client_addr);
-			int client_fd = accept(this->_socketfd, (struct sockaddr*)&client_addr, &client_len);
-			if ( client_fd < 0) {
+			int client_fd = accept(this->_socketfd, (struct sockaddr *)&client_addr, &client_len);
+			if (client_fd < 0)
+			{
 				if (errno == EAGAIN || errno == EWOULDBLOCK)
-					break ;
-				else {
+					break;
+				else
+				{
 					std::perror("accept client failed");
-					break ;
+					break;
 				}
 			}
 
@@ -142,7 +151,7 @@ void	Server::handler() {
 			{
 				std::perror("setNonblicking client_fd");
 				close(client_fd);
-				continue ;
+				continue;
 			}
 
 			struct epoll_event client_ev;
@@ -153,7 +162,7 @@ void	Server::handler() {
 			{
 				std::perror("add client fd to epoll failed");
 				close(client_fd);
-				continue ;
+				continue;
 			}
 
 			this->_clientBuffers[client_fd] = std::vector<char>();
@@ -166,22 +175,23 @@ void	Server::handler() {
 				bool closed = false;
 				while (true)
 				{
-					char	buf[BUFSIZ];
-					ssize_t	count = recv(fd, buf, sizeof(buf), 0);
-					if (count < 0) {
+					char buf[BUFSIZ];
+					ssize_t count = recv(fd, buf, sizeof(buf), 0);
+					if (count < 0)
+					{
 						if (errno == EAGAIN || errno == EWOULDBLOCK) // ! forbidden function call
-							break ;
+							break;
 						else
 						{
 							std::perror("recv failed");
 							closed = true;
-							break ;
+							break;
 						}
 					}
 					else if (count == 0)
 					{
 						closed = true;
-						break ;
+						break;
 					}
 					else // handle bytes read
 					{
@@ -196,11 +206,14 @@ void	Server::handler() {
 						std::perror("epoll_ctl DEL");
 					close(fd);
 					this->_clientBuffers.erase(fd);
-					std::cout << "Client FD=" << fd << " déconnecté\n";	
+					std::cout << "Client FD=" << fd << " déconnecté\n";
 				}
 				else
 				{
-					Request req = Request(*this);
+
+
+					
+					Request req = Request(*this, fd);
 
 					// Respond to client
 					std::string reqstr;
@@ -210,6 +223,9 @@ void	Server::handler() {
 						reqstr.push_back(*it);
 						it++;
 					}
+
+
+
 					req.parseRequest(reqstr, *this);
 					std::string	reply = req.CreateResponse();
 					send(fd, reply.c_str(), reply.size(), 0);

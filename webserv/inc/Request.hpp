@@ -60,11 +60,12 @@ private:
 	std::vector<unsigned char>			_body;
 	struct timeval 						_start;
 	struct timeval 						_end;
+	int 								_fd;
 
 	// response
     std::map<std::string, std::string>	_response_headers;
 public:
-    Request(Server& server);
+    Request(Server& server, int fd);
     ~Request();
 
 	void			parseRequest(std::string& req, Server& server);

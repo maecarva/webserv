@@ -83,12 +83,12 @@ std::string	Request::formatResponse(Server& server) {
 		case HTML_DJB2:
 			this->_response_headers.insert(std::make_pair("Content-Type:" ,"text/html"));
 			break;
-		
+
 		default:
 			break;
 		}
 	}
-	
+
 	//Logger::debug(filepath.c_str());
 	std::string str;
 	if (access(filepath.c_str(), F_OK | R_OK) == 0) // file exist
@@ -181,7 +181,10 @@ std::string	Response::getMIMEtype() {
 	case JS_DJB2:
 		return "Content-type: text/javascript";
 		break;
-	
+	case PNG_DJB2:
+		return "Content-type: image/png";
+		break;
+
 	default:
 		return "Content-type: text/plain";
 		break;
@@ -214,19 +217,34 @@ std::string		Response::formatRedirectResponse() {
 }
 
 std::string		Response::handleUploadResponse() {
-	//std::cout << "Body size: " << this->getRequest().getBody().size() << std::endl;
 	std::string ressource =  this->getRequest().getRequestedRessource();
 	std::string uploaddir = this->getRequest().getCorrespondingRoute().getUploadDir();
+	size_t max_body_size = this->getRequest().getServer().getConfig().getClientMaxBodySize();
+	std::string filepath = BuildFilePath( uploaddir, ressource );
 
-	std::string filepath = BuildFilePath(uploaddir, ressource);
-	std::string filecontent = "";
+	const std::vector<unsigned char>& body = this->getRequest().getBody();
 
-	for (std::vector<unsigned char>::iterator i = this->getRequest().getBody().begin(); i != this->getRequest().getBody().end(); i++)
+	std::cout << body.size() << std::endl;
+	std::cout << max_body_size << std::endl;
+
+	if ( max_body_size >= body.size() )          // verifier si le fichier existe
 	{
-		filecontent.push_back(*i);
+		std::ofstream ofs( filepath.c_str(), std::ios::binary );
+		if ( !ofs.is_open() )
+		{
+			std::cerr << "Erreur: impossible d'écrire dans " << filepath << std::endl;
+			return ( ErrorResponse(413) );
+		}
+		
+		ofs.write( reinterpret_cast<const char*>( body.data() ), body.size() );
+		ofs.close();
+	}
+	else
+	{
+		std::cout << "File to big" << std::endl;
+		return ( ErrorResponse(500) );
 	}
 
-	std::ofstream(filepath.c_str(), std::ios::binary).write(filecontent.c_str(), filecontent.size()); 
 
 	std::ostringstream oss;
 
@@ -248,7 +266,22 @@ std::string		Response::handleUploadResponse() {
 // * - return Formated HTTP Response
 // - Change body to be a byte vector and not a string to prevent 0x00 anywhere in the file.
 
-std::string	Response::BuildResponse() {
+
+// // Cgi
+// bool Response::isCgi( void )
+// {
+
+// }
+
+// void Response::handleCgi( void )
+// {
+
+// }
+
+
+
+std::string	Response::BuildResponse()
+{
 #ifdef DEBUG
 	Logger::debug("Response::BuildResponse");
 #endif
@@ -268,22 +301,33 @@ std::string	Response::BuildResponse() {
 		return (ErrorResponse(HTTP_BAD_REQUEST));
 	}
 
+	for ( int i = 0; i < this->getRequest().getBody()[i]; ++i )
+		std::cout << this->getRequest().getBody()[i] << std::endl;
+
 	// format
 	if (this->getRequest().getCorrespondingRoute().isRedirect())
 		return this->formatRedirectResponse();
 	else if (this->getRequest().getCorrespondingRoute().getUploads())
 		return this->handleUploadResponse();
-	else if (indexRequested && route.getAutoIndex()) {
-		if (!this->ReadFile(BuildFilePath(route.getRootDir(), route.getIndexFile()).c_str(), responseFileContent, mime_type))
-			return (ErrorResponse(404));
+	else if ( indexRequested && route.getAutoIndex() )
+	{
+		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
+			return ( ErrorResponse( 404 ) );
 
-		return this->formatResponse(responseFileContent, HTTP_OK, mime_type);
-	} else {
-		if (!this->ReadFile(BuildFilePath(route.getRootDir(), this->getRequest().getRequestedRessource()).c_str(), responseFileContent, mime_type))
-			return (ErrorResponse(404));
+		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+	}
+	// else if ( this->getRequest().isCgi() )
+	// {
+	// 	return ( this->handleCgi() );
+	// }
+
+	else
+	{
+		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type ) )
+			return ( ErrorResponse( 404 ) );
 		
-		return this->formatResponse(responseFileContent, HTTP_OK, mime_type);
+		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
 	
-	return ErrorResponse(500);
+	return ErrorResponse( 500 );
 }

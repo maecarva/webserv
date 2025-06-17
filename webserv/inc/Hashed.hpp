@@ -15,5 +15,6 @@
 #define HTML_DJB2 0x310b685228
 #define CSS_DJB2 0x17c7770fc
 #define JS_DJB2 0xb878070
+#define PNG_DJB2 0x17c77a798
 
 #endif
