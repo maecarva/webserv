@@ -43,6 +43,7 @@
 #include "Request.hpp"
 #include "Response.hpp"
 #include "Route.hpp"
+#include "Client.hpp"
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "Config.hpp"
+#include "Client.hpp"
 
 class Config;
-
+class Client;
 
 class Server
 {
@@ -14,7 +15,7 @@ private:
 	int									_socketfd;
 	int									_epoll_fd;
 	struct epoll_event					_ev;
-	std::map<int, std::vector<char> >	_clientBuffers;
+	std::map<int, Client >	_clientBuffers;
 public:
 	Server(Config& config);
 	Server& operator=(const Server& server);

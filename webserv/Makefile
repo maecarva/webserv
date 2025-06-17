@@ -14,6 +14,7 @@ SRC		:=	main.cpp \
 			Config/Route.cpp \
 			Server/Server.cpp \
 			Config/CGI.cpp \
+			Server/Client.cpp \
 			Server/CreateServerPool.cpp \
 			Request/Request_GS.cpp \
 			Request/Request.cpp \

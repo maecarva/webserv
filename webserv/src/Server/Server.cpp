@@ -165,7 +165,7 @@ void Server::handler()
 				continue;
 			}
 
-			this->_clientBuffers[client_fd] = std::vector<char>();
+			this->_clientBuffers.insert(std::make_pair(client_fd, Client(client_fd)));
 		}
 		/// -------
 		else // second case : client socket ready for read
@@ -195,7 +195,18 @@ void Server::handler()
 					}
 					else // handle bytes read
 					{
-						this->_clientBuffers[fd].insert(this->_clientBuffers[fd].end(), buf, buf + count);
+						std::string buffer = buf;
+						if (this->_clientBuffers[fd].getContentLength() == 0)
+						{
+							size_t pos = buffer.find("content-length:");
+							long len = strtol(buffer.c_str() + pos + 16, NULL, 10);
+							this->_clientBuffers[fd].setContentLendht(len);
+						}
+						PRINTCLN(GRN, "BODYCOUNT !");
+						std::cout << buffer << std::endl;
+						this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
+						PRINTCLN(GRN, "-------------");
+						bzero(buf, BUFSIZ);
 					}
 				}
 
@@ -211,30 +222,25 @@ void Server::handler()
 				else
 				{
 
+					if (this->_clientBuffers[fd].getAllRead()) {
 
-					
-					Request req = Request(*this, fd);
+						Request req = Request(*this, fd);
 
-					// Respond to client
-					std::string reqstr;
-					std::vector<char>::iterator it = this->_clientBuffers[fd].begin();
-					while (it != this->_clientBuffers[fd].end())
-					{
-						reqstr.push_back(*it);
-						it++;
+						// Respond to client
+						std::string reqstr= this->_clientBuffers[fd].getThatBody();
+
+
+
+						req.parseRequest(reqstr, *this);
+						std::string	reply = req.CreateResponse();
+						send(fd, reply.c_str(), reply.size(), 0);
+						// Close connection
+						if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
+							std::perror("epoll_ctl DEL après send");
+						close(fd);
+						this->_clientBuffers.erase(fd);
+						req.logRequest(*this);
 					}
-
-
-
-					req.parseRequest(reqstr, *this);
-					std::string	reply = req.CreateResponse();
-					send(fd, reply.c_str(), reply.size(), 0);
-					// Close connection
-					if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
-						std::perror("epoll_ctl DEL après send");
-					close(fd);
-					this->_clientBuffers.erase(fd);
-					req.logRequest(*this);
 				}
 			}
 		}
