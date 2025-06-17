@@ -200,7 +200,7 @@ void	Server::handler() {
 				}
 				else
 				{
-					Request req = Request(*this);
+					Request req = Request(*this, fd);
 
 					// Respond to client
 					std::string reqstr;

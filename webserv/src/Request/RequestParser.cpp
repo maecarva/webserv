@@ -50,10 +50,10 @@ std::string		Request::ExtractRessource(std::string& route) {
 
 void	Request::parseRequest(std::string& req, Server& server)
 {
-#ifdef DEBUG
-	std::cout << "request size: " << req << std::endl;
-	std::cout << "REQUEST : \n" << req << "\n\n";
-#endif
+// #ifdef DEBUG
+	//std::cout << "request size: " << req << std::endl;
+	// std::cout << "REQUEST : \n" << req << "\n\n";
+// #endif
 
     this->_response_code = HTTP_OK;
     std::string         token;
@@ -101,14 +101,15 @@ void	Request::parseRequest(std::string& req, Server& server)
 
 		std::istringstream iss2(line);
         while (iss2 >> token) {
-            std::pair<std::string, std::string> pair = std::make_pair(token, "");
             std::string key = token;
+            
+            std::transform(key.begin(), key.end(), key.begin(), ::toupper);
+            std::pair<std::string, std::string> pair = std::make_pair(key, "");
 
             while (iss2 >> token) {
                 pair.second.append(token);
             }
 
-            std::transform(key.begin(), key.end(), key.begin(), ::toupper);
             
             if (key == "HOST:") { 
                 std::string second = pair.second;
@@ -130,10 +131,9 @@ void	Request::parseRequest(std::string& req, Server& server)
     }
 
 
+    std::vector<unsigned char> body;
 
-
-	std::vector<unsigned char> body;
-	size_t pos = request.find("\r\n\r\n");
+    size_t pos = request.find("\r\n\r\n");
 
 	if (pos != std::string::npos)
 	{
@@ -149,7 +149,31 @@ void	Request::parseRequest(std::string& req, Server& server)
 			tmppos++;
 		}
 	}
-	this->_body = body;
+
+    std::string headerinfo = this->_headers["CONTENT-TYPE:"];
+    std::transform(headerinfo.begin(), headerinfo.end(), headerinfo.begin(), ::toupper);
+    if ( !headerinfo.empty() ) // si y'a un content type.
+    {
+
+        if (headerinfo == "APPLICATION/OCTET-STREAM") {
+            ssize_t	count = -1;
+            while (true) {
+            char	buf[BUFSIZ];
+			count = recv(this->_fd, buf, sizeof(buf), 0);
+				if (count <= 0)
+                    break ;
+                    PRINTCLN(GRN, "recv");
+                for (ssize_t i = 0; i < count; i++)
+                {
+                    body.push_back(buf[i]);
+                }
+            }
+        }
+    }
+
+    this->_body = body;
+
+
 
 #ifdef DEBUG
     PRINTCLN(GRN, "PARSED = ");

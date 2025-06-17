@@ -186,7 +186,6 @@ std::string	Response::getMIMEtype() {
 		break;
 
 	default:
-		return "Content-type: image/png";      // a enlever et a gerer proprement
 		return "Content-type: text/plain";
 		break;
 	}
@@ -218,7 +217,7 @@ std::string		Response::formatRedirectResponse() {
 }
 
 std::string		Response::handleUploadResponse() {
-	std::string ressource =  this->getRequest().getRequestedRessource();                  // c est quoi corresponding route ??
+	std::string ressource =  this->getRequest().getRequestedRessource();
 	std::string uploaddir = this->getRequest().getCorrespondingRoute().getUploadDir();
 	size_t max_body_size = this->getRequest().getServer().getConfig().getClientMaxBodySize();
 	std::string filepath = BuildFilePath( uploaddir, ressource );
@@ -267,7 +266,22 @@ std::string		Response::handleUploadResponse() {
 // * - return Formated HTTP Response
 // - Change body to be a byte vector and not a string to prevent 0x00 anywhere in the file.
 
-std::string	Response::BuildResponse() {
+
+// // Cgi
+// bool Response::isCgi( void )
+// {
+
+// }
+
+// void Response::handleCgi( void )
+// {
+
+// }
+
+
+
+std::string	Response::BuildResponse()
+{
 #ifdef DEBUG
 	Logger::debug("Response::BuildResponse");
 #endif
@@ -295,23 +309,25 @@ std::string	Response::BuildResponse() {
 		return this->formatRedirectResponse();
 	else if (this->getRequest().getCorrespondingRoute().getUploads())
 		return this->handleUploadResponse();
-	else if (indexRequested && route.getAutoIndex()) {
-		if (!this->ReadFile(BuildFilePath(route.getRootDir(), route.getIndexFile()).c_str(), responseFileContent, mime_type))
-			return (ErrorResponse(404));
-
-		return this->formatResponse(responseFileContent, HTTP_OK, mime_type);
-	}
-	else if ( this->getRequest().getCorrespondingRoute(). )
+	else if ( indexRequested && route.getAutoIndex() )
 	{
+		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
+			return ( ErrorResponse( 404 ) );
 
+		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
+	// else if ( this->getRequest().isCgi() )
+	// {
+	// 	return ( this->handleCgi() );
+	// }
 
-	else {
-		if (!this->ReadFile(BuildFilePath(route.getRootDir(), this->getRequest().getRequestedRessource()).c_str(), responseFileContent, mime_type))
-			return (ErrorResponse(404));
+	else
+	{
+		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type ) )
+			return ( ErrorResponse( 404 ) );
 		
-		return this->formatResponse(responseFileContent, HTTP_OK, mime_type);
+		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
 	
-	return ErrorResponse(500);
+	return ErrorResponse( 500 );
 }

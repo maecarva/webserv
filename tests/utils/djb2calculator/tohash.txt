@@ -12,3 +12,4 @@ CONNECT
 .HTML
 .CSS
 .JS
+.PNG
