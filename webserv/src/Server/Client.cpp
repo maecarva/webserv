@@ -34,6 +34,8 @@ size_t Client::getContentLength() const { return ( _contentLength ); }
 std::string Client::getThatBody() { return ( giveHeadAndBody ); };
 
 void	Client::setContentLendht(size_t size) { _contentLength = size; };
+void	Client::setAllRead( bool a ) { _allRead = a; }
+
 
 void Client::addBodyCount( const char *buf, ssize_t count )
 {
@@ -56,6 +58,11 @@ void Client::addBodyCount( const char *buf, ssize_t count )
 		for (ssize_t i = 0; i < count; ++i )
 		{
 			giveHeadAndBody.push_back(buf[i]);
+		}
+		if (giveHeadAndBody.size()  >= _contentLength)
+		{
+			std::cout << "allread\n";
+			_allRead = true;
 		}
 	}
 }

@@ -301,8 +301,8 @@ std::string	Response::BuildResponse()
 		return (ErrorResponse(HTTP_BAD_REQUEST));
 	}
 
-	for ( int i = 0; i < this->getRequest().getBody()[i]; ++i )
-		std::cout << this->getRequest().getBody()[i] << std::endl;
+	// for ( int i = 0; i < this->getRequest().getBody()[i]; ++i )
+	// 	std::cout << this->getRequest().getBody()[i] << std::endl;
 
 	// format
 	if (this->getRequest().getCorrespondingRoute().isRedirect())

@@ -23,6 +23,7 @@ public:
 	std::string getThatBody();
 
 	void	setContentLendht(size_t size);
+	void	setAllRead( bool a );
 
 	void addBodyCount( const char *buf, ssize_t count );
 };

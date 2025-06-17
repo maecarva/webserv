@@ -131,58 +131,14 @@ void	Request::parseRequest(std::string& req, Server& server)
         }
     }
 
-
-    // std::vector<unsigned char> body;
-
-    // size_t pos = request.find("\r\n\r\n");
-
-	// if (pos != std::string::npos)
-	// {
-	// 	int tmppos = pos + 4;
-	// 	while (static_cast<size_t>(tmppos) <= request.size())
-	// 	{
-	// 		body.push_back(request[tmppos]);
-	// 		if (tmppos - (long)pos > server.getConfig().getClientMaxBodySize())
-	// 		{
-	// 			PRINTCLN(RED, "max body size reached");
-	// 			return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
-	// 		}
-	// 		tmppos++;
-	// 	}
-	// }
-
-    // std::string headerinfo = this->_headers["CONTENT-TYPE:"];
-    // std::transform(headerinfo.begin(), headerinfo.end(), headerinfo.begin(), ::toupper);
-    // if ( !headerinfo.empty() ) // si y'a un content type.
-    // {
-    //     if (headerinfo == "APPLICATION/OCTET-STREAM" || headerinfo.find("MULTIPART/FORM-DATA;") != std::string::npos) {
-    //         ssize_t	count = -1;
-    //         while (true) {
-    //         char	buf[BUFSIZ * 4];
-	// 		count = recv(this->_fd, buf, sizeof(buf), 0);
-	// 			if (count <= 0)
-    //                 break ;
-    //             PRINTCLN(GRN, "recv");
-    //             for (ssize_t i = 0; i < count; i++)
-    //             {
-    //                 body.push_back(buf[i]);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // this->_body = body;
-
-    // for (size_t i = 0; i < pos; i++)
-    // {
-    //     std::cout << req[i];
-    // }
-    // std::cout << "\r\n\r\n";
-    // for (size_t i = 0; i < this->_body.size(); i++)
-    // {
-    //     std::cout << this->_body[i];
-    // }
-    // std::cout << "\r\n\r\n";
+    std::vector<unsigned char> body;
+    size_t pos = req.find("\r\n\r\n");
+    for (size_t i = pos + 4; i < req.size(); i++)
+    {
+        body.push_back(req[i]);
+    }
+    
+    this->_body = body;
 
 
 

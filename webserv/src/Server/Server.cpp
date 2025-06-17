@@ -198,15 +198,29 @@ void Server::handler()
 						std::string buffer = buf;
 						if (this->_clientBuffers[fd].getContentLength() == 0)
 						{
+
 							size_t pos = buffer.find("content-length:");
-							long len = strtol(buffer.c_str() + pos + 16, NULL, 10);
-							this->_clientBuffers[fd].setContentLendht(len);
+							if ( pos != std::string::npos )
+							{
+								long len = strtol(buffer.c_str() + pos + 16, NULL, 10);
+								this->_clientBuffers[fd].setContentLendht(len);
+							}
 						}
-						PRINTCLN(GRN, "BODYCOUNT !");
-						std::cout << buffer << std::endl;
-						this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
-						PRINTCLN(GRN, "-------------");
-						bzero(buf, BUFSIZ);
+						if ( this->_clientBuffers[fd].getContentLength() == 0 )
+						{
+							this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
+							bzero(buf, BUFSIZ);
+							this->_clientBuffers[fd].setAllRead( true );
+							break;
+						}
+						else
+						{
+							this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
+							bzero(buf, BUFSIZ);
+						}
+						// PRINTCLN(GRN, "BODYCOUNT !");
+						// std::cout << buffer << std::endl;
+						// PRINTCLN(GRN, "-------------");
 					}
 				}
 
@@ -221,13 +235,12 @@ void Server::handler()
 				}
 				else
 				{
-
 					if (this->_clientBuffers[fd].getAllRead()) {
-
+						PRINTLN( "VAS MANGER TES GRANBDS MRTS6" );
 						Request req = Request(*this, fd);
 
 						// Respond to client
-						std::string reqstr= this->_clientBuffers[fd].getThatBody();
+						std::string reqstr = this->_clientBuffers[fd].getThatBody();
 
 
 
