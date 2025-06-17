@@ -12,29 +12,19 @@ private:
 	std::string giveHeadAndBody;
 
 public:
-	Client( int fd, int contentL );
+	Client();
+	Client( int fd);
+	Client( const Client& client);
+	Client& operator=( const Client& client);
 	~Client();
-	bool getAllRead() const { return ( _allRead ); }
-	size_t getContentLength() const { return ( _contentLength ); }
+	
+	bool getAllRead() const;
+	size_t getContentLength() const;
+	std::string getThatBody();
 
-	void addBodyCount( char *buf, ssize_t count )
-	{
-		for (ssize_t i = 0; i < count; i++)
-		{
-			giveHeadAndBody.push_back(buf[i]);
-		}
-		_contentLength += count;
-		if (giveHeadAndBody.size() == _contentLength)
-			_allRead = true;
-	}
+	void	setContentLendht(size_t size);
+
+	void addBodyCount( const char *buf, ssize_t count );
 };
 
-Client::Client( int fd, int contentL ) : _fd( fd ), _allRead( false ), _contentLength( contentL )
-{
-	size_t headerlen = giveHeadAndBody.find("\r\n\r\n");
-	_header_len = headerlen;
-}
 
-Client::~Client()
-{
-}
