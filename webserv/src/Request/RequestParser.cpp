@@ -154,15 +154,14 @@ void	Request::parseRequest(std::string& req, Server& server)
     std::transform(headerinfo.begin(), headerinfo.end(), headerinfo.begin(), ::toupper);
     if ( !headerinfo.empty() ) // si y'a un content type.
     {
-
-        if (headerinfo == "APPLICATION/OCTET-STREAM") {
+        if (headerinfo == "APPLICATION/OCTET-STREAM" || headerinfo.find("MULTIPART/FORM-DATA;") != std::string::npos) {
             ssize_t	count = -1;
             while (true) {
-            char	buf[BUFSIZ];
+            char	buf[BUFSIZ * 4];
 			count = recv(this->_fd, buf, sizeof(buf), 0);
 				if (count <= 0)
                     break ;
-                    PRINTCLN(GRN, "recv");
+                PRINTCLN(GRN, "recv");
                 for (ssize_t i = 0; i < count; i++)
                 {
                     body.push_back(buf[i]);
@@ -172,6 +171,17 @@ void	Request::parseRequest(std::string& req, Server& server)
     }
 
     this->_body = body;
+
+    for (size_t i = 0; i < pos; i++)
+    {
+        std::cout << req[i];
+    }
+    std::cout << "\r\n\r\n";
+    for (size_t i = 0; i < this->_body.size(); i++)
+    {
+        std::cout << this->_body[i];
+    }
+    std::cout << "\r\n\r\n";
 
 
 
