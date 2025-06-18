@@ -6,6 +6,7 @@
 #include <iterator>
 #include <vector>
 #include <iostream>
+#include "Webserv.hpp"
 
 std::vector<std::string> splitFromChain( std::string str, std::string chain )
 {
@@ -24,10 +25,10 @@ std::vector<std::string> splitFromChain( std::string str, std::string chain )
 }
 
 //Request::
-std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBody )
+std::map<std::string, std::string> Request::extractDataFromChunkedBody( std::string oldBody )
 {
 	std::map<std::string, std::string> bodyData;
-	std::vector<std::string> explodedData = splitFromChain( oldBody, "--------------------------668049539896908373084707" );
+	std::vector<std::string> explodedData = splitFromChain( oldBody, "--" + _chunkedLimiter );
 
 	for ( size_t i = 1; i < explodedData.size() - 1; ++i )
 	{
@@ -42,7 +43,7 @@ std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBo
 		name = explodedData[i].substr( start, end - start );
 
 		start = explodedData[i].find( "\r\n\r\n" ) + 4; // On skip name="
-		end = explodedData[i].find( "\0" ) - 1;
+		end = explodedData[i].find_last_of( "\n" ); // se termine par un /n
 
 		value = explodedData[i].substr( start, end - start );
 
@@ -50,19 +51,4 @@ std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBo
 	}
 
 	return ( bodyData );
-}
-
-int main( void )
-{
-	std::string body;
-
-	body = "----------------------------668049539896908373084707\nContent-Disposition: form-data; name=\"username\"\r\n\r\nadmin\n----------------------------668049539896908373084707\nContent-Disposition: form-data; name=\"password\"\r\n\r\neliolebg\n----------------------------668049539896908373084707--";
-
-	std::map<std::string, std::string> data = extractDataFromChunkedBody( body );
-
-	for ( std::map<std::string, std::string>::iterator it = data.begin(); it != data.end(); ++it )
-	{
-		std::cout << it->first << " " << it->second << std::endl;
-
-	}
 }
