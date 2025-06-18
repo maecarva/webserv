@@ -20,3 +20,6 @@ location /dir/
 allow GET POST DELETE
 autoindex on
 
+location /cgi-bin/
+allow GET POST
+cgi_extension .py
