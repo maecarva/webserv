@@ -82,7 +82,7 @@ std::string		Response::handleUploadResponse() {
 	size_t max_body_size = this->getRequest().getServer().getConfig().getClientMaxBodySize();
 	std::string filepath = BuildFilePath( uploaddir, ressource );
 
-	const std::vector<unsigned char>& body = this->getRequest().getBody();
+	std::string body = this->getRequest().getBody();
 
 	std::cout << body.size() << std::endl;
 	std::cout << max_body_size << std::endl;
