@@ -9,7 +9,7 @@ private:
 	bool _allRead;
 	size_t	_header_len;
 	size_t	_contentLength;
-	std::string giveHeadAndBody;
+	std::string _giveHeadAndBody;
 
 public:
 	Client();
@@ -22,7 +22,8 @@ public:
 	size_t getContentLength() const;
 	std::string getThatBody();
 
-	void	setContentLendht(size_t size);
+	void	setContentLength(size_t size);
+	void	setAllRead( bool a );
 
 	void addBodyCount( const char *buf, ssize_t count );
 };

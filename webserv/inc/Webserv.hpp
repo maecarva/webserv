@@ -47,6 +47,7 @@
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)
+// #define DEBUG(i) (std::cout << "debug: " << i << std::endl)
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
 
