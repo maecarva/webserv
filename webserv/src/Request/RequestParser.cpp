@@ -47,6 +47,12 @@ std::string		Request::ExtractRessource(std::string& route) {
 	return ressource;
 }
 
+void	print_hex(const std::string& str) {
+	for (std::string::const_iterator i = str.begin(); i != str.end(); i++)
+	{
+		std::cout << *i << " = " << std::hex << (char)*i << std::endl;
+	}
+}
 
 void	Request::parseRequest(std::string& req, Server& server)
 {
@@ -151,9 +157,10 @@ void	Request::parseRequest(std::string& req, Server& server)
         _chunkedLimiter = limiter.substr( 31 );
         // std::cout << _chunkedLimiter << std::endl;
         std::map<std::string, std::string> result = this->extractDataFromChunkedBody( _body );
+		
         for ( std::map<std::string, std::string>::iterator it = result.begin(); it != result.end(); ++it )
         {
-            std::cout <<  it->first << ":" << it->second << std::endl;
+			std::cout << "'" << it->first << "''" << it->second << "'" << std::endl;
         }
     }
 
