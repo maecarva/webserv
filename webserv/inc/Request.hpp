@@ -62,6 +62,7 @@ private:
 	struct timeval 						_end;
 	int 								_fd;
 	std::string							_chunkedLimiter;
+	std::vector<std::pair<std::string, std::string> >	_query_args;
 
 	// response
     std::map<std::string, std::string>	_response_headers;
@@ -70,8 +71,8 @@ public:
     ~Request();
 
 	void			parseRequest(std::string& req, Server& server);
+	void			ParseQueryArgs();
 	void			logRequest(Server& server);
-	std::string		formatResponse(Server& server);
 	std::string		CreateResponse();
 	bool			ValidateURI(std::string&	route);
 	std::string		ExtractRessource(std::string& route);

@@ -39,7 +39,7 @@ std::string		Request::ExtractRessource(std::string& route) {
 		it2++;
 	}
 	std::string ressource = "";
-	while (it2 != route.end())
+	while (it2 != route.end() && *it2 != '?')
 	{
 		ressource.push_back(*it2);
 		it2++;
@@ -86,6 +86,9 @@ void	Request::parseRequest(std::string& req, Server& server)
 	Route matchedroute = this->FindCorrespondingRoute(splitted[1], &failed);
 	if (!failed)
 		return this->setError(HTTP_NOT_FOUND, __LINE__, __FILENAME__);
+
+	if (this->_route.find('?') != std::string::npos)
+		this->ParseQueryArgs();
 
 	this->_corresponding_route = matchedroute;
 	this->_clean_route = matchedroute.getName();
@@ -166,3 +169,36 @@ void	Request::parseRequest(std::string& req, Server& server)
 #endif
     (void)server;
 };
+
+
+
+void			Request::ParseQueryArgs() {
+	std::string route = this->_route;
+	size_t		pos = route.find('?');
+
+	if (pos == std::string::npos)
+		return ;
+	
+	std::string query = route.substr(pos + 1);
+	if (query == "")
+		return ;
+
+	std::vector<std::string> splitted = splitFromCharset(query, "&");
+
+	for (size_t i = 0; i < splitted.size(); i++)
+	{
+		std::string key;
+		std::string value;
+		pos = splitted[i].find('=');
+		key = splitted[i].substr(0, pos);
+		value = splitted[i].substr(pos + 1);
+		this->_query_args.push_back(std::make_pair(key, value));
+	}
+	
+
+	for (std::vector<std::pair<std::string, std::string> >::iterator i = this->_query_args.begin(); i != this->_query_args.end(); i++)
+	{
+		std::cout << (*i).first << ":" << (*i).second << std::endl;
+	}
+	
+}
