@@ -45,22 +45,23 @@ typedef enum e_METHOD {
 class Request
 {
 private:
-Server&													_server;
-	unsigned short										_response_code;
-    t_METHOD											_method;
-	Route												_corresponding_route;
-    std::string											_route;
-	std::string											_clean_route;
-	std::string											_ressource_requested;
-	std::string											_protocol;
-	std::string											_host;
-	bool												_keepalive;
-    std::map<std::string, std::string>					_headers;
-    int													_header_len;
-	std::string											_body;
-	struct timeval 										_start;
-	struct timeval 										_end;
-	int 												_fd;
+	Server&								_server;
+	unsigned short						_response_code;
+    t_METHOD							_method;
+	Route								_corresponding_route;
+    std::string							_route;
+	std::string							_clean_route;
+	std::string							_ressource_requested;
+	std::string							_protocol;
+	std::string							_host;
+	bool								_keepalive;
+    std::map<std::string, std::string>	_headers;
+    int									_header_len;
+	std::string							_body;
+	struct timeval 						_start;
+	struct timeval 						_end;
+	int 								_fd;
+	std::string							_chunkedLimiter;
 	std::vector<std::pair<std::string, std::string> >	_query_args;
 
 	// response
@@ -76,6 +77,7 @@ public:
 	bool			ValidateURI(std::string&	route);
 	std::string		ExtractRessource(std::string& route);
 	Route			FindCorrespondingRoute(std::string& requestedressource, bool *failed);
+	std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBody );
 
 
 	// * Setters
