@@ -131,7 +131,7 @@ void	Request::parseRequest(std::string& req, Server& server)
         }
     }
 
-    std::vector<unsigned char> body;
+    std::string body;
     size_t pos = req.find("\r\n\r\n");
     for (size_t i = pos + 4; i < req.size(); i++)
     {

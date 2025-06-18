@@ -89,7 +89,7 @@ std::string		Request::getRequestedRessource() {
 	return this->_ressource_requested;
 }
 
-std::vector<unsigned char>		Request::getBody() {
+std::string		Request::getBody() {
 	return this->_body;
 }
 

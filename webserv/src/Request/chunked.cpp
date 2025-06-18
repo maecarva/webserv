@@ -21,9 +21,10 @@ std::map<std::string, std::string> Request::extractDataFromChunkedBody( std::str
 	std::map<std::string, std::string> bodyData;
 
 	std::vector<std::string> explodedData = splitFromChain( oldBody, _chunkedLimiter );
-	while (  )
+	
+	for ( size_t i = 0; i < explodedData.size(); ++i )
 	{
-
+		if ( _chunkedLimiter = ;
 	}
 
 }

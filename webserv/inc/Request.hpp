@@ -94,7 +94,7 @@ public:
 	bool							isKeepAlive()	const;
 	Route							getCorrespondingRoute();
 	std::string						getRequestedRessource();
-	std::vector<unsigned char>		getBody();
+	std::string						getBody();
 };
 
 
