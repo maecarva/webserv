@@ -57,7 +57,7 @@ private:
 	bool								_keepalive;
     std::map<std::string, std::string>	_headers;
     int									_header_len;
-	std::vector<unsigned char>			_body;
+	std::string							_body;
 	struct timeval 						_start;
 	struct timeval 						_end;
 	int 								_fd;
