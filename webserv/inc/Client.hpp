@@ -5,11 +5,14 @@
 class Client
 {
 private:
-	int _fd;
-	bool _allRead;
-	size_t	_header_len;
-	size_t	_contentLength;
-	std::string _giveHeadAndBody;
+	int 			_fd;
+	bool 			_allRead;
+	size_t			_header_len;
+	size_t			_contentLength;
+	std::string 	_giveHeadAndBody;
+
+	bool        	_headerParsed;
+	size_t      	_bodyStart;
 
 public:
 	Client();
