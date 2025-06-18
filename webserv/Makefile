@@ -17,6 +17,7 @@ SRC		:=	main.cpp \
 			Server/Client.cpp \
 			Server/CreateServerPool.cpp \
 			Request/Request_GS.cpp \
+			Request/chunked.cpp \
 			Request/Request.cpp \
 			Request/RequestParser.cpp \
 			Request/RequestUtils.cpp \

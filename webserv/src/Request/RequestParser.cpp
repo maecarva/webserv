@@ -134,6 +134,7 @@ void	Request::parseRequest(std::string& req, Server& server)
         }
     }
 
+
     std::string body;
     size_t pos = req.find("\r\n\r\n");
     for (size_t i = pos + 4; i < req.size(); i++)
@@ -143,7 +144,18 @@ void	Request::parseRequest(std::string& req, Server& server)
     
     this->_body = body;
 
-
+    if ( request.find( "multipart/form-data; boundary=" ) != std::string::npos )
+    {
+        std::string limiter = this->_headers["CONTENT-TYPE:"];
+        // std:: cout << limiter << std::endl;
+        _chunkedLimiter = limiter.substr( 31 );
+        // std::cout << _chunkedLimiter << std::endl;
+        std::map<std::string, std::string> result = this->extractDataFromChunkedBody( _body );
+        for ( std::map<std::string, std::string>::iterator it = result.begin(); it != result.end(); ++it )
+        {
+            std::cout <<  it->first << ":" << it->second << std::endl;
+        }
+    }
 
 #ifdef DEBUG
     PRINTCLN(GRN, "PARSED = ");

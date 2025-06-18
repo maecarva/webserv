@@ -43,7 +43,7 @@ std::map<std::string, std::string> Request::extractDataFromChunkedBody( std::str
 		name = explodedData[i].substr( start, end - start );
 
 		start = explodedData[i].find( "\r\n\r\n" ) + 4; // On skip name="
-		end = explodedData[i].find_last_of( "\n" ); // se termine par un /n
+		end = explodedData[i].find_last_of( "\r\n" ); // se termine par un /n
 
 		value = explodedData[i].substr( start, end - start );
 

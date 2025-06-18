@@ -1,0 +1,116 @@
+[0;34m[DEBUG] [0m[18-05-2025 19:19:51] Creating Config
+uploads ./static_pages/dir/
+[0;32mCONFIG:[0m
+[0;34mSERVER_NAMES = [0m
+'hubert' 
+[0;34mHOST:PORT = [0m
+127.0.0.1:3001
+[0;34mERROR -> PAGE = [0m
+400 -> ./static_pages/error_pages/400.html
+404 -> ./static_pages/error_pages/404.html
+500 -> ./static_pages/error_pages/500.html
+[0;34mMax body size = [0m
+1073741824
+[0;34mROUTES = [0m
+
+[0;35m
+
+Path:[0m
+/
+[0;35mAllowed methods:[0m
+GET 
+[0;35mRoot directory:[0m
+./static_pages/dir/
+[0;35mAuto Index: [0mfalse
+[0;35mIndex file:[0m
+index.html
+[0;35mRedirection:[0m
+
+[0;35mUploads[0m
+false
+[0;35mCgi:[0m
+[0;35m
+
+Path:[0m
+/uploads/
+[0;35mAllowed methods:[0m
+GET POST DELETE 
+[0;35mRoot directory:[0m
+
+[0;35mAuto Index: [0mfalse
+[0;35mIndex file:[0m
+
+[0;35mRedirection:[0m
+
+[0;35mUploads[0m
+./static_pages/dir/
+[0;35mCgi:[0m
+[0;35m
+
+Path:[0m
+/dir/
+[0;35mAllowed methods:[0m
+GET POST DELETE 
+[0;35mRoot directory:[0m
+
+[0;35mAuto Index: [0mtrue
+[0;35mIndex file:[0m
+
+[0;35mRedirection:[0m
+
+[0;35mUploads[0m
+false
+[0;35mCgi:[0m
+[0;35m
+
+Path:[0m
+/cgi-bin/
+[0;35mAllowed methods:[0m
+GET POST 
+[0;35mRoot directory:[0m
+
+[0;35mAuto Index: [0mfalse
+[0;35mIndex file:[0m
+
+[0;35mRedirection:[0m
+
+[0;35mUploads[0m
+false
+[0;35mCgi:[0m
+
+
+[0;34m[DEBUG] [0m[18-05-2025 19:19:51] Server is listening on 127.0.0.1:3001
+REQUEST : 
+[0;31mPOST /dir/index.html HTTP/1.1
+user-agent: got (https://github.com/sindresorhus/got)
+content-type: multipart/form-data; boundary=--------------------------532908653607134434212315
+content-length: 494
+accept-encoding: gzip, deflate, br
+Host: localhost:3001
+Connection: close
+
+----------------------------532908653607134434212315
+Content-Disposition: form-data; name="leplusbeau"
+
+mael
+----------------------------532908653607134434212315
+Content-Disposition: form-data; name="age"
+
+24
+----------------------------532908653607134434212315
+Content-Disposition: form-data; name="nationalite"
+
+fr por
+----------------------------532908653607134434212315
+Content-Disposition: form-data; name="fiches"
+
+
+----------------------------532908653607134434212315--
+[0m
+age:24
+fiches:
+leplusbeau:mael
+nationalite:fr por
+[0;33m[WARNING] [0m[18-05-2025 19:19:55] Server: hubert POST /dir/index.html localhost:3001 close [0;33m404[0m 135 us
+[0;32m[INFO] [0m[18-05-2025 19:19:56] Stopping servers.
+[0;32m[INFO] [0m[18-05-2025 19:19:56] Closing server.
