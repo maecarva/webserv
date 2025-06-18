@@ -61,6 +61,7 @@ private:
 	struct timeval 						_start;
 	struct timeval 						_end;
 	int 								_fd;
+	std::string							_chunkedLimiter;
 
 	// response
     std::map<std::string, std::string>	_response_headers;
@@ -75,6 +76,7 @@ public:
 	bool			ValidateURI(std::string&	route);
 	std::string		ExtractRessource(std::string& route);
 	Route			FindCorrespondingRoute(std::string& requestedressource, bool *failed);
+	std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBody );
 
 
 	// * Setters

@@ -1,4 +1,11 @@
-#include "Webserv.hpp"
+// #include "Webserv.hpp"
+
+#include <string>
+#include <map>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+#include <iostream>
 
 std::vector<std::string> splitFromChain( std::string str, std::string chain )
 {
@@ -16,15 +23,46 @@ std::vector<std::string> splitFromChain( std::string str, std::string chain )
 	return ( result );
 }
 
-std::map<std::string, std::string> Request::extractDataFromChunkedBody( std::string oldBody )
+//Request::
+std::map<std::string, std::string> extractDataFromChunkedBody( std::string oldBody )
 {
 	std::map<std::string, std::string> bodyData;
+	std::vector<std::string> explodedData = splitFromChain( oldBody, "--------------------------668049539896908373084707" );
 
-	std::vector<std::string> explodedData = splitFromChain( oldBody, _chunkedLimiter );
-	
-	for ( size_t i = 0; i < explodedData.size(); ++i )
+	for ( size_t i = 1; i < explodedData.size() - 1; ++i )
 	{
-		if ( _chunkedLimiter = ;
+		std::string name;
+		std::string value;
+		size_t start;
+		size_t end;
+
+		start = explodedData[i].find( "name=\"" ) + 6; // On skip name="
+		end = explodedData[i].find( "\r\n\r\n" ) - 1; // On arrive a a fin -> ", on ne prend que jusqu'au dernier char donc -2.
+
+		name = explodedData[i].substr( start, end - start );
+
+		start = explodedData[i].find( "\r\n\r\n" ) + 4; // On skip name="
+		end = explodedData[i].find( "\0" ) - 1;
+		
+		value = explodedData[i].substr( start, end - start );
+
+		bodyData[name] = value;
 	}
 
+	return ( bodyData );
+}
+
+int main( void )
+{
+	std::string body;
+
+	body = "----------------------------668049539896908373084707\nContent-Disposition: form-data; name=\"username\"\r\n\r\nadmin\n----------------------------668049539896908373084707\nContent-Disposition: form-data; name=\"password\"\r\n\r\neliolebg\n----------------------------668049539896908373084707--";
+
+	std::map<std::string, std::string> data = extractDataFromChunkedBody( body );
+
+	for ( std::map<std::string, std::string>::iterator it = data.begin(); it != data.end(); ++it )
+	{
+		std::cout << it->first << " " << it->second << std::endl;
+
+	}
 }
