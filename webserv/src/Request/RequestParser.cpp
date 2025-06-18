@@ -182,8 +182,6 @@ void	Request::parseRequest(std::string& req, Server& server)
     (void)server;
 };
 
-
-
 void			Request::ParseQueryArgs() {
 	std::string route = this->_route;
 	size_t		pos = route.find('?');
@@ -205,12 +203,6 @@ void			Request::ParseQueryArgs() {
 		key = splitted[i].substr(0, pos);
 		value = splitted[i].substr(pos + 1);
 		this->_query_args.push_back(std::make_pair(key, value));
-	}
-	
-
-	for (std::vector<std::pair<std::string, std::string> >::iterator i = this->_query_args.begin(); i != this->_query_args.end(); i++)
-	{
-		std::cout << (*i).first << ":" << (*i).second << std::endl;
 	}
 	
 }
