@@ -177,59 +177,51 @@ void Server::handler()
 				{
 					char buf[BUFSIZ];
 					ssize_t count = recv(fd, buf, sizeof(buf) - 1, 0); // -1 pour laisser place au \0
-					
-					if (count < 0)
+
+					if (count > 0)
 					{
-						// if (errno == EAGAIN || errno == EWOULDBLOCK) //! on a pas le droit hartung 
-						// {
-						// 	// Socket non-bloquant : pas de données disponibles pour le moment
-						// 	// On continue à essayer ou on sort selon la logique métier
-						// 	//sleep(1);
-						// 	continue;     // Continuer à essayer au lieu de break
-						// }
-						// else
-						// {
-						// 	std::perror("recv failed");
-						// 	closed = true;
-						// 	break;
-						// }
+						buf[count] = '\0';
+						// std::cout << buf << std::endl;
+						std::string buffer(buf, count); // Utiliser le constructeur avec taille
+						
+						// Recherche du Content-Length si pas encore trouvé
+						if (this->_clientBuffers[fd].getContentLength() == 0)
+						{
+							size_t pos = buffer.find("Content-Length:"); // Attention à la casse
+							if (pos == std::string::npos)
+								pos = buffer.find("content-length:");
+							
+							if (pos != std::string::npos)
+							{
+								// Trouver le début du nombre
+								size_t start = buffer.find(':', pos) + 1;
+								while (start < buffer.size() && isspace(buffer[start])) start++; // Skip whitespace
+								
+								long len = strtol(buffer.c_str() + start, NULL, 10);
+								this->_clientBuffers[fd].setContentLength(len); // Correction du nom de méthode
+							}
+						}
+						
+						// Ajouter les données reçues
+						this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
+						
+						// Vérifier si on a tout lu
+						if (this->_clientBuffers[fd].getAllRead())
+						{
+							break;
+						}
 						continue ;
 					}
-					else if (count == 0)
-					{
-						// Connexion fermée par le serveur
+					else if (count == 0) {
 						closed = true;
 						break;
-					}
-
-					buf[count] = '\0';
-					// std::cout << buf << std::endl;
-					std::string buffer(buf, count); // Utiliser le constructeur avec taille
-					
-					// Recherche du Content-Length si pas encore trouvé
-					if (this->_clientBuffers[fd].getContentLength() == 0)
-					{
-						size_t pos = buffer.find("Content-Length:"); // Attention à la casse
-						if (pos == std::string::npos)
-							pos = buffer.find("content-length:");
-						
-						if (pos != std::string::npos)
-						{
-							// Trouver le début du nombre
-							size_t start = buffer.find(':', pos) + 1;
-							while (start < buffer.size() && isspace(buffer[start])) start++; // Skip whitespace
-							
-							long len = strtol(buffer.c_str() + start, NULL, 10);
-							this->_clientBuffers[fd].setContentLength(len); // Correction du nom de méthode
+					} else {
+						if (errno == EAGAIN || errno == EWOULDBLOCK) {
+						break;
 						}
-					}
-					
-					// Ajouter les données reçues
-					this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
-					
-					// Vérifier si on a tout lu
-					if (this->_clientBuffers[fd].getAllRead())
-					{
+						// véritable erreur réseau
+						std::perror("recv failed");
+						closed = true;
 						break;
 					}
 				}
