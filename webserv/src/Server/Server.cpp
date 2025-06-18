@@ -176,11 +176,17 @@ void Server::handler()
 				while (true)
 				{
 					char buf[BUFSIZ];
-					ssize_t count = recv(fd, buf, sizeof(buf), 0);
+					ssize_t count = recv(fd, buf, sizeof(buf) - 1, 0); // -1 pour laisser place au \0
+					
 					if (count < 0)
 					{
-						if (errno == EAGAIN || errno == EWOULDBLOCK) // ! forbidden function call
-							break;
+						if (errno == EAGAIN || errno == EWOULDBLOCK) //! on a pas le droit hartung 
+						{
+							// Socket non-bloquant : pas de données disponibles pour le moment
+							// On continue à essayer ou on sort selon la logique métier
+							
+							continue;     // Continuer à essayer au lieu de break
+						}
 						else
 						{
 							std::perror("recv failed");
@@ -190,37 +196,40 @@ void Server::handler()
 					}
 					else if (count == 0)
 					{
+						// Connexion fermée par le serveur
 						closed = true;
 						break;
 					}
-					else // handle bytes read
-					{
-						std::string buffer = buf;
-						if (this->_clientBuffers[fd].getContentLength() == 0)
-						{
 
-							size_t pos = buffer.find("content-length:");
-							if ( pos != std::string::npos )
-							{
-								long len = strtol(buffer.c_str() + pos + 16, NULL, 10);
-								this->_clientBuffers[fd].setContentLendht(len);
-							}
-						}
-						if ( this->_clientBuffers[fd].getContentLength() == 0 )
+					buf[count] = '\0';
+					// std::cout << buf << std::endl;
+					std::string buffer(buf, count); // Utiliser le constructeur avec taille
+					
+					// Recherche du Content-Length si pas encore trouvé
+					if (this->_clientBuffers[fd].getContentLength() == 0)
+					{
+						size_t pos = buffer.find("Content-Length:"); // Attention à la casse
+						if (pos == std::string::npos)
+							pos = buffer.find("content-length:");
+						
+						if (pos != std::string::npos)
 						{
-							this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
-							bzero(buf, BUFSIZ);
-							this->_clientBuffers[fd].setAllRead( true );
-							break;
+							// Trouver le début du nombre
+							size_t start = buffer.find(':', pos) + 1;
+							while (start < buffer.size() && isspace(buffer[start])) start++; // Skip whitespace
+							
+							long len = strtol(buffer.c_str() + start, NULL, 10);
+							this->_clientBuffers[fd].setContentLength(len); // Correction du nom de méthode
 						}
-						else
-						{
-							this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
-							bzero(buf, BUFSIZ);
-						}
-						// PRINTCLN(GRN, "BODYCOUNT !");
-						// std::cout << buffer << std::endl;
-						// PRINTCLN(GRN, "-------------");
+					}
+					
+					// Ajouter les données reçues
+					this->_clientBuffers[fd].addBodyCount(buffer.c_str(), buffer.size());
+					
+					// Vérifier si on a tout lu
+					if (this->_clientBuffers[fd].getAllRead())
+					{
+						break;
 					}
 				}
 
@@ -236,7 +245,7 @@ void Server::handler()
 				else
 				{
 					if (this->_clientBuffers[fd].getAllRead()) {
-						PRINTLN( "VAS MANGER TES GRANBDS MRTS6" );
+						// PRINTLN( "VAS MANGER TES GRANBDS MRTS6" );
 						Request req = Request(*this, fd);
 
 						// Respond to client
