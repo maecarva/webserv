@@ -52,8 +52,8 @@ void	Request::parseRequest(std::string& req, Server& server)
 {
 // #ifdef DEBUG
 	//std::cout << "request size: " << req << std::endl;
-	// std::cout << "REQUEST : \n";
-	// PRINTCLN(RED, req.c_str());
+	std::cout << "REQUEST : \n";
+	PRINTCLN(RED, req.c_str());
 // #endif
 
     this->_response_code = HTTP_OK;

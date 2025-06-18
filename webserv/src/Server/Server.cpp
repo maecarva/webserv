@@ -180,19 +180,20 @@ void Server::handler()
 					
 					if (count < 0)
 					{
-						if (errno == EAGAIN || errno == EWOULDBLOCK) //! on a pas le droit hartung 
-						{
-							// Socket non-bloquant : pas de données disponibles pour le moment
-							// On continue à essayer ou on sort selon la logique métier
-							
-							continue;     // Continuer à essayer au lieu de break
-						}
-						else
-						{
-							std::perror("recv failed");
-							closed = true;
-							break;
-						}
+						// if (errno == EAGAIN || errno == EWOULDBLOCK) //! on a pas le droit hartung 
+						// {
+						// 	// Socket non-bloquant : pas de données disponibles pour le moment
+						// 	// On continue à essayer ou on sort selon la logique métier
+						// 	//sleep(1);
+						// 	continue;     // Continuer à essayer au lieu de break
+						// }
+						// else
+						// {
+						// 	std::perror("recv failed");
+						// 	closed = true;
+						// 	break;
+						// }
+						continue ;
 					}
 					else if (count == 0)
 					{
