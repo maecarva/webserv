@@ -5,7 +5,6 @@ error_pages 404 ./static_pages/error_pages/404.html
 error_pages 400 ./static_pages/error_pages/400.html
 error_pages 500 ./static_pages/error_pages/500.html
 client_max_body_size 1073741824
-
 location /
 allow GET
 root ./static_pages/
