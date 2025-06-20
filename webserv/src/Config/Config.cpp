@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Config::Config( void ) : _client_max_body_size( -1 )
+Config::Config( void ) : _client_max_body_size( CLIENT_MAX_BODY_SIZE_O )
 {
 	Logger::debug("Creating Config");
 }
@@ -78,6 +78,7 @@ bool Config::isValidHostPort( const std::string &host, const std::string &port )
 	if ( !_host.empty() && !_port.empty() )
 	{
 		std::cerr << "host:port is already filled." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -92,6 +93,7 @@ bool Config::isValidHostPort( const std::string &host, const std::string &port )
 	if ( err != 0 )
 	{
 		std::cerr << "getaddrinfo error: " << gai_strerror( err ) << '.' << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 	freeaddrinfo( res );
@@ -108,12 +110,14 @@ void Config::ParseServerConfigListen( const std::vector<std::string> &lineSplitt
 	if ( lineSplitted.size() > 2 )
 	{
 		std::cerr << "listen: Too many arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
 	if ( !_host.empty() )
 	{
 		std::cerr << "listen: already filled." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -134,6 +138,7 @@ bool Config::isValidName( const std::string &name )
 	if ( name.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
 	{
 		std::cerr << "Invalid server name: \'" << name << "\'." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -142,6 +147,7 @@ bool Config::isValidName( const std::string &name )
 		if ( _server_names[i] == name )
 		{
 			std::cerr << "Server already has name: \'" << name << "\'." << std::endl;
+			throw parsingError();
 			return ( false );
 		}
 	}
@@ -160,14 +166,14 @@ void Config::ParseServerConfigName( const std::vector<std::string> &lineSplitted
 
 
 // Error Pages
-bool Config::isValidPage( const std::string &page )
+bool Config::isValidPage( const std::string &page )      //? a gerer
 {
-	// if ( access( page.c_str(), R_OK | X_OK ) != 0 )
-	// {
-	// 	perror( page.c_str() );
-	// 	return ( false );
-	// }
-	(void)page;
+	if ( access( page.c_str(), R_OK ) != 0 )
+	{
+		perror( page.c_str() );
+		throw parsingError();
+		return ( false );
+	}
 
 	return ( true );
 }
@@ -177,6 +183,7 @@ bool Config::isValidErrorCode( const std::string &errorCode )
 	if ( errorCode.size() != 3 )
 	{
 		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -184,6 +191,7 @@ bool Config::isValidErrorCode( const std::string &errorCode )
 	if ( nbErrorCode < 400 || nbErrorCode > 599 )
 	{
 		std::cerr << "Invalid error_code \'" << errorCode << "\'." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -195,6 +203,7 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 	if ( lineSplitted.size() < 3 )
 	{
 		std::cerr << "error_pages: Not enough arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -203,6 +212,7 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 	if ( !this->isValidPage( page ) )
 	{
 		std::cerr << "Invalid error_page \'" << page << "\'." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -215,7 +225,10 @@ void Config::ParseServerConfigErrorPages( const std::vector<std::string> &lineSp
 			if ( _error_pages.find( code ) == _error_pages.end() ) //  N'est pas dedans
 				_error_pages[code] = page;
 			else
+			{
 				std::cerr << "error_pages: code \'" << code << "\' is already set." << std::endl;
+				throw parsingError();
+			}
 		}
 	}
 }
@@ -228,6 +241,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	if ( client_max_body_size.size() > 10 )
 	{
 		std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -239,6 +253,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	if ( nb <= 0 )
 	{
 		std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -248,6 +263,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 		if ( nb > CLIENT_MAX_BODY_SIZE_O )
 		{
 			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+			throw parsingError();
 			return ( false );
 		}
 		_client_max_body_size = (  nb );
@@ -260,6 +276,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 		if ( nb > CLIENT_MAX_BODY_SIZE_KO )
 		{
 			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+			throw parsingError();
 			return ( false );
 		}
 		_client_max_body_size = ( ( int ) nb ) * 1024;
@@ -272,6 +289,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 		if ( nb > CLIENT_MAX_BODY_SIZE_MO )
 		{
 			std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+			throw parsingError();
 			return ( false );
 		}
 		_client_max_body_size = ( ( int ) nb ) * 1024 * 1024;
@@ -279,6 +297,7 @@ bool Config::isValidClientMaxBodySize( const std::string &client_max_body_size )
 	}
 	// Cas autre
 	std::cerr << "Invalid client_max_body_size \'" << client_max_body_size << '\'' << std::endl;
+	throw parsingError();
 	return ( false );
 }
 
@@ -287,12 +306,7 @@ void Config::ParseServerConfigClientMaxBodySize( const std::vector<std::string> 
 	if ( lineSplitted.size() > 2 )
 	{
 		std::cerr << "client_max_body_size: Too many arguments." << std::endl;
-		return ;
-	}
-
-	if ( _client_max_body_size != -1 )
-	{
-		std::cerr << "client_max_body_size is already set." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -316,6 +330,7 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		if ( lineSplitted.size() == 1 )
 		{
 			std::cerr << "Invalid arguments after directive \'" << lineSplitted[0] << '\'' << std::endl;
+			throw parsingError();
 			continue;
 		}
 
@@ -337,6 +352,7 @@ bool Config::ParseServerConfig( std::ifstream &configFile )
 		else
 		{
 			std::cerr << "Invalid Server directive \'" << line << "\'." << std::endl;
+			throw parsingError();
 			break;
 		}
 
@@ -387,4 +403,15 @@ void	Config::PrintConfig(std::vector<Config>& configs) {
 		NEWLINE;
 	}
 	
+}
+
+bool Config::checkConfig( void )
+{
+	if ( _host.empty() ) // Donc port est empty aussi
+	{
+		std::cerr << "Invalid Config. Not Host/port." << std::endl;
+		return ( false );
+	}
+
+	return ( true );
 }

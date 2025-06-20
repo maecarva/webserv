@@ -44,12 +44,18 @@
 #include "Response.hpp"
 #include "Route.hpp"
 #include "Client.hpp"
+#include <exception>
 
 #define SPACE << " "
 #define NEWLINE (std::cout << std::endl)
 // #define DEBUG(i) (std::cout << "debug: " << i << std::endl)
 
 #define __FILENAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+
+class parsingError : public std::exception {
+public:
+    const char* what() const throw() { return ( NULL ); }
+};
 
 typedef std::string string;
 

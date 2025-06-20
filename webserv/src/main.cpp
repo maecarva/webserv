@@ -27,7 +27,25 @@ int main( int ac, char **av , char **envp)
 	env = envp;
 
 	std::ifstream infile( av[1] );
-	std::vector<Config> vec = CreateConfigs(infile);
+	std::vector<Config> vec;
+
+	try {
+		vec = CreateConfigs(infile);
+		if ( vec.size() == 0)
+		{
+			std::cerr << "No config" << std::endl;
+			throw parsingError();
+		}
+		for ( size_t i = 0; i < vec.size(); ++i )
+		{
+			if ( !vec[i].checkConfig() )
+				throw parsingError();
+		}
+
+	} catch ( ... )
+	{
+		return ( -1 );
+	}
 
 	Config::PrintConfig(vec);
 

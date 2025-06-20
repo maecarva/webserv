@@ -42,6 +42,7 @@ bool Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSpli
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "locate: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -63,6 +64,7 @@ bool Route::isValidMethod( const std::string &method )
 	if ( method.find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
 	{
 		std::cerr << "Invalid route method: \'" << method << "\'." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
@@ -71,6 +73,7 @@ bool Route::isValidMethod( const std::string &method )
 		if ( _allowed_methods[i] == method )
 		{
 			std::cerr << "Route already has method: \'" << method << "\'." << std::endl;
+			throw parsingError();
 			return ( false );
 		}
 	}
@@ -97,12 +100,14 @@ bool Route::isValidRoot( const std::string &root )
 	if ( stat( root.c_str(), &info ) != 0 ) // Verifie si le dossier existe et s'il y'a un erreur d'accès.
 	{
 		std::cerr << "Root: \'" << root << "\' does not exist." << std::endl;
+		throw parsingError();
 		return ( false );
 	}
 
 	if ( !( info.st_mode & S_IFDIR ) ) // Verifie si c'est un dossier
 	{
 		std::cerr << "Root: \'" << root << "\' is not a directory." << std::endl;
+		throw parsingError();
 		return ( false ); // Ce n'est pas un dossier
 	}
 
@@ -120,6 +125,7 @@ void Route::ParseServerConfigRouteRoot( const std::vector<std::string> &lineSpli
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Root: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -135,6 +141,7 @@ void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lin
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Autoindex: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -145,7 +152,10 @@ void Route::ParseServerConfigRouteAutoindex( const std::vector<std::string> &lin
 		_autoindex = false;
 
 	else
+	{
 		std::cerr << "AutoIndex: \'" << lineSplitted[1] << "\' is Invalid." << std::endl;
+		throw parsingError();
+	}
 }
 
 // Index
@@ -154,6 +164,7 @@ void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSpl
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Index: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -173,6 +184,7 @@ void Route::ParseServerConfigRouteReturn( const std::vector<std::string> &lineSp
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Return: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 	_redirect = true;
@@ -183,10 +195,11 @@ void Route::ParseServerConfigRouteReturn( const std::vector<std::string> &lineSp
 // Uploads
 void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineSplitted )
 {
-	std::cout << lineSplitted[0] SPACE << lineSplitted[1] << std::endl;
+	// std::cout << lineSplitted[0] SPACE << lineSplitted[1] << std::endl;
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "uploads: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -217,21 +230,23 @@ bool Route::isValidCommand( const std::string &command )
 void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted )
 {
 
-	for (size_t i = 0; i < lineSplitted.size(); i++)
-	{
-		std::cout << "linesplitted " << i << " : " << lineSplitted[i] << std::endl;
-	}
+	// for (size_t i = 0; i < lineSplitted.size(); i++)
+	// {
+	// 	std::cout << "linesplitted " << i << " : " << lineSplitted[i] << std::endl;
+	// }
 	
 
 	if ( lineSplitted.size() < 3 )
 	{
 		std::cerr << "cgi: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
 	if ( _cgi.find( lineSplitted[1] ) != _cgi.end() )
 	{
 		std::cerr << "cgi: Extension already exists" << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -240,6 +255,7 @@ void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplit
 	if ( !this->isValidExtension( extension ) )
 	{
 		std::cerr << "cgi: Invalid extension: " << extension << std::endl;
+		throw parsingError();
 		return;
 	}
 
@@ -248,6 +264,7 @@ void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplit
 	if ( !this->isValidCommand( command ) )
 	{
 		std::cerr << "cgi: Invalid command: " << command << std::endl;
+		throw parsingError();
 		return;
 	}
 
@@ -265,12 +282,15 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 	if ( lineSplitted.size() != 2 )
 	{
 		std::cerr << "Location: Invalid number of arguments." << std::endl;
+		throw parsingError();
 		// Skip tous les elements de la route
 		return ;
 	}
 
 	if ( !route.ParseServerConfigRouteName( lineSplitted ) ) //! renvoyer un booleen.
 	{
+		std::cerr << "Invalid Route Name." << std::endl;
+		throw parsingError();
 		return ;
 	}
 
@@ -284,6 +304,7 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 		if ( lineSplitted.size() == 1 )
 		{
 			std::cerr << "Invalid arguments after directive \'" << lineSplitted[0] << '\'' << std::endl;
+			throw parsingError();
 			continue;
 		}
 
@@ -311,6 +332,7 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 		else
 		{
 			std::cerr << "Invalid Route directive \'" << line << "\'." << std::endl;
+			throw parsingError();
 			break;
 		}
 	}
