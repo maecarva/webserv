@@ -24,7 +24,8 @@ std::vector<Config> CreateConfigs( std::ifstream &configFile )
 
 		else
 		{
-			std::cerr << "Invalid ta mere" << std::endl;
+			std::cerr << "Cannot be parsed" << std::endl;
+			throw parsingError();
 			break;
 		}
 	}

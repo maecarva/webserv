@@ -65,8 +65,10 @@ public:
 	bool ParseServerConfig( std::ifstream &configFile );
 	static void PrintConfig(std::vector<Config>& configs);
 
+// Check
+	bool checkConfig( void );
 
-	// Getters
+// Getters
 	std::vector<std::string> getServerNames( void ) const;
 	std::string getListen( void ) const;
 	std::string getServerHost( void ) const;
