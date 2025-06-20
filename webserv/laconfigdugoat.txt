@@ -7,7 +7,7 @@ error_pages 500 ./static_pages/error_pages/500.html
 client_max_body_size 1073741824
 location /
 allow GET
-root ./static_pages/dir/
+root ./static_pages/
 autoindex off
 index index.html
 

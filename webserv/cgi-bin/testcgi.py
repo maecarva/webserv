@@ -26,4 +26,4 @@ body = """
 print ("Content-type: text/html\r")
 print ("Content-Length: %d\r" % len(body))
 print ("\r")
-print(body)
+print (body)

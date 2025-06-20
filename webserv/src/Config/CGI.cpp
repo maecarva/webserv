@@ -47,7 +47,7 @@ std::string executeCgi( std::vector< std::string > command, char **envp )
 		close( pipe_in[0] ); close( pipe_out[1] );
 
 		execve( argv[0], argv, envp );
-		perror( "excve" );
+		perror( "execve" );
 		delete[] argv;
 		exit( 1 ); // Faire gaffe en gerant les leaks
 	}
@@ -61,7 +61,7 @@ std::string executeCgi( std::vector< std::string > command, char **envp )
 		ssize_t bytesRead;
 		while ( ( bytesRead = read( pipe_out[0], buffer, sizeof( buffer ) ) ) > 0)
 		{
-			buf.append(buffer);
+			buf.append(buffer, bytesRead);
 		}
 
 		close( pipe_out[0] );
