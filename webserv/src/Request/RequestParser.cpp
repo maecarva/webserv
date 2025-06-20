@@ -150,6 +150,7 @@ void	Request::parseRequest(std::string& req, Server& server)
     
     this->_body = body;
 
+	//std::cout << "body : " << body << std::endl;
     if ( request.find( "multipart/form-data; boundary=" ) != std::string::npos )
     {
         std::string limiter = this->_headers["CONTENT-TYPE:"];

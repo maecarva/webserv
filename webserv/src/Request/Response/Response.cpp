@@ -187,6 +187,7 @@ std::string		Response::handleCGI() {
 	oss << "HTTP/1.1 ";
 	oss << HTTP_OK << " " << HttpMessageByCode(HTTP_OK) << "\r\n";
 	oss << cgireturn;
+
 	return oss.str();
 }
 

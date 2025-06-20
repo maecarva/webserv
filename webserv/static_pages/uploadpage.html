@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Upload Page</title>
+</head>
+<body>
+  <form id="uploadForm">
+    <input type="file" id="fileInput" name="file">
+    <button type="submit">Envoyer</button>
+  </form>
+
+  <script>
+    document
+      .getElementById("uploadForm")
+      .addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const input = document.getElementById("fileInput");
+        if (input.files.length === 0) {
+          alert("Veuillez sélectionner un fichier.");
+          return;
+        }
+
+        const file = input.files[0];
+        try {
+          const response = await fetch("http://127.0.0.1:3001/uploads/" + document.getElementById("fileInput").value.substr(12, 500), {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/octet-stream"
+            },
+            body: file
+          });
+
+          if (response.ok) {
+            const text = await response.text();
+            alert("Réponse du serveur :", text);
+          } else {
+            console.error(
+              `Erreur serveur : ${response.status} ${response.statusText}`
+            );
+          }
+        } catch (err) {
+          console.error("Erreur réseau :", err);
+        }
+      });
+  </script>
+</body>
+</html>
