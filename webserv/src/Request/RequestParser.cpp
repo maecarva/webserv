@@ -59,7 +59,7 @@ void	Request::parseRequest(std::string& req, Server& server)
 // #ifdef DEBUG
 	//std::cout << "request size: " << req << std::endl;
 	std::cout << "REQUEST : \n";
-	PRINTCLN(RED, req.c_str());
+	PRINTCLN(MAG, req.c_str());
 // #endif
 
     this->_response_code = HTTP_OK;
@@ -153,16 +153,38 @@ void	Request::parseRequest(std::string& req, Server& server)
     if ( request.find( "multipart/form-data; boundary=" ) != std::string::npos )
     {
         std::string limiter = this->_headers["CONTENT-TYPE:"];
-        // std:: cout << limiter << std::endl;
         _chunkedLimiter = limiter.substr( 31 );
-        // std::cout << _chunkedLimiter << std::endl;
         std::map<std::string, std::string> result = this->extractDataFromChunkedBody( _body );
 		
-        for ( std::map<std::string, std::string>::iterator it = result.begin(); it != result.end(); ++it )
-        {
-			std::cout << "'" << it->first << "''" << it->second << "'" << std::endl;
-        }
+        // for ( std::map<std::string, std::string>::iterator it = result.begin(); it != result.end(); ++it )
+        // {
+		// 	std::cout << "'" << it->first << "''" << it->second << "'" << std::endl;
+        // }
     }
+
+	std::string content_type = this->_headers["CONTENT-TYPE:"];
+    std::transform(content_type.begin(), content_type.end(), content_type.begin(), ::toupper);
+	if (content_type == "APPLICATION/X-WWW-FORM-URLENCODED")
+	{
+		if (this->_method == GET)
+		{
+			size_t pos = this->_route.find('?');
+			if (pos != std::string::npos)
+				this->_query_string = this->_route.substr(pos + 1);
+		}
+		else if (this->_method == POST)
+		{
+			this->_query_string = this->_body;
+		}
+	}
+	else {
+		if (this->_method == GET && this->_route.find('?') != std::string::npos)
+		{
+			size_t pos = this->_route.find('?');
+			if (pos != std::string::npos)
+				this->_query_string = this->_route.substr(pos + 1);
+		}
+	}
 
 #ifdef DEBUG
     PRINTCLN(GRN, "PARSED = ");

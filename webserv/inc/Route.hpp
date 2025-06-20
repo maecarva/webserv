@@ -16,7 +16,9 @@ private:
 	std::string 										_return;
 	bool 												_uploads;
 	std::string											_uploadfolder;
-	std::map< std::string, std::vector<std::string> > 	_cgi;
+	bool												_iscgi;
+	std::map<std::string, std::string >					_cgi;
+			// .py /usr/bin/python3
 	bool												_directory_listing;
 
 public:
@@ -60,11 +62,13 @@ public:
 	std::string					getIndexFile();
 	bool						getDirectoryListing();
 	std::string					getUploadDir();
+	std::map<std::string, std::string > getValidsCGI();
 
 
 	void						setRootDir(std::string str);
  
 	bool						isRedirect();
+	bool						isCGI();
 	std::string					getReturn();
 	bool						getUploads( void );
 

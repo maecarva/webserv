@@ -93,7 +93,7 @@ std::string		Response::handleUploadResponse() {
 		if ( !ofs.is_open() )
 		{
 			std::cerr << "Erreur: impossible d'écrire dans " << filepath << std::endl;
-			return ( ErrorResponse(413) );
+			return ( ErrorResponse(500) );
 		}
 		
 		ofs.write( reinterpret_cast<const char*>( body.data() ), body.size() );
@@ -117,6 +117,78 @@ std::string		Response::handleUploadResponse() {
 	return oss.str();
 };
 
+
+// * check extention with _cgi OK
+// * join requested ressource + dir OK
+// * construct env QUERY_STRING
+// * execve
+// * format response
+
+extern char **env;
+
+std::string		Response::handleCGI() {
+	Request& req = this->getRequest();
+	std::string extension = "";
+	std::string requested_ressource = req.getRequestedRessource();
+	std::string	cgi_program;
+	std::string scriptpath;
+	std::string	query_string_env;
+
+	for (std::string::iterator i = requested_ressource.end() - 1; i != requested_ressource.begin(); i--)
+	{
+		extension.push_back(*i);
+		if (*i == '.')
+			break ;
+	}
+	std::reverse(extension.begin(), extension.end());
+
+	std::map<std::string, std::string> mapeuh = this->getRequest().getCorrespondingRoute().getValidsCGI();
+	cgi_program = mapeuh[extension];
+
+	if (cgi_program.empty())
+		return ErrorResponse(HTTP_BAD_REQUEST);
+
+	scriptpath = BuildFilePath(this->getRequest().getCorrespondingRoute().getRootDir(), requested_ressource);
+
+	query_string_env = "QUERY_STRING=" + req.getQueryString();
+
+	//std::cout << query_string_env << std::endl;
+
+
+	size_t envsize = 0;
+	while (env[envsize])
+		envsize++;
+	
+	envsize++;
+
+	char **new_env = new char*[envsize + 1];
+	size_t i = 0;
+	while (i < envsize - 1)
+	{
+		new_env[i] = strdup(env[i]);
+		i++;
+	}
+	new_env[i] = strdup(query_string_env.c_str());
+	new_env[i + 1] = NULL;
+
+
+	std::vector<std::string> argv;
+	argv.push_back(cgi_program);
+	argv.push_back(scriptpath);
+
+	std::string cgireturn = executeCgi(argv, new_env);
+
+	i = 0;
+	while (new_env[i])
+		delete new_env[i++];
+	delete[] new_env;
+
+	std::ostringstream oss;
+	oss << "HTTP/1.1 ";
+	oss << HTTP_OK << " " << HttpMessageByCode(HTTP_OK) << "\r\n";
+	oss << cgireturn;
+	return oss.str();
+}
 
 
 // // Cgi
@@ -154,7 +226,11 @@ std::string	Response::BuildResponse()
 	}
 
 	// format
-	if (this->getRequest().getCorrespondingRoute().isRedirect())
+	if (this->getRequest().getCorrespondingRoute().isCGI())
+	{
+		return this->handleCGI();
+	}
+	else if (this->getRequest().getCorrespondingRoute().isRedirect())
 		return this->formatRedirectResponse();
 	else if (this->getRequest().getCorrespondingRoute().getUploads())
 		return this->handleUploadResponse();

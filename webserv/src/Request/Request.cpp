@@ -15,6 +15,7 @@ Request::Request(Server& server, int fd) :
 	_start(),
 	_end(),
 	_fd(fd),
+	_query_string(),
 	_response_headers()
 {
 	gettimeofday(&this->_start, NULL);

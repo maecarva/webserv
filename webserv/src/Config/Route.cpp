@@ -1,7 +1,7 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Route::Route( void ) : _autoindex( false ), _redirect( false ), _uploads( false ), _directory_listing( true )
+Route::Route( void ) : _autoindex( false ), _redirect( false ), _uploads( false ), _iscgi (false), _directory_listing( false )
 {}
 
 Route::~Route( void ) {}
@@ -17,6 +17,7 @@ Route&	Route::operator=(const Route& route) {
 		_return = route._return;
 		_uploads = route._uploads;
 		_uploadfolder = route._uploadfolder;
+		_iscgi = route._iscgi;
 		_cgi = route._cgi;
 		_directory_listing = route._directory_listing;
 	}
@@ -30,6 +31,7 @@ Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._a
 		,_return(route._return)
 		,_uploads(route._uploads)
 		,_uploadfolder(route._uploadfolder)
+		,_iscgi(route._iscgi)
 		,_cgi(route._cgi)
 		,_directory_listing(route._directory_listing)
 {}
@@ -104,11 +106,11 @@ bool Route::isValidRoot( const std::string &root )
 		return ( false ); // Ce n'est pas un dossier
 	}
 
-	if ( access( root.c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
-	{
-		std::cerr << "Root: \'" << root << "\' has an invalid access." << std::endl;
-		return ( false );
-	}
+	// if ( access( root.c_str(), R_OK | X_OK ) != 0 )  // Vérifie les droits d'accès (lecture + exécution)
+	// {
+	// 	std::cerr << "Root: \'" << root << "\' has an invalid access." << std::endl;
+	// 	return ( false );
+	// }
 
 	return ( true );
 }
@@ -198,7 +200,7 @@ void Route::ParseServerConfigRouteUploads( const std::vector<std::string> &lineS
 // Cgi
 bool Route::isValidExtension( const std::string &extension )
 {
-	if ( extension.empty() || extension.size() < 2 || extension.find_first_of( FORBIDDEN_NAME_CHARACTERS ) == std::string::npos )
+	if ( extension.empty() || extension[0] != '.' || extension.size() < 2 )
 		return ( false );
 
 	return ( true );
@@ -214,6 +216,13 @@ bool Route::isValidCommand( const std::string &command )
 
 void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted )
 {
+
+	for (size_t i = 0; i < lineSplitted.size(); i++)
+	{
+		std::cout << "linesplitted " << i << " : " << lineSplitted[i] << std::endl;
+	}
+	
+
 	if ( lineSplitted.size() < 3 )
 	{
 		std::cerr << "cgi: Invalid number of arguments." << std::endl;
@@ -228,23 +237,23 @@ void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplit
 
 	std::string extension = lineSplitted[1];
 
-	if ( this->isValidExtension( extension ) )
+	if ( !this->isValidExtension( extension ) )
 	{
 		std::cerr << "cgi: Invalid extension: " << extension << std::endl;
 		return;
 	}
 
-	if ( this->isValidCommand( lineSplitted[2] ) )
+	std::string command = lineSplitted[2];
+
+	if ( !this->isValidCommand( command ) )
 	{
-		std::cerr << "cgi: Invalid command: " << extension << std::endl;
+		std::cerr << "cgi: Invalid command: " << command << std::endl;
 		return;
 	}
 
-	std::vector<std::string> command;
-	for ( size_t i = 2; i < lineSplitted.size(); ++i )
-		command.push_back( lineSplitted[i] );
-
 	_cgi[extension] = command;
+	std::cout << extension << ":" << command << std::endl;
+	_iscgi = true;
 }
 
 
@@ -347,8 +356,17 @@ bool						Route::isRedirect() {
 	return _redirect;
 }
 
+bool						Route::isCGI() {
+	return _iscgi;
+}
+
 std::string		Route::getUploadDir() {
 	return this->_uploadfolder;
+}
+
+
+std::map<std::string, std::string > Route::getValidsCGI() {
+	return this->_cgi;
 }
 
 void	Route::printRoute() {
@@ -382,13 +400,11 @@ void	Route::printRoute() {
 		std::cout << "false" << std::endl;
 
 	PRINTCLN(MAG, "Cgi:");
-	for ( std::map< std::string, std::vector< std::string> >::iterator it = _cgi.begin(); it != _cgi.end(); ++it )
+	for ( std::map< std::string, std::string>::iterator it = _cgi.begin(); it != _cgi.end(); ++it )
 	{
-		std::cout << it->first << " ";
-		for ( size_t i = 0; i < it->second.size(); ++i )
-			std::cout << it->second[i] << " ";
-		std::cout << std::endl;
+		std::cout << "extention: " << (*it).first << " path : " << (*it).second << std::endl;
 	}
+	std::cout << std::endl;
 }
 
 // * setters

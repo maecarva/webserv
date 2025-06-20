@@ -22,6 +22,7 @@ public:
 	std::string		formatResponse(std::string& responseFileContent, int responseCode, std::string& mimetype);
 	std::string		formatRedirectResponse();
 	std::string		handleUploadResponse();
+	std::string		handleCGI();
 
 	bool			ReadFile(const char *path, std::string& resultfile, std::string& mimetype);
 	std::string		getMIMEtype();

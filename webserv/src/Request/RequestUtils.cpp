@@ -4,7 +4,7 @@ bool	Request::ValidateURI(std::string&	route) {
 	for (std::string::iterator it = route.begin(); it != route.end(); it++)
 	{
 		if (!(std::isalnum(*it)) && !(*it == '$' || *it == '-' || *it == '_' || *it == '.' || *it == '+' || *it == '!' || *it == '*' || *it == '\'' || *it == '(' || *it == ')' || *it == ',' || *it == '/')
-			&& !(*it == ';' || *it == '/' || *it == '?' || *it == ':' || *it == '@' || *it == '=' || *it == '&'))
+			&& !(*it == ';' || *it == '/' || *it == '?' || *it == ':' || *it == '@' || *it == '=' || *it == '&' || *it == '%'))
 		{
 			std::cout << "invalid char : " << *it << std::endl;
 			return false;
