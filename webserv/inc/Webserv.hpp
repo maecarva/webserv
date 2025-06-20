@@ -76,6 +76,6 @@ std::string		formatDirectoryListing(std::vector<std::string>& files);
 std::vector<Server>	CreateServerPool(std::vector<Config>& configs);
 
 // cgi
-void executeCgi( std::vector< std::string > command, char **envp, const std::string& input );
+std::string executeCgi( std::vector< std::string > command, char **envp );
 
 #endif

@@ -63,6 +63,7 @@ private:
 	int 								_fd;
 	std::string							_chunkedLimiter;
 	std::vector<std::pair<std::string, std::string> >	_query_args;
+	std::string							_query_string;
 
 	// response
     std::map<std::string, std::string>	_response_headers;
@@ -98,6 +99,7 @@ public:
 	Route							getCorrespondingRoute();
 	std::string						getRequestedRessource();
 	std::string						getBody();
+	std::string						getQueryString();
 };
 
 

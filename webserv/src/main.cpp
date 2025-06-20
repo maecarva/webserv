@@ -3,6 +3,8 @@
 
 bool	running = true;
 
+char	**env;
+
 void	sig_handler(int sig) {
 	running = false;
 	Logger::info("Stopping servers.");
@@ -14,13 +16,16 @@ void	set_signals(void)
 	signal(SIGINT, sig_handler);
 }
 
-int main( int ac, char **av )
+int main( int ac, char **av , char **envp)
 {
 	if (ac != 2)
 	{
 		std::cerr << "Usage: ./webserv <configfile>" << std::endl;
 		return -1;
 	}
+
+	env = envp;
+
 	std::ifstream infile( av[1] );
 	std::vector<Config> vec = CreateConfigs(infile);
 

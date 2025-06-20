@@ -1,8 +1,12 @@
 #include "Webserv.hpp"
 
-void executeCgi( std::vector< std::string > command, char **envp, const std::string& input )
+
+
+std::string executeCgi( std::vector< std::string > command, char **envp )
 {
 	char **argv = new char *[command.size() + 1];
+
+	std::string buf;
 
 	for ( size_t i = 0; i < command.size(); ++i )
 		argv[i] = const_cast<char *>( command[i].c_str() );
@@ -13,7 +17,7 @@ void executeCgi( std::vector< std::string > command, char **envp, const std::str
 	if ( pipe( pipe_in ) == -1 )
 	{
 		perror( "pipe" );
-		return ;
+		return "" ;
 	}
 
 	int pipe_out[2];
@@ -22,7 +26,7 @@ void executeCgi( std::vector< std::string > command, char **envp, const std::str
 	{
 		close( pipe_in[0] ); close( pipe_in[1] );
 		perror( "pipe" );
-		return ;
+		return "" ;
 	}
 
 	pid_t pid = fork();
@@ -32,7 +36,7 @@ void executeCgi( std::vector< std::string > command, char **envp, const std::str
 		close( pipe_in[0] ); close( pipe_in[1] );
 		close( pipe_out[0] ); close( pipe_out[1] );
 		perror( "fork" );
-		return ;
+		return "" ;
 	}
 
 	if ( pid == 0 )
@@ -49,14 +53,16 @@ void executeCgi( std::vector< std::string > command, char **envp, const std::str
 	}
 	else
 	{
-		close( pipe_in[0] ); close( pipe_out[1] );
-		write( pipe_in[1], input.c_str(), input.size() );
+		close( pipe_in[0] ); 
+		close( pipe_out[1] );
 		close( pipe_in[1] );
 
 		char buffer[1024];
 		ssize_t bytesRead;
 		while ( ( bytesRead = read( pipe_out[0], buffer, sizeof( buffer ) ) ) > 0)
-			write( STDOUT_FILENO, buffer, bytesRead );
+		{
+			buf.append(buffer);
+		}
 
 		close( pipe_out[0] );
 
@@ -64,4 +70,5 @@ void executeCgi( std::vector< std::string > command, char **envp, const std::str
 	}
 
 	delete[] argv;
+	return buf;
 }

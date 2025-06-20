@@ -93,6 +93,12 @@ std::string		Request::getBody() {
 	return this->_body;
 }
 
+std::string		Request::getQueryString() {
+	return this->_query_string;
+}
+
+
+
 void			Request::pushBody(std::vector<unsigned char>& newpart) {
 	this->_body.insert(this->_body.end(), newpart.begin(), newpart.end());
 }
