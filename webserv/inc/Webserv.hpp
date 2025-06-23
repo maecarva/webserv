@@ -70,6 +70,7 @@ bool			getAllFilesFromDirectory(std::vector<string>& files, const char *path);
 const char		*InternalERROR();
 const char		*ERROR_404();
 const char		*BadRequest();
+const char *MethodNotAllowed();
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
 

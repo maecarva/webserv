@@ -15,3 +15,7 @@ const char	*BadRequest() {
 	return "HTTP/1.1 400 Bad Request\r\nContent-Length: 158\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Bad Request</title><h1>Bad Request</h1>";
 }
 
+const char *MethodNotAllowed() {
+	return "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 172\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Method Not Allowed</title><h1>Method Not Allowed</h1>";
+}
+
