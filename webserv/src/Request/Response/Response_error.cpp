@@ -39,6 +39,8 @@ std::string	Response::ErrorResponse(int code) {
 	std::string					mime_type			= "";
 
     this->getRequest().setResponseCode(code);
+	if (current_config.getErrorPages()[code] == "")
+		goto SWITCH;
 	if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type))
 	{
 		return InternalERROR();
@@ -54,16 +56,36 @@ std::string	Response::ErrorResponse(int code) {
 		std::cout << resp.str() << std::endl;
 
 	}
+
+SWITCH:
+
+	std::string resp1;
+	const char* respeuh;
     switch (code)
 	{
 	case 500:
-		return InternalERROR();
+		respeuh = InternalERROR();
+		break;
 	case 400:
-		return BadRequest();
+		respeuh = BadRequest();
+		break;
     case 404:
-		return ERROR_404();
+		respeuh = ERROR_404();
+		break;
+    case 405:
+		respeuh = MethodNotAllowed();
+		break;
 	default:
-		return InternalERROR();
+		respeuh = InternalERROR();
 		break;
 	}
+
+	resp1 = respeuh;
+	if (strcmp(this->getRequest().getMethod(), "HEAD") == 0)
+	{
+		size_t pos = resp1.find("\r\n\r\n") + 4;
+		resp1.erase(pos, resp1.size() - pos);
+	}
+	std::cout << resp1 << std::endl;
+	return resp1.c_str();
 }

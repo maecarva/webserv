@@ -20,8 +20,11 @@ location /dir/
 allow GET POST DELETE
 autoindex on
 
-location /cgi-bin/
-allow GET POST
+location /
+allow POST
 root ./cgi-bin/
-cgi_extension .py /usr/bin/python3
-cgi_extension .php /usr/bin/php
+cgi_extension .bla /usr/bin/php
+
+setup le tester
+server server_names
+uploads multipart

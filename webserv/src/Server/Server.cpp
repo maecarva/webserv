@@ -238,22 +238,26 @@ void Server::handler()
 				else
 				{
 					if (this->_clientBuffers[fd].getAllRead()) {
-						// PRINTLN( "VAS MANGER TES GRANBDS MRTS6" );
 						Request req = Request(*this, fd);
 
 						// Respond to client
 						std::string reqstr = this->_clientBuffers[fd].getThatBody();
 
-
-
 						req.parseRequest(reqstr, *this);
 						std::string	reply = req.CreateResponse();
 						send(fd, reply.c_str(), reply.size(), 0);
 						// Close connection
-						if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
-							std::perror("epoll_ctl DEL après send");
-						close(fd);
-						this->_clientBuffers.erase(fd);
+						if (req.isKeepAlive() == false)
+						{
+							if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
+								std::perror("epoll_ctl DEL après send");
+							close(fd);
+							this->_clientBuffers.erase(fd);
+						}
+						else {
+							this->_clientBuffers.erase(fd);
+							this->_clientBuffers[fd] = Client(fd);
+						}
 						req.logRequest(*this);
 					}
 				}

@@ -13,7 +13,8 @@ private:
 
 	bool        	_headerParsed;
 	size_t      	_bodyStart;
-
+	bool			_isChunked;
+	size_t			_endOfMessage;
 public:
 	Client();
 	Client( int fd);

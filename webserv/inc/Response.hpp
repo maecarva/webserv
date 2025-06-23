@@ -26,6 +26,7 @@ public:
 
 	bool			ReadFile(const char *path, std::string& resultfile, std::string& mimetype);
 	std::string		getMIMEtype();
+	bool			isIndexed();
 
 
     // * Getters / setters

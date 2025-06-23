@@ -8,7 +8,7 @@ Request::Request(Server& server, int fd) :
 	_route(),
 	_protocol(),
 	_host(),
-	_keepalive(),
+	_keepalive(true),
 	_headers(),
 	_header_len(),
 	_body(),

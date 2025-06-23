@@ -61,7 +61,9 @@ std::string		Response::formatResponse(std::string& responseFileContent, int resp
 		oss << mimetype << "\r\n\r\n";
 	else
 		oss << this->getMIMEtype() << "\r\n\r\n";
-	oss << responseFileContent;
+	
+	if (strcmp(this->getRequest().getMethod(), "HEAD") != 0)
+		oss << responseFileContent;
 
 	return oss.str();
 }
@@ -203,7 +205,13 @@ std::string		Response::handleCGI() {
 
 // }
 
+bool	Response::isIndexed() {
+	std::string ressource = this->getRequest().getCorrespondingRoute().getRootDir() + this->_req.getRequestedRessource();
 
+	if (is_directory(ressource.c_str()))
+		return true;
+	return false;
+}
 
 std::string	Response::BuildResponse()
 {
@@ -219,11 +227,14 @@ std::string	Response::BuildResponse()
 	std::string			responseFileContent = "";
 	std::string			mime_type			= "";
 
-	if (this->_req.getRequestedRessource() == "/" || this->_req.getRequestedRessource() == "")
-		indexRequested = true;
+	// if (this->_req.getRequestedRessource() == "/" || this->_req.getRequestedRessource() == "")
+	// 	indexRequested = true;
+	// std::cout << "Requested: " << this->_req.getRequestedRessource() << std::endl;
+	// std::cout << "Root: " << route.getRootDir() << std::endl;
+	indexRequested = isIndexed();
 
 	if (!checkMatchingMethod(*this, &route)) {
-		return (ErrorResponse(HTTP_BAD_REQUEST));
+		return (ErrorResponse(HTTP_METHOD_NOT_ALLOWED));
 	}
 
 	// format
@@ -235,18 +246,14 @@ std::string	Response::BuildResponse()
 		return this->formatRedirectResponse();
 	else if (this->getRequest().getCorrespondingRoute().getUploads())
 		return this->handleUploadResponse();
-	else if ( indexRequested && route.getAutoIndex() )
+	else if (route.getAutoIndex() && indexRequested)
 	{
-		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
+		std::cout << "autoindex" << std::endl;
+		if ( !this->ReadFile( BuildFilePath( route.getRootDir() + this->getRequest().getRequestedRessource(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
 			return ( ErrorResponse( 404 ) );
 
 		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
-	// else if ( this->getRequest().isCgi() )
-	// {
-	// 	return ( this->handleCgi() );
-	// }
-
 	else
 	{
 		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type ) )
