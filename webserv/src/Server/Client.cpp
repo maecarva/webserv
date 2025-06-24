@@ -50,12 +50,6 @@ long    Client::getMaxBodySize() {
 
 void Client::addBodyCount(const char* buf, ssize_t count) {
     _giveHeadAndBody.append(buf, count);
-    // std::cout << "la taille :" << _giveHeadAndBody.size() - ( _giveHeadAndBody.find("\r\n\r\n") + 4 ) << std::endl;
-    // if ( _giveHeadAndBody.size() - ( _giveHeadAndBody.find("\r\n\r\n") + 4 ) > (size_t)this->getMaxBodySize() )
-    // {
-    //     _allRead = true;
-    //     return ;
-    // }
     if (!_headerParsed) {
         size_t hpos = _giveHeadAndBody.find("\r\n\r\n");
         if (hpos != std::string::npos) {
@@ -79,25 +73,4 @@ void Client::addBodyCount(const char* buf, ssize_t count) {
             }
         }
  	}
-	// std::cout << "size: " << _giveHeadAndBody.size() << std::endl; 
 }
-
-// void Client::addBodyCount( const char *buf, ssize_t count )
-// {
-//     _giveHeadAndBody.append(buf, count);
-
-//     if (!_headerParsed) {
-//       size_t hpos = _giveHeadAndBody.find("\r\n\r\n");
-//       if (hpos != std::string::npos) {
-//         _headerParsed = true;
-//         _bodyStart    = hpos + 4;
-//       }
-//     }
-
-//     if (_headerParsed) {
-//       size_t bodyLen = _giveHeadAndBody.size() - _bodyStart;
-//       if (bodyLen >= _contentLength) {
-//         _allRead = true;
-//       }
-//     }
-// }

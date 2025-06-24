@@ -52,7 +52,7 @@ std::string	getMimeType(const char *path) {
 	
 }
 
-bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& mimetype)
+bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& mimetype, int *errorcode)
 {
 	if (!path)
 		return false;
@@ -60,7 +60,6 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 
 	if (access(path, F_OK | R_OK) == 0) // access ok
 	{
-
 		if (is_directory(path))
 		{
 			if (this->getRequest().getCorrespondingRoute().getDirectoryListing())
@@ -73,7 +72,10 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 				return true;
 			}
 			else
+			{
+				*errorcode = HTTP_FORBIDDEN;
 				return false;
+			}
 		}
 
 		inputfile.open(path, std::ios::in);
@@ -87,6 +89,12 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 		mimetype = getMimeType(path);
 		return true;
 	}
+	else {
+		Logger::error("Cannot open file");
+		*errorcode = HTTP_FORBIDDEN;
+		return false;
+	}
+	*errorcode = HTTP_INTERNAL_SERVER_ERROR;
 	return false;
 
 }

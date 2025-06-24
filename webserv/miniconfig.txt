@@ -8,22 +8,23 @@ client_max_body_size 1073741824
 location /
 allow GET
 root ./static_pages
-autoindex off
+autoindex on
 index index.html
 
 location /testredirect
 allow GET
-return https://tinyurl.com/4u5sn7x7
+return http://google.fr
 
 location /site
 allow GET POST DELETE
-autoindex on
+autoindex off
 index index.html
 root ./static_pages/site
 
 location /uploads
-allow POST
-uploads ./static_pages/uploads
+allow POST GET
+autoindex on
+uploads ./static_pages/site/uploads
 
 location /cgi-bin/
 allow POST GET

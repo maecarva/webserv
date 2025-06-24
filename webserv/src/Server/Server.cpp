@@ -233,7 +233,9 @@ void Server::handler()
 						std::perror("epoll_ctl DEL");
 					close(fd);
 					this->_clientBuffers.erase(fd);
-					std::cout << "Client FD=" << fd << " déconnecté\n";
+					std::ostringstream oss;
+					oss << "Client FD=" << fd << " déconnecté";
+					Logger::debug(oss.str().c_str());
 				}
 				else
 				{

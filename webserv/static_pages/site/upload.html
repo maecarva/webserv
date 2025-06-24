@@ -50,7 +50,6 @@
 
           if (response.ok) {
             const text = await response.text();
-            alert("Réponse du serveur :", text);
           } else {
             console.error(
               `Erreur serveur : ${response.status} ${response.statusText}`
