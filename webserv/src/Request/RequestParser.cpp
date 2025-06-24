@@ -143,11 +143,15 @@ void	Request::parseRequest(std::string& req, Server& server)
                 pair.second.append(token);
             }
 
-            
-            if (key == "HOST:") { 
-                std::string second = pair.second;
-                this->_host = second;
-            }
+
+			if (key == "HOST:") {
+				std::string second = pair.second;
+				this->_host = second;
+				PRINTCLN(RED, second);
+				if ( std::find(this->getServer().getConfig().getServerNames().begin(), this->getServer().getConfig().getServerNames().end(), second ) == this->getServer().getConfig().getServerNames().end() )
+					return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
+				PRINTCLN(RED, "ici " + second);
+			}
             else if (key == "CONNECTION:") {
                 std::string second = pair.second;
                 std::transform(second.begin(), second.end(), second.begin(), ::toupper);
