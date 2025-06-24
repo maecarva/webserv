@@ -7,7 +7,28 @@ Route	Request::FindCorrespondingRoute(std::string& requestedressource, bool *fai
 	std::vector<Route> routes = this->getServer().getConfig().getRoutes();
 	std::vector<Route>::iterator routeit = routes.begin();
 	size_t	pos = std::string::npos;
-	Route	route;
+	Route	route;\
+
+	// check cgi match
+
+	for ( size_t i = 0; i < routes.size(); ++i )
+	{
+		// std::cout << routes[i].getName() << std::endl;
+		if ( routes[i].isCGI() == false )
+			continue;
+	
+		std::string test(this->getRoute());
+
+		if ( test.find_last_of(routes[i].getName()) == ( test.size() - 1 ) )
+		{
+		
+			if (std::find(routes[i].getAllowedMethods().begin(), routes[i].getAllowedMethods().end(), (std::string)this->getMethod()) !=  routes[i].getAllowedMethods().end())
+				return ( *failed = true, routes[i] );
+		}
+
+	}
+
+
 	while (routeit != routes.end())
 	{
 		//std::cout << (*routeit).getName() << std::endl;
@@ -58,8 +79,8 @@ void	Request::parseRequest(std::string& req, Server& server)
 {
 // #ifdef DEBUG
 	//std::cout << "request size: " << req << std::endl;
-	std::cout << "REQUEST : \n";
-	PRINTCLN(MAG, req.c_str());
+	// std::cout << "REQUEST : \n";
+	// PRINTCLN(MAG, req.c_str());
 // #endif
 
     this->_response_code = HTTP_OK;
@@ -92,6 +113,8 @@ void	Request::parseRequest(std::string& req, Server& server)
 	Route matchedroute = this->FindCorrespondingRoute(splitted[1], &failed);
 	if (!failed)
 		return this->setError(HTTP_NOT_FOUND, __LINE__, __FILENAME__);
+
+	// PRINTCLN(BLU, matchedroute.getName());
 
 	if (this->_route.find('?') != std::string::npos)
 		this->ParseQueryArgs();
@@ -149,6 +172,11 @@ void	Request::parseRequest(std::string& req, Server& server)
     }
     
     this->_body = body;
+	std::cout << body.size() << std::endl;
+	std::cout << (size_t)this->getServer().getConfig().getClientMaxBodySize() << std::endl;
+
+	if (this->_body.size() > (size_t)this->getServer().getConfig().getClientMaxBodySize())
+		return setError(HTTP_REQUEST_ENTITY_TOO_LARGE, __LINE__, __FILENAME__);
 
 	//std::cout << "body : " << body << std::endl;
     if ( request.find( "multipart/form-data; boundary=" ) != std::string::npos )

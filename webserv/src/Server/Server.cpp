@@ -165,7 +165,7 @@ void Server::handler()
 				continue;
 			}
 
-			this->_clientBuffers.insert(std::make_pair(client_fd, Client(client_fd)));
+			this->_clientBuffers.insert(std::make_pair(client_fd, Client(client_fd, this->getConfig().getClientMaxBodySize())));
 		}
 		/// -------
 		else // second case : client socket ready for read
@@ -256,7 +256,7 @@ void Server::handler()
 						}
 						else {
 							this->_clientBuffers.erase(fd);
-							this->_clientBuffers[fd] = Client(fd);
+							this->_clientBuffers[fd] = Client(fd, this->getConfig().getClientMaxBodySize());
 						}
 						req.logRequest(*this);
 					}
