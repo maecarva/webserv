@@ -73,6 +73,7 @@ std::string		Response::formatRedirectResponse() {
 
 	oss << "HTTP/1.1 ";
 	oss << HTTP_FOUND << " " << HttpMessageByCode(HTTP_FOUND) << "\r\n";
+	oss << "Content-Length: 0\r\n";
 	oss << "Location: " << this->getRequest().getCorrespondingRoute().getReturn() << "\r\n\r\n";
 
 	return oss.str();
@@ -85,11 +86,16 @@ std::string		Response::handleUploadResponse() {
 	std::string filepath = BuildFilePath( uploaddir, ressource );
 
 	std::string body = this->getRequest().getBody();
+	std::string mime_type;
+	int error_code = HTTP_OK;
+	std::string responseFileContent;
 
-	std::cout << body.size() << std::endl;
-	std::cout << max_body_size << std::endl;
-
-	if ( max_body_size >= body.size() )          // verifier si le fichier existe
+	if (this->getRequest().getMethod() == std::string("GET")) {
+		if ( !this->ReadFile( BuildFilePath(this->getRequest().getCorrespondingRoute().getUploadDir() , this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type , &error_code) )
+				return ( ErrorResponse( error_code ) );
+		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+	}
+	else if ( max_body_size >= body.size() )          // verifier si le fichier existe
 	{
 		std::ofstream ofs( filepath.c_str(), std::ios::binary );
 		if ( !ofs.is_open() )
@@ -119,13 +125,6 @@ std::string		Response::handleUploadResponse() {
 	return oss.str();
 };
 
-
-// * check extention with _cgi OK
-// * join requested ressource + dir OK
-// * construct env QUERY_STRING
-// * execve
-// * format response
-
 extern char **env;
 
 std::string		Response::handleCGI() {
@@ -154,7 +153,6 @@ std::string		Response::handleCGI() {
 
 	query_string_env = "QUERY_STRING=" + req.getQueryString();
 
-	//std::cout << query_string_env << std::endl;
 
 
 	size_t envsize = 0;
@@ -194,17 +192,6 @@ std::string		Response::handleCGI() {
 }
 
 
-// // Cgi
-// bool Response::isCgi( void )
-// {
-
-// }
-
-// void Response::handleCgi( void )
-// {
-
-// }
-
 bool	Response::isIndexed() {
 	std::string ressource = this->getRequest().getCorrespondingRoute().getRootDir() + this->_req.getRequestedRessource();
 
@@ -223,15 +210,9 @@ std::string	Response::BuildResponse()
 		return ErrorResponse(this->getRequest().getResponseCode());
 
 	Route				route				= this->getRequest().getCorrespondingRoute();
-	bool				indexRequested		= false;
 	std::string			responseFileContent = "";
 	std::string			mime_type			= "";
-
-	// if (this->_req.getRequestedRessource() == "/" || this->_req.getRequestedRessource() == "")
-	// 	indexRequested = true;
-	// std::cout << "Requested: " << this->_req.getRequestedRessource() << std::endl;
-	// std::cout << "Root: " << route.getRootDir() << std::endl;
-	indexRequested = isIndexed();
+	int					error_code			= HTTP_OK;
 
 	if (!checkMatchingMethod(*this, &route)) {
 		return (ErrorResponse(HTTP_METHOD_NOT_ALLOWED));
@@ -243,24 +224,34 @@ std::string	Response::BuildResponse()
 		return this->handleCGI();
 	}
 	else if (this->getRequest().getCorrespondingRoute().isRedirect())
-		return this->formatRedirectResponse();
+		return (  this->formatRedirectResponse() );
 	else if (this->getRequest().getCorrespondingRoute().getUploads())
-		return this->handleUploadResponse();
-	else if (route.getAutoIndex() && indexRequested)
-	{
-		std::cout << "autoindex" << std::endl;
-		if ( !this->ReadFile( BuildFilePath( route.getRootDir() + this->getRequest().getRequestedRessource(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
-			return ( ErrorResponse( 404 ) );
-		std::cout << mime_type << std::endl;
-		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+		return  (  this->handleUploadResponse() );
+	else {
+		std::string filepath = BuildFilePath(route.getRootDir() , this->getRequest().getRequestedRessource());
+
+		if (is_directory(filepath.c_str()) && route.indexFileIsSet())
+		{
+			filepath = BuildFilePath(filepath, route.getIndexFile());
+			if ( !this->ReadFile( filepath.c_str(), responseFileContent, mime_type , &error_code) )
+			{
+				filepath = BuildFilePath(route.getRootDir() , this->getRequest().getRequestedRessource());
+				if (!this->ReadFile( filepath.c_str(), responseFileContent, mime_type , &error_code))
+					return ( ErrorResponse( error_code ) );
+			}
+			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+		}
+		else if (is_directory(filepath.c_str()) && !route.indexFileIsSet() && route.getAutoIndex())
+		{
+			if ( !this->ReadFile( BuildFilePath(route.getRootDir() , this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type , &error_code) )
+				return ( ErrorResponse( error_code ) );
+			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+		}
+		else {
+			if ( !this->ReadFile( filepath.c_str(), responseFileContent, mime_type , &error_code) )
+				return ( ErrorResponse( error_code ) );
+			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+		}
 	}
-	else
-	{
-		if ( !this->ReadFile( BuildFilePath( route.getRootDir(), this->getRequest().getRequestedRessource() ).c_str(), responseFileContent, mime_type ) )
-			return ( ErrorResponse( 404 ) );
-		
-		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
-	}
-	
-	return ErrorResponse( 500 );
+	return ErrorResponse( error_code );
 }

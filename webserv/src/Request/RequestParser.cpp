@@ -157,13 +157,10 @@ void	Request::parseRequest(std::string& req, Server& server)
     }
     
     this->_body = body;
-	std::cout << body.size() << std::endl;
-	std::cout << (size_t)this->getServer().getConfig().getClientMaxBodySize() << std::endl;
 
 	if (this->_body.size() > (size_t)this->getServer().getConfig().getClientMaxBodySize())
 		return setError(HTTP_REQUEST_ENTITY_TOO_LARGE, __LINE__, __FILENAME__);
 
-	//std::cout << "body : " << body << std::endl;
     if ( request.find( "multipart/form-data; boundary=" ) != std::string::npos )
     {
         std::string limiter = this->_headers["CONTENT-TYPE:"];

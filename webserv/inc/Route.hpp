@@ -10,8 +10,9 @@ private:
 	std::string 										_name;
 	std::vector<std::string> 							_allowed_methods;
 	std::string 										_root;
-	bool 												_autoindex;   // a set a true ou false des le debut
+	bool 												_autoindex;   // a set a true ou false des le debut // directory listing
 	std::string 										_index;
+	bool												_indexFile;
 	bool												_redirect;
 	std::string 										_return;
 	bool 												_uploads;
@@ -79,5 +80,7 @@ public:
 	bool						getUploads( void );
 
 	void						printRoute();
+
+	bool						indexFileIsSet();
 
 };

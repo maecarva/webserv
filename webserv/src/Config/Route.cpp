@@ -16,6 +16,7 @@ Route&	Route::operator=(const Route& route) {
 		_root = route._root;
 		_autoindex = route._autoindex;
 		_index = route._index;
+		_indexFile = route._indexFile;
 		_redirect = route._redirect;
 		_return = route._return;
 		_uploads = route._uploads;
@@ -31,6 +32,7 @@ Route&	Route::operator=(const Route& route) {
 Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._allowed_methods), _root(route._root)
 		,_autoindex(route._autoindex)
 		,_index(route._index)
+		,_indexFile(route._indexFile)
 		,_redirect(route._redirect)
 		,_return(route._return)
 		,_uploads(route._uploads)
@@ -180,6 +182,7 @@ void Route::ParseServerConfigRouteIndex( const std::vector<std::string> &lineSpl
 	// }
 
 	_index = lineSplitted[1];
+	_indexFile = true;
 }
 
 
@@ -427,6 +430,10 @@ std::string		Route::getUploadDir() {
 
 std::map<std::string, std::string > Route::getValidsCGI() {
 	return this->_cgi;
+}
+
+bool				Route::indexFileIsSet() {
+	return this->_indexFile;
 }
 
 void	Route::printRoute() {

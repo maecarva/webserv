@@ -29,19 +29,17 @@
 		<h1>CGI</h1>
 		<label for="method-select">Choose a method:</label>
 		<select name="methods" id="method-select">
-			<option value="">--Please choose a method--</option>
 			<option value="post">POST</option>
 			<option value="get">GET</option>
 		</select>
 		<label for="cgi-select">Choose a cgi-bin:</label>
 		<select name="cgis" id="cgi-select">
-			<option value="">--Please choose a cgi--</option>
 			<option value="php">php</option>
 			<option value="python">python</option>
 		</select>
 		<br>
 		<br>
-		<form id="cgiForm" action="http://127.0.0.1:3001/cgi-bin/testcgi.py" method="get">
+		<form id="cgiForm" action="http://127.0.0.1:3001/cgi-bin/testcgi.php" method="post">
 			<label for="email">email : </label>
 			<input type="email" name="email" id="email">
 			<label for="name">name : </label>
