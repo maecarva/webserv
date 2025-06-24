@@ -24,7 +24,3 @@ location /
 allow POST
 root ./cgi-bin/
 cgi_extension .bla /usr/bin/php
-
-setup le tester
-server server_names
-uploads multipart
