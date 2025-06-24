@@ -24,7 +24,7 @@ public:
 	std::string		handleUploadResponse();
 	std::string		handleCGI();
 
-	bool			ReadFile(const char *path, std::string& resultfile, std::string& mimetype);
+	bool			ReadFile(const char *path, std::string& resultfile, std::string& mimetype, int *errorcode);
 	std::string		getMIMEtype();
 	bool			isIndexed();
 

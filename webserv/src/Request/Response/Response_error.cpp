@@ -37,27 +37,28 @@ std::string	Response::ErrorResponse(int code) {
     std::string                 page                = "";
 	std::ostringstream			resp;
 	std::string					mime_type			= "";
+	int							errorcode			= HTTP_OK;
 
     this->getRequest().setResponseCode(code);
-	if (current_config.getErrorPages()[code] == "")
+	if (current_config.getErrorPages().count(code) == 0)
 		goto SWITCH;
-	if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type))
+	else if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type, &errorcode))
 	{
 		return InternalERROR();
 	}
 	else {
-		resp << "HTTP/1.1 " << code << " " << HttpMessageByCode(404) << "\r\n";
+		SWITCH:
+		resp << "HTTP/1.1 " << code << " " << "Error" << "\r\n";
 
-		resp	<< "Content-Length: " << page.length() << "\r\n"
+		resp	<< "Content-Length: " << (page.size() == 0 ? 20 : page.size()) << "\r\n"
 				<< "Connection: close\r\n"
-				<< "\r\n"
-				<< page;
+				<< "\r\n";
+				if (page.size() == 0)
+					resp << "Unable to open file.";
+				else
+					resp << page;
 		return resp.str();
-		std::cout << resp.str() << std::endl;
-
 	}
-
-SWITCH:
 
 	std::string resp1;
 	const char* respeuh;
