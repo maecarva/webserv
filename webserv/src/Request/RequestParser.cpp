@@ -129,8 +129,15 @@ void	Request::parseRequest(std::string& req, Server& server)
 				std::string second = pair.second;
 				this->_host = second;
 				PRINTCLN(RED, second);
-				if ( std::find(this->getServer().getConfig().getServerNames().begin(), this->getServer().getConfig().getServerNames().end(), second ) == this->getServer().getConfig().getServerNames().end() )
-					return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
+				for ( size_t i = 0; i < this->getServer().getConfig().getServerNames().size(); ++i )
+				{
+					if ( this->getServer().getConfig().getServerNames()[i] == second )
+					{
+						goto SUCCESS_NAME;
+					}
+				}
+				return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
+SUCCESS_NAME:
 				PRINTCLN(RED, "ici " + second);
 			}
             else if (key == "CONNECTION:") {

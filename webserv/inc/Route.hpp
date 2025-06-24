@@ -22,6 +22,8 @@ private:
 			// .py /usr/bin/python3
 	bool												_guard;
 	std::string											_guardPage;
+	std::string											_protection;
+	std::map< std::string, unsigned int >				_tokenMap;
 
 public:
 	Route();
@@ -59,6 +61,8 @@ public:
 // Guard
 	void ParseServerConfigGuard( const std::vector<std::string> &lineSplitted );
 
+// Protection
+	void ParseServerConfigProtection( const std::vector<std::string> &lineSplitted );
 
 	std::string&				getName();
 	std::vector<std::string>& 	getAllowedMethods();
@@ -70,6 +74,7 @@ public:
 	std::map<std::string, std::string > getValidsCGI();
 	bool getGuard( void ) const;
 	std::string getGuardPage( void ) const;
+
 
 
 	void						setRootDir(std::string str);
