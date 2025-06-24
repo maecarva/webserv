@@ -1,8 +1,11 @@
 #include "Config.hpp"
 
 // Default constructor and Destructor
-Route::Route( void ) : _autoindex( false ), _redirect( false ), _uploads( false ), _iscgi (false), _directory_listing( false )
-{}
+Route::Route( void ) : _autoindex( false ), _redirect( false ), _uploads( false ), _iscgi (false), _guard( false ),  _guardPage( "" )
+{
+
+}
+
 
 Route::~Route( void ) {}
 
@@ -19,7 +22,8 @@ Route&	Route::operator=(const Route& route) {
 		_uploadfolder = route._uploadfolder;
 		_iscgi = route._iscgi;
 		_cgi = route._cgi;
-		_directory_listing = route._directory_listing;
+		_guard = route._guard;
+		_guardPage = route._guardPage;
 	}
 	return *this;
 }
@@ -33,7 +37,8 @@ Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._a
 		,_uploadfolder(route._uploadfolder)
 		,_iscgi(route._iscgi)
 		,_cgi(route._cgi)
-		,_directory_listing(route._directory_listing)
+		,_guard( route._guard )
+		,_guardPage( route._guardPage )
 {}
 
 // Route
@@ -274,6 +279,25 @@ void Route::ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplit
 }
 
 
+// Guard
+void Route::ParseServerConfigGuard( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "Guard: Invalid number of arguments." << std::endl;
+		throw parsingError();
+	}
+
+	if ( _guard == true )
+	{
+		std::cerr << "Guard: Extension already exists" << std::endl;
+		throw parsingError();
+	}
+	_guard = true;
+	_guardPage = lineSplitted[1];
+}
+
+
 // Parse Route
 void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted )
 {
@@ -329,6 +353,9 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 		else if ( lineSplitted[0] == "cgi_extension" )
 			route.ParseServerConfigRouteCgi( lineSplitted );
 
+		else if ( lineSplitted[0] == "guard" )
+			route.ParseServerConfigGuard( lineSplitted );
+
 		else
 		{
 			std::cerr << "Invalid Route directive \'" << line << "\'." << std::endl;
@@ -362,8 +389,14 @@ std::string					Route::getIndexFile() {
 };
 
 
-bool						Route::getDirectoryListing() {
-	return this->_directory_listing;
+bool Route::getGuard( void ) const
+{
+	return ( _guard );
+}
+
+std::string Route::getGuardPage( void ) const
+{
+	return ( _guardPage );
 }
 
 std::string					Route::getReturn() {
@@ -372,6 +405,11 @@ std::string					Route::getReturn() {
 
 bool Route::getUploads( void ) { 
 	return ( this->_uploads );
+}
+
+bool Route::getDirectoryListing( void )
+{
+	return ( _autoindex );
 }
 
 bool						Route::isRedirect() {

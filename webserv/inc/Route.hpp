@@ -19,7 +19,8 @@ private:
 	bool												_iscgi;
 	std::map<std::string, std::string >					_cgi;
 			// .py /usr/bin/python3
-	bool												_directory_listing;
+	bool												_guard;
+	std::string											_guardPage;
 
 public:
 	Route();
@@ -54,6 +55,9 @@ public:
 	bool isValidCommand( const std::string &command );
 	void ParseServerConfigRouteCgi( const std::vector<std::string> &lineSplitted );
 
+// Guard
+	void ParseServerConfigGuard( const std::vector<std::string> &lineSplitted );
+
 
 	std::string&				getName();
 	std::vector<std::string>& 	getAllowedMethods();
@@ -63,6 +67,8 @@ public:
 	bool						getDirectoryListing();
 	std::string					getUploadDir();
 	std::map<std::string, std::string > getValidsCGI();
+	bool getGuard( void ) const;
+	std::string getGuardPage( void ) const;
 
 
 	void						setRootDir(std::string str);

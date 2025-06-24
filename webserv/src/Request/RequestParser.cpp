@@ -7,26 +7,7 @@ Route	Request::FindCorrespondingRoute(std::string& requestedressource, bool *fai
 	std::vector<Route> routes = this->getServer().getConfig().getRoutes();
 	std::vector<Route>::iterator routeit = routes.begin();
 	size_t	pos = std::string::npos;
-	Route	route;\
-
-	// check cgi match
-
-	for ( size_t i = 0; i < routes.size(); ++i )
-	{
-		// std::cout << routes[i].getName() << std::endl;
-		if ( routes[i].isCGI() == false )
-			continue;
-	
-		std::string test(this->getRoute());
-
-		if ( test.find_last_of(routes[i].getName()) == ( test.size() - 1 ) )
-		{
-		
-			if (std::find(routes[i].getAllowedMethods().begin(), routes[i].getAllowedMethods().end(), (std::string)this->getMethod()) !=  routes[i].getAllowedMethods().end())
-				return ( *failed = true, routes[i] );
-		}
-
-	}
+	Route	route;
 
 
 	while (routeit != routes.end())
