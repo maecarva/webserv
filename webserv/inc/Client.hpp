@@ -15,9 +15,10 @@ private:
 	size_t      	_bodyStart;
 	bool			_isChunked;
 	size_t			_endOfMessage;
+	long			_maxBodyCount;
 public:
 	Client();
-	Client( int fd);
+	Client( int fd, long maxBodyCount);
 	Client( const Client& client);
 	Client& operator=( const Client& client);
 	~Client();
@@ -25,6 +26,7 @@ public:
 	bool getAllRead() const;
 	size_t getContentLength() const;
 	std::string getThatBody();
+	long getMaxBodySize();
 
 	void	setContentLength(size_t size);
 	void	setAllRead( bool a );

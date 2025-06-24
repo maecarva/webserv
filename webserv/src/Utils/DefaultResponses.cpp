@@ -19,3 +19,6 @@ const char *MethodNotAllowed() {
 	return "HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 172\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Method Not Allowed</title><h1>Method Not Allowed</h1>";
 }
 
+const char *PayloadTooLarge() {
+	return "HTTP/1.1 413 Payload Too Large\r\nContent-Length: 170\r\n\r\n<!doctypehtml><html lang=en><meta charset=UTF-8><meta content=\"width=device-width,initial-scale=1\"name=viewport><title>Payload Too Large</title><h1>Payload Too Large</h1>";
+}

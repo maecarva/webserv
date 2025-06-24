@@ -77,6 +77,7 @@ const char		*InternalERROR();
 const char		*ERROR_404();
 const char		*BadRequest();
 const char *MethodNotAllowed();
+const char *PayloadTooLarge();
 
 std::string		formatDirectoryListing(std::vector<std::string>& files);
 

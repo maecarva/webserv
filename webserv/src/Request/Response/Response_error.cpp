@@ -75,6 +75,9 @@ SWITCH:
     case 405:
 		respeuh = MethodNotAllowed();
 		break;
+	case 413:
+		respeuh = PayloadTooLarge();
+		break ;
 	default:
 		respeuh = InternalERROR();
 		break;
@@ -86,6 +89,6 @@ SWITCH:
 		size_t pos = resp1.find("\r\n\r\n") + 4;
 		resp1.erase(pos, resp1.size() - pos);
 	}
-	std::cout << resp1 << std::endl;
+	// std::cout << resp1 << std::endl;
 	return resp1.c_str();
 }
