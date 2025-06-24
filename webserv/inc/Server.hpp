@@ -16,6 +16,8 @@ private:
 	int									_epoll_fd;
 	struct epoll_event					_ev;
 	std::map<int, Client >	_clientBuffers;
+
+	std::map< std::string, unsigned int >				_tokenMap;
 public:
 	Server(Config& config);
 	Server& operator=(const Server& server);
@@ -24,6 +26,7 @@ public:
 
 	void	handler();
 
+	std::map< std::string, unsigned int >&	getTokenMap();
 	Config&		getConfig();
 
 	class ServerCreationError : public std::exception {

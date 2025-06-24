@@ -36,7 +36,9 @@ location /login
 allow POST GET
 protection /protection
 index login.html
+root ./static_pages
 
-location /protection/
-guard login.html
+location /protection
+guard ./static_pages/protected.html
+return /login
 allow POST GET

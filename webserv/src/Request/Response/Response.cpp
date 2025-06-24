@@ -219,7 +219,40 @@ std::string	Response::BuildResponse()
 	}
 
 	// format
-	if (this->getRequest().getCorrespondingRoute().isCGI())
+	if ( this->getRequest().getCorrespondingRoute().getGuard() )
+	{
+		std::string cookieheader = this->getRequest().getHeaders()["AUTHORIZATION:"];
+		std::string cookie;
+		if (cookieheader.size() > 6)
+			cookie = cookieheader.substr(6);
+		std::map< std::string, unsigned int >& tokenmap = this->getRequest().getServer().getTokenMap();
+
+		if (tokenmap.count(cookie) == 0 || cookieheader == "" || cookie == "") {
+			std::vector<Route> routes = this->getRequest().getServer().getConfig().getRoutes();
+			std::string returnlocation = this->getRequest().getCorrespondingRoute().getReturn();
+
+			tokenmap[cookie] = 0;
+
+			if (returnlocation.empty())
+				return (ErrorResponse(HTTP_BAD_REQUEST));
+			std::ostringstream oss;
+
+			oss << "HTTP/1.1 ";
+			oss << HTTP_FOUND << " " << HttpMessageByCode(HTTP_FOUND) << "\r\n";
+			oss << "Content-Length: 0\r\n";
+			oss << "Location: " << this->getRequest().getCorrespondingRoute().getReturn() << "\r\n\r\n";
+
+			return oss.str();
+		} else {
+			tokenmap[cookie] += 1;
+			//int integer = tokenmap[cookie];
+			if (!this->ReadFile( route.getGuardPage().c_str(), responseFileContent, mime_type , &error_code))
+				return ( ErrorResponse( error_code ) );
+			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
+		}
+		
+	}
+	else if (this->getRequest().getCorrespondingRoute().isCGI())
 	{
 		return this->handleCGI();
 	}
@@ -253,5 +286,6 @@ std::string	Response::BuildResponse()
 			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 		}
 	}
+	PRINTCLN(REDB, "asdadsadd");
 	return ErrorResponse( error_code );
 }

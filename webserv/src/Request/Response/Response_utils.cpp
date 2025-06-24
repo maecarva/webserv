@@ -119,3 +119,4 @@ std::string	formatDirectoryListing(std::vector<std::string>& files) {
 	resp2 << "</ul></body></html>";
 	return resp2.str();
 }
+

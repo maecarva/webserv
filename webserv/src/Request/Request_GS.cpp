@@ -102,3 +102,7 @@ std::string		Request::getQueryString() {
 void			Request::pushBody(std::vector<unsigned char>& newpart) {
 	this->_body.insert(this->_body.end(), newpart.begin(), newpart.end());
 }
+
+std::map<std::string, std::string>	Request::getHeaders() {
+	return this->_headers;
+}

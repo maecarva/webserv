@@ -96,6 +96,7 @@ public:
 	const char						*getProtocol()	const;
 	unsigned short					getResponseCode()	const;
 	bool							isKeepAlive()	const;
+	std::map<std::string, std::string>	getHeaders();
 	Route							getCorrespondingRoute();
 	std::string						getRequestedRessource();
 	std::string						getBody();

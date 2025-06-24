@@ -267,3 +267,7 @@ void Server::handler()
 		}
 	}
 }
+
+std::map< std::string, unsigned int >&	Server::getTokenMap() {
+	return this->_tokenMap;
+};
