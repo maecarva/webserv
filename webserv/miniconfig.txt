@@ -32,12 +32,11 @@ root ./cgi-bin/
 cgi_extension .py /usr/bin/python
 cgi_extension .php /usr/bin/php
 
-location /exemple
-protected on /login
-allow POST GET
-autoindex on
-uploads ./static_pages/site/uploads
-
 location /login
-guard on login.html
-allow GET POST
+allow POST GET
+protection /protection
+index login.html
+
+location /protection/
+guard login.html
+allow POST GET

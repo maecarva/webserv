@@ -25,6 +25,7 @@ Route&	Route::operator=(const Route& route) {
 		_cgi = route._cgi;
 		_guard = route._guard;
 		_guardPage = route._guardPage;
+		_protection = route._protection;
 	}
 	return *this;
 }
@@ -41,6 +42,7 @@ Route::Route(const Route& route) : _name(route._name), _allowed_methods(route._a
 		,_cgi(route._cgi)
 		,_guard( route._guard )
 		,_guardPage( route._guardPage )
+		,_protection( route._protection )	
 {}
 
 // Route
@@ -51,6 +53,12 @@ bool Route::ParseServerConfigRouteName( const std::vector<std::string> &lineSpli
 		std::cerr << "locate: Invalid number of arguments." << std::endl;
 		throw parsingError();
 		return ( false );
+	}
+
+	if ( lineSplitted[1][0] != '/' )
+	{
+		std::cerr << "Invalid route name: \'" << lineSplitted[1] << "\'." << std::endl;
+		throw parsingError();
 	}
 
 	// if ( lineSplitted[1].find_first_of( FORBIDDEN_NAME_CHARACTERS ) != std::string::npos ) // Nom invalide
@@ -300,6 +308,23 @@ void Route::ParseServerConfigGuard( const std::vector<std::string> &lineSplitted
 	_guardPage = lineSplitted[1];
 }
 
+// Protection
+void Route::ParseServerConfigProtection( const std::vector<std::string> &lineSplitted )
+{
+	if ( lineSplitted.size() != 2 )
+	{
+		std::cerr << "Protection: Invalid number of arguments." << std::endl;
+		throw parsingError();
+	}
+	if ( !_protection.empty() )
+	{
+		std::cerr << "Protection: Extension already exists" << std::endl;
+		throw parsingError();
+	}
+
+	_protection = lineSplitted[1];
+}
+
 
 // Parse Route
 void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &line, std::vector<std::string> &lineSplitted )
@@ -358,6 +383,9 @@ void Config::ParseServerConfigRoute( std::ifstream &configFile, std::string &lin
 
 		else if ( lineSplitted[0] == "guard" )
 			route.ParseServerConfigGuard( lineSplitted );
+
+		else if ( lineSplitted[0] == "protection" )
+			route.ParseServerConfigProtection( lineSplitted );
 
 		else
 		{
@@ -472,6 +500,15 @@ void	Route::printRoute() {
 		std::cout << "extention: " << (*it).first << " path : " << (*it).second << std::endl;
 	}
 	std::cout << std::endl;
+
+	PRINTCLN(MAG, "Guard:");
+	std::cout << (_guard ? "true" : "false") << std::endl;
+
+	PRINTCLN(MAG, "GuardPage:");
+	std::cout << _guardPage << std::endl;
+
+	PRINTCLN(MAG, "Protection:");
+	std::cout << this->_protection << std::endl;
 }
 
 // * setters
