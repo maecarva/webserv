@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/site/style.css">
+	<title>S.C.E.P</title>
+	<style>
+		form {
+			margin: 0 auto;
+			display: flex;
+			flex-direction: column;
+			max-width: 20vw;
+			gap: 5px;
+		}
+	</style>
+</head>
+<body>
+	<div class="root">
+		<nav>
+			<ul>
+				<li>
+					<a href="/site">HOME</a>
+					<a href="/site/upload.html">UPLOAD PAGE</a>
+					<a href="/site/cgi.html">CGI PAGE</a>
+				</li>
+			</ul>
+		</nav>
+		<h1>CGI</h1>
+		<label for="method-select">Choose a method:</label>
+		<select name="methods" id="method-select">
+			<option value="">--Please choose a method--</option>
+			<option value="post">POST</option>
+			<option value="get">GET</option>
+		</select>
+		<label for="cgi-select">Choose a cgi-bin:</label>
+		<select name="cgis" id="cgi-select">
+			<option value="">--Please choose a cgi--</option>
+			<option value="php">php</option>
+			<option value="python">python</option>
+		</select>
+		<br>
+		<br>
+		<form id="cgiForm" action="http://127.0.0.1:3001/cgi-bin/testcgi.py" method="get">
+			<label for="email">email : </label>
+			<input type="email" name="email" id="email">
+			<label for="name">name : </label>
+			<input type="text" name="name" id="name">
+			<label for="textarea">message : </label>
+			<textarea name="message" id="textarea"></textarea>
+			<input type="submit" value="submit">
+		</form>
+
+	</div>
+</body>
+  <script>
+    const select = document.getElementById('method-select');
+    const form   = document.getElementById('cgiForm');
+
+    select.addEventListener('change', (e) => {
+      const m = e.target.value.toLowerCase();
+      if (m === 'get' || m === 'post') {
+        form.method = m;
+      }
+    });
+
+	const selectcgi = document.getElementById('cgi-select');
+
+    selectcgi.addEventListener('change', (e) => {
+      const m = e.target.value.toLowerCase();
+      if (m === 'python') {
+        form.action = "http://127.0.0.1:3001/cgi-bin/testcgi.py"
+      } else if (m == "php") {
+        form.action = "http://127.0.0.1:3001/cgi-bin/testcgi.php"
+	  }
+    });
+  </script>
+</html>

@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Upload Page</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" href="/site/style.css">
+	<title>S.C.E.P</title>
 </head>
 <body>
-  <form id="uploadForm">
-    <input type="file" id="fileInput" name="file">
-    <button type="submit">Envoyer</button>
-  </form>
+	<div class="root">
+		<nav>
+			<ul>
+				<li>
+					<a href="/site">HOME</a>
+					<a href="/site/upload.html">UPLOAD PAGE</a>
+					<a href="/site/cgi.html">CGI PAGE</a>
+				</li>
+			</ul>
+		</nav>
+		<h1>Upload page</h1>
 
+
+		<form id="uploadForm">
+			<input type="file" id="fileInput" name="file">
+			<button type="submit">Envoyer</button>
+		</form>
+	</div>
+</body>
   <script>
     document
       .getElementById("uploadForm")
@@ -46,5 +61,4 @@
         }
       });
   </script>
-</body>
 </html>

@@ -251,7 +251,7 @@ std::string	Response::BuildResponse()
 		std::cout << "autoindex" << std::endl;
 		if ( !this->ReadFile( BuildFilePath( route.getRootDir() + this->getRequest().getRequestedRessource(), route.getIndexFile() ).c_str(), responseFileContent, mime_type ) )
 			return ( ErrorResponse( 404 ) );
-
+		std::cout << mime_type << std::endl;
 		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
 	else
