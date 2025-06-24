@@ -24,3 +24,9 @@ root ./static_pages/site
 location /uploads
 allow POST
 uploads ./static_pages/uploads
+
+location /cgi-bin/
+allow POST GET
+root ./cgi-bin/
+cgi_extension .py /usr/bin/python
+cgi_extension .php /usr/bin/php

@@ -1,17 +1,17 @@
 
 const imageslinks = [
-	"/site/hubert.webp",
-	"/site/jack.webp",
-	"/site/larmina.webp",
-	"/site/armand.webp",
-	"/site/raymond.webp",
+	"/site/images/hubert.webp",
+	"/site/images/jack.webp",
+	"/site/images/larmina.webp",
+	"/site/images/armand.webp",
+	"/site/images/raymond.webp",
 ]
 
 document.addEventListener('DOMContentLoaded', function() {
 	let links = document.querySelectorAll(".imageb");
 	links.forEach((link) => {
 		link.addEventListener('click', function() {
-			document.querySelector("img").src = `/site/` + link.id + ".webp"
+			document.querySelector("img").src = `/site/images/` + link.id + ".webp"
 		})
 	})
 

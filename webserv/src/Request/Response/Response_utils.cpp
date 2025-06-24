@@ -9,6 +9,49 @@ bool    checkMatchingMethod(Response& res, Route *route) {
 	return (it == methods.end() ? false : true);
 }
 
+
+std::string	getMimeType(const char *path) {
+	std::string pathfile = path;
+	std::string ext;
+
+	for (std::string::iterator i = pathfile.end() - 1; i != pathfile.begin(); i--)
+	{
+		ext.push_back(*i);
+		if (*i == '.')
+			break ;
+	}
+
+	std::reverse(ext.begin(), ext.end());
+	std::transform(ext.begin(), ext.end(), ext.begin(), ::toupper);
+	unsigned long hash = hashdjb2(ext.c_str());
+	switch (hash)
+	{
+	case TXT_DJB2:
+		return "Content-type: text/plain";
+		break;
+	case JSON_DJB2:
+		return "Content-type: application/json";
+		break;
+	case HTML_DJB2:
+		return "Content-type: text/html";
+		break;
+	case CSS_DJB2:
+		return "Content-type: text/css";
+		break;
+	case JS_DJB2:
+		return "Content-type: text/javascript";
+		break;
+	case PNG_DJB2:
+		return "Content-type: image/png";
+		break;
+
+	default:
+		return "Content-type: text/plain";
+		break;
+	}
+	
+}
+
 bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& mimetype)
 {
 	if (!path)
@@ -41,6 +84,7 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 		}
 		std::string content((std::istreambuf_iterator<char>(inputfile)), std::istreambuf_iterator<char>());
 		resultfile = content;
+		mimetype = getMimeType(path);
 		return true;
 	}
 	return false;
