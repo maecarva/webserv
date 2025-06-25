@@ -65,7 +65,7 @@ typedef std::string string;
 #define DEFAULT_INDEX	"/index.html"
 #define CLOSE false
 #define KEEP_ALIVE true
-#define PASSWORD 1234
+#define PASSWORD "1234"
 
 // Utils
 unsigned long	hashdjb2(const char *str);
