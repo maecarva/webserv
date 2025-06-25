@@ -217,19 +217,51 @@ std::string	Response::BuildResponse()
 	}
 
 	// format
+	PRINTCLN(RED, "LA");
+	if ( !this->getRequest().getCorrespondingRoute().getProtection().empty() && this->getRequest().getBody().find("username") != std::string::npos )
+	{
+		size_t i = this->getRequest().getBody().find("username");
+		size_t j = this->getRequest().getBody().find("\r\n", i);
+		std::string cookie = this->getRequest().getBody().substr( i, j - i );
+		std::cout << cookie << std::endl;
+
+		std::map<std::string, unsigned int> &tokenmap = this->getRequest().getServer().getTokenMap();
+
+		// i = this->getRequest().getBody().find("=") + 1;
+		// j = this->getRequest().getBody().find("&", i);
+		// std::string username = sentence.substr( i, j - i );
+		// std::cout << username << std::endl;
+
+		// i = this->getRequest().getBody().find("=", j) + 1;
+		// std::string password = sentence.substr( i, sentence.size() - i );
+		// std::cout << password << std::endl;
+
+		if ( tokenmap.count(cookie) == 0 )
+		{
+			tokenmap[cookie] = 0;
+		}
+		std::ostringstream oss;
+
+		oss << "HTTP/1.1 ";
+		oss << HTTP_FOUND << " " << HttpMessageByCode(HTTP_FOUND) << "\r\n";
+		oss << "Content-Length: 0\r\n";
+		oss << "Location: " << this->getRequest().getCorrespondingRoute().getProtection() << "\r\n\r\n";
+
+		return oss.str();
+	}
+	PRINTCLN(RED, "LA");
+	// PRINTCLN(RED, this->getRequest().getQueryString());
 	if ( this->getRequest().getCorrespondingRoute().getGuard() )
 	{
+		std::string cookie2;
 		std::string cookieheader = this->getRequest().getHeaders()["AUTHORIZATION:"];
-		std::string cookie;
 		if (cookieheader.size() > 6)
-			cookie = cookieheader.substr(6);
+			cookie2 = cookieheader.substr(6);
 		std::map< std::string, unsigned int >& tokenmap = this->getRequest().getServer().getTokenMap();
 
-		if (tokenmap.count(cookie) == 0 || cookieheader == "" || cookie == "") {
+		if (tokenmap.count(cookie2) == 0 || cookieheader == "" || cookie2 == "") {
 			std::vector<Route> routes = this->getRequest().getServer().getConfig().getRoutes();
 			std::string returnlocation = this->getRequest().getCorrespondingRoute().getReturn();
-
-			tokenmap[cookie] = 0;
 
 			if (returnlocation.empty())
 				return (ErrorResponse(HTTP_BAD_REQUEST));
@@ -242,7 +274,7 @@ std::string	Response::BuildResponse()
 
 			return oss.str();
 		} else {
-			tokenmap[cookie] += 1;
+			tokenmap[cookie2] += 1;
 			//int integer = tokenmap[cookie];
 			if (!this->ReadFile( route.getGuardPage().c_str(), responseFileContent, mime_type , &error_code))
 				return ( ErrorResponse( error_code ) );
@@ -284,6 +316,5 @@ std::string	Response::BuildResponse()
 			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 		}
 	}
-	PRINTCLN(REDB, "asdadsadd");
 	return ErrorResponse( error_code );
 }

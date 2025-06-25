@@ -141,10 +141,9 @@ void	Request::parseRequest(std::string& req, Server& server)
 				}
 				if (this->getServer().getConfig().getListen() != second)
 					return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
+				}
 SUCCESS_NAME:
-				PRINTCLN(RED, "ici " + second);
-			}
-            else if (key == "CONNECTION:") {
+            if (key == "CONNECTION:") {
                 std::string second = pair.second;
                 std::transform(second.begin(), second.end(), second.begin(), ::toupper);
                 if (second == "KEEP-ALIVE")

@@ -1,5 +1,5 @@
 # TODO
-- error response pattern
+- error response pattern (normalement)
 - login / token
 
 - check recv/send error
