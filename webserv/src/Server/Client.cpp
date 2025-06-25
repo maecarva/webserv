@@ -2,18 +2,18 @@
 
 
 Client::Client( ) : _fd(0 ), _allRead( false ), _contentLength( 0 ), _headerParsed(false), _bodyStart(0), _isChunked(false),
-_endOfMessage( 0 ), _maxBodyCount( 0 )
+_endOfMessage( 0 ), _maxBodyCount( 0 ), _outBuffer(), _outOffset(0), keepalive(false)
 {
 }
 
 Client::Client( int fd, long maxBodyCount) : _fd( fd ), _allRead( false ), _contentLength( 0 ), _headerParsed(false), _bodyStart(0), _isChunked(false),
-_endOfMessage( 0 ), _maxBodyCount( maxBodyCount )
+_endOfMessage( 0 ), _maxBodyCount( maxBodyCount ), _outBuffer(), _outOffset(0), keepalive(false)
 {
 }
 
 Client::Client( const Client& client) : _fd(client._fd), _allRead(client._allRead), _header_len(client._header_len), _contentLength(client._contentLength)
 , _giveHeadAndBody(client._giveHeadAndBody), _headerParsed(client._headerParsed), _bodyStart(client._bodyStart), _isChunked(client._isChunked),
-_endOfMessage( client._endOfMessage ), _maxBodyCount (client._maxBodyCount) {}
+_endOfMessage( client._endOfMessage ), _maxBodyCount (client._maxBodyCount), _outBuffer(client._outBuffer), _outOffset(client._outOffset), keepalive(client.keepalive) {}
 
 Client& Client::operator=( const Client& client) {
 	if (this != &client) {
@@ -27,6 +27,9 @@ Client& Client::operator=( const Client& client) {
 		_isChunked = client._isChunked;
 		_endOfMessage = client._endOfMessage;
         _maxBodyCount = client._maxBodyCount;
+		_outBuffer = client._outBuffer;
+		_outOffset = client._outOffset;
+		keepalive = client.keepalive;
 	}
 	return *this;
 }
@@ -73,4 +76,36 @@ void Client::addBodyCount(const char* buf, ssize_t count) {
             }
         }
  	}
+}
+
+
+std::string&	Client::getOutBuffer() {
+	return this->_outBuffer;
+}
+
+size_t			Client::getOutOffset() {
+	return this->_outOffset;
+}
+
+
+void			Client::addOutOffset(size_t n) {
+	this->_outOffset += n;
+}
+
+bool	Client::isKeepAlive() {
+	return this->keepalive;
+}
+
+
+void			Client::setKeepAlive(bool state) {
+	this->keepalive = state;
+}
+
+
+void	Client::setOutBuffer(std::string str) {
+	this->_outBuffer = str;
+}
+
+void			Client::setOutOffset(size_t size) {
+	this->_outOffset = size;
 }

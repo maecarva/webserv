@@ -16,13 +16,16 @@ private:
 	bool			_isChunked;
 	size_t			_endOfMessage;
 	long			_maxBodyCount;
+	std::string		_outBuffer;
+	size_t			_outOffset;
+	bool			keepalive;
 public:
 	Client();
 	Client( int fd, long maxBodyCount);
 	Client( const Client& client);
 	Client& operator=( const Client& client);
 	~Client();
-	
+
 	bool getAllRead() const;
 	size_t getContentLength() const;
 	std::string getThatBody();
@@ -30,6 +33,14 @@ public:
 
 	void	setContentLength(size_t size);
 	void	setAllRead( bool a );
+
+	std::string&	getOutBuffer();
+	size_t			getOutOffset();
+	void	setOutBuffer(std::string str);
+	void			setOutOffset(size_t size);
+	void			addOutOffset(size_t n);
+	bool			isKeepAlive();
+	void			setKeepAlive(bool state);
 
 	void addBodyCount( const char *buf, ssize_t count );
 };
