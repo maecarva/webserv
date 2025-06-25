@@ -60,8 +60,8 @@ void	Request::parseRequest(std::string& req, Server& server)
 {
 // #ifdef DEBUG
 	//std::cout << "request size: " << req << std::endl;
-	// std::cout << "REQUEST : \n";
-	// PRINTCLN(MAG, req.c_str());
+	std::cout << "REQUEST : \n";
+	PRINTCLN(MAG, req.c_str());
 // #endif
 
     this->_response_code = HTTP_OK;
@@ -136,7 +136,8 @@ void	Request::parseRequest(std::string& req, Server& server)
 						goto SUCCESS_NAME;
 					}
 				}
-				return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
+				if (this->getServer().getConfig().getListen() != second)
+					return this->setError(HTTP_BAD_REQUEST, __LINE__, __FILENAME__);
 SUCCESS_NAME:
 				PRINTCLN(RED, "ici " + second);
 			}

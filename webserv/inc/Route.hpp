@@ -23,7 +23,6 @@ private:
 	bool												_guard;
 	std::string											_guardPage;
 	std::string											_protection;
-	std::map< std::string, unsigned int >				_tokenMap;
 
 public:
 	Route();
@@ -74,6 +73,7 @@ public:
 	std::map<std::string, std::string > getValidsCGI();
 	bool getGuard( void ) const;
 	std::string getGuardPage( void ) const;
+	std::string getProtection();
 
 
 

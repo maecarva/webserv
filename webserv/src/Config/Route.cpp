@@ -430,6 +430,13 @@ std::string Route::getGuardPage( void ) const
 	return ( _guardPage );
 }
 
+
+std::string Route::getProtection() {
+	return this->_protection;
+};
+
+
+
 std::string					Route::getReturn() {
 	return this->_return;
 };
