@@ -128,7 +128,10 @@ void	Request::parseRequest(std::string& req, Server& server)
 			if (key == "HOST:") {
 				std::string second = pair.second;
 				this->_host = second;
-				PRINTCLN(RED, second);
+				std::string localhost_listen = "localhost:" + this->getServer().getConfig().getServerPort();
+
+				if ( second == localhost_listen )
+					goto SUCCESS_NAME;
 				for ( size_t i = 0; i < this->getServer().getConfig().getServerNames().size(); ++i )
 				{
 					if ( this->getServer().getConfig().getServerNames()[i] == second )
