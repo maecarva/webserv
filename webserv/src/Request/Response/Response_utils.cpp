@@ -58,6 +58,8 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 		return false;
 	std::fstream inputfile;
 
+	// std::cout << path << std::endl;
+
 	if (access(path, F_OK | R_OK) == 0) // access ok
 	{
 		if (is_directory(path))
@@ -90,8 +92,8 @@ bool	Response::ReadFile(const char *path, std::string& resultfile, std::string& 
 		return true;
 	}
 	else {
-		Logger::error("Cannot open file");
-		*errorcode = HTTP_FORBIDDEN;
+		// Logger::error("Cannot open file");
+		*errorcode = HTTP_NOT_FOUND;
 		return false;
 	}
 	*errorcode = HTTP_INTERNAL_SERVER_ERROR;

@@ -113,7 +113,6 @@ std::string		Response::handleUploadResponse() {
 		return ( ErrorResponse(500) );
 	}
 
-
 	std::ostringstream oss;
 
 	oss << "HTTP/1.1 ";
@@ -151,9 +150,9 @@ std::string		Response::handleCGI() {
 
 	scriptpath = BuildFilePath(this->getRequest().getCorrespondingRoute().getRootDir(), requested_ressource);
 
+	if (req.getQueryString().empty())
+		return ErrorResponse(HTTP_BAD_REQUEST);
 	query_string_env = "QUERY_STRING=" + req.getQueryString();
-
-
 
 	size_t envsize = 0;
 	while (env[envsize])
@@ -183,21 +182,20 @@ std::string		Response::handleCGI() {
 		delete new_env[i++];
 	delete[] new_env;
 
+	if (cgireturn.empty())
+	{
+		if (access(argv[1].c_str(), F_OK) == 0 && access(argv[1].c_str(), F_OK | R_OK) == -1)
+			return ErrorResponse(500);
+		else
+			return ErrorResponse(404);
+	}
+
 	std::ostringstream oss;
 	oss << "HTTP/1.1 ";
 	oss << HTTP_OK << " " << HttpMessageByCode(HTTP_OK) << "\r\n";
 	oss << cgireturn;
 
 	return oss.str();
-}
-
-
-bool	Response::isIndexed() {
-	std::string ressource = this->getRequest().getCorrespondingRoute().getRootDir() + this->_req.getRequestedRessource();
-
-	if (is_directory(ressource.c_str()))
-		return true;
-	return false;
 }
 
 std::string	Response::BuildResponse()
