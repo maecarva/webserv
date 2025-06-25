@@ -3,7 +3,7 @@
 #include <sstream>
 
 std::string	HttpMessageByCode(int code) {
-	std::string message = "Invalid error code";
+	std::string message = "status code";
 
 	switch (code)
 	{
@@ -28,8 +28,21 @@ std::string	HttpMessageByCode(int code) {
 	return message;
 }
 
-// TODO : respond with error pages
-std::string	Response::ErrorResponse(int code) { 
+
+std::string formatErrorPage(int code) {
+	std::ostringstream			resp;
+
+	resp << "HTTP/1.1 " << code << " " << HttpMessageByCode(code) << "\r\n";
+	resp << "Content-Length: " << 130 << "\r\n";
+	resp << "Content-Type: text/html" << "\r\n\r\n";
+	resp << "<!DOCTYPE html><html><head><title>Status ";
+	resp << code << "</title></head><body><h1>Status ";
+	resp << code << " Page</h1><h2>Default Error page</h2></body></html>";
+
+	return resp.str();
+}
+
+std::string	Response::ErrorResponse(int code) {
 	const Request&              req                 = this->getRequest();
     Server&                     current_server      = req.getServer();
     Config&                     current_config      = current_server.getConfig();
@@ -39,57 +52,20 @@ std::string	Response::ErrorResponse(int code) {
 	std::string					mime_type			= "";
 	int							errorcode			= HTTP_OK;
 
-    this->getRequest().setResponseCode(code);
-	if (current_config.getErrorPages().count(code) == 0)
-		goto SWITCH;
-	else if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type, &errorcode))
+	this->getRequest().setResponseCode(code);
+	if (current_config.getErrorPages().count(code) != 0)
 	{
-		return InternalERROR();
-	}
-	else {
-		SWITCH:
-		resp << "HTTP/1.1 " << code << " " << "Error" << "\r\n";
+		if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type, &errorcode))
+			return formatErrorPage(500);
 
-		resp	<< "Content-Length: " << (page.size() == 0 ? 20 : page.size()) << "\r\n"
-				<< "Connection: close\r\n"
-				<< "\r\n";
-				if (page.size() == 0)
-					resp << "Unable to open file.";
-				else
-					resp << page;
+		resp << "HTTP/1.1 " << code << " " << HttpMessageByCode(code) << "\r\n";
+		resp << "Content-Length: " << page.size() << "\r\n";
+		resp << "Content-Type: text/html" << "\r\n\r\n";
+		resp << page;
 		return resp.str();
 	}
+	else if (!ReadFile(current_config.getErrorPages()[code].c_str(), page, mime_type, &errorcode))
+		return formatErrorPage(code);
 
-	std::string resp1;
-	const char* respeuh;
-    switch (code)
-	{
-	case 500:
-		respeuh = InternalERROR();
-		break;
-	case 400:
-		respeuh = BadRequest();
-		break;
-    case 404:
-		respeuh = ERROR_404();
-		break;
-    case 405:
-		respeuh = MethodNotAllowed();
-		break;
-	case 413:
-		respeuh = PayloadTooLarge();
-		break ;
-	default:
-		respeuh = InternalERROR();
-		break;
-	}
-
-	resp1 = respeuh;
-	if (strcmp(this->getRequest().getMethod(), "HEAD") == 0)
-	{
-		size_t pos = resp1.find("\r\n\r\n") + 4;
-		resp1.erase(pos, resp1.size() - pos);
-	}
-	// std::cout << resp1 << std::endl;
-	return resp1.c_str();
+	return resp.str();
 }

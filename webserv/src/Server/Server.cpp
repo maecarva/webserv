@@ -216,11 +216,11 @@ void Server::handler()
 						closed = true;
 						break;
 					} else {
-						if (errno == EAGAIN || errno == EWOULDBLOCK) {
-						break;
-						}
-						// véritable erreur réseau
-						std::perror("recv failed");
+						// if (errno == EAGAIN || errno == EWOULDBLOCK) {
+						// break;
+						// }
+						// // véritable erreur réseau
+						// std::perror("recv failed");
 						closed = true;
 						break;
 					}
@@ -247,7 +247,17 @@ void Server::handler()
 
 						req.parseRequest(reqstr, *this);
 						std::string	reply = req.CreateResponse();
-						send(fd, reply.c_str(), reply.size(), 0);
+						ssize_t bytes_send = send(fd, reply.c_str(), reply.size(), 0);
+						if (bytes_send < 0 || ((size_t)bytes_send != reply.size()))
+						{
+							if (epoll_ctl(this->_epoll_fd, EPOLL_CTL_DEL, fd, NULL) < 0)
+								std::perror("epoll_ctl DEL après send");
+							close(fd);
+							this->_clientBuffers.erase(fd);
+							Logger::error("Failed to send reponse.");
+							continue;
+						}
+
 						// Close connection
 						if (req.isKeepAlive() == false)
 						{
