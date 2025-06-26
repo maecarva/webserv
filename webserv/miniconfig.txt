@@ -4,7 +4,7 @@ server_names hubert
 error_pages 404 ./static_pages/error_pages/404.html
 error_pages 400 ./static_pages/error_pages/400.html
 error_pages 500 ./static_pages/error_pages/500.html
-client_max_body_size 1073741824
+client_max_body_size 100
 location /
 allow GET
 root ./static_pages
@@ -24,7 +24,7 @@ root ./static_pages/site
 location /uploads
 allow POST GET
 autoindex on
-uploads ./static_pages/site/uploads
+uploads ./static_pages/upload
 
 location /cgi-bin/
 allow POST GET
