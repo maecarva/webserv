@@ -168,7 +168,7 @@ void Server::handler()
 						buf[n] = '\0';
 						std::string bufstr(buf, n);
 
-						// Détection Content-Length (une fois)
+
 						Client& client = _clientBuffers[fd];
 						if (client.getContentLength() == 0) {
 							size_t pos = bufstr.find("Content-Length:");
@@ -217,23 +217,11 @@ void Server::handler()
 				ssize_t		offset = 0;
 				ssize_t		sent = 0;
 
-				// size_t pos = reply.find("\r\n\r\n");
-				// for (size_t i = 0; i < pos; i++)
-				// {
-				// 	std::cout << reply[i];
-				// }
-				// std::cout << std::endl;
-				
-
 				while (( size_t )offset < reply.size()) {
 					sent = send(fd, reply.c_str() + offset, reply.size() - offset, 0);
 					if (sent > 0) {
 						offset += sent;
 					}
-					// else {
-					// 	break;
-					// }
-					// usleep(100000);
 				}
 
 				if (!req.isKeepAlive()) {

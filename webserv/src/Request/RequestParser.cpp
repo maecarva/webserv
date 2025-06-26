@@ -1,8 +1,6 @@
 #include "Webserv.hpp"
 
 Route	Request::FindCorrespondingRoute(std::string& requestedressource, bool *failed) {
-	
-	//std::cout << "Requested: " << requestedressource << "\n";
 
 	std::vector<Route> routes = this->getServer().getConfig().getRoutes();
 	std::vector<Route>::iterator routeit = routes.begin();
@@ -12,7 +10,6 @@ Route	Request::FindCorrespondingRoute(std::string& requestedressource, bool *fai
 
 	while (routeit != routes.end())
 	{
-		//std::cout << (*routeit).getName() << std::endl;
 		pos = requestedressource.find((*routeit).getName());
 		if (pos != std::string::npos && pos == 0) {
 			if (*failed)
@@ -58,11 +55,6 @@ void	print_hex(const std::string& str) {
 
 void	Request::parseRequest(std::string& req, Server& server)
 {
-// #ifdef DEBUG
-	//std::cout << "request size: " << req << std::endl;
-	std::cout << "REQUEST : \n";
-	PRINTCLN(MAG, req.c_str());
-// #endif
 
     this->_response_code = HTTP_OK;
     std::string         token;
@@ -94,8 +86,6 @@ void	Request::parseRequest(std::string& req, Server& server)
 	Route matchedroute = this->FindCorrespondingRoute(splitted[1], &failed);
 	if (!failed)
 		return this->setError(HTTP_NOT_FOUND, __LINE__, __FILENAME__);
-
-	// PRINTCLN(BLU, matchedroute.getName());
 
 	if (this->_route.find('?') != std::string::npos)
 		this->ParseQueryArgs();
