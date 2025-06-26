@@ -412,6 +412,40 @@ bool Config::checkConfig( void )
 		std::cerr << "Invalid Config. Not Host/port." << std::endl;
 		return ( false );
 	}
+	bool found;
+	for ( size_t i = 0; i < _routes.size(); ++i )
+	{
+		if ( !_routes[i].getGuard() && _routes[i].getProtection().empty() )
+			continue;
+		if ( _routes[i].getGuard() && !_routes[i].getProtection().empty() )
+		{
+			throw parsingError();
+		}
+		if ( !_routes[i].getProtection().empty() && _routes[i].getName() == _routes[i].getProtection() )
+		{
+			throw parsingError();
+		}
+
+		found = false;
+
+		if ( !_routes[i].getProtection().empty() )
+		{
+			for ( size_t j = 0; j < _routes.size(); ++j )
+			{
+				if ( i == j )
+					continue;
+				if ( _routes[i].getProtection() == _routes[j].getName() && _routes[j].getGuard() == true )
+				{
+					found = true;
+					break;
+				}
+			}
+			if ( found == false )
+			{
+				throw parsingError();
+			}
+		}
+	}
 
 	return ( true );
 }
