@@ -32,10 +32,9 @@ root ./cgi-bin/
 cgi_extension .py /usr/bin/python
 cgi_extension .php /usr/bin/php
 
-location /site/login
-allow POST GET DELETE
-protection /site/protected
-index login.html
-root ./static_pages/site
-
+location /site/protected
+guard ./static_pages/site/protected.html
+return /site/login
+protection /site/login
+allow POST GET
 
