@@ -217,7 +217,6 @@ std::string	Response::BuildResponse()
 	}
 
 	// format
-	PRINTCLN(RED, "LA");
 	if ( !this->getRequest().getCorrespondingRoute().getProtection().empty()   )
 	{
 		std::ostringstream oss;
@@ -260,38 +259,30 @@ std::string	Response::BuildResponse()
 			return ( ErrorResponse( error_code ) );
 		return this->formatResponse( responseFileContent, HTTP_OK, mime_type );
 	}
-	PRINTCLN(RED, "LA");
-	// PRINTCLN(RED, this->getRequest().getQueryString());
 	if ( this->getRequest().getCorrespondingRoute().getGuard() )
 	{
 		std::string cookie2;
 		std::string cookieheader = this->getRequest().getHeaders()["COOKIE:"];
 		if (cookieheader.size() > 6)
 			cookie2 = cookieheader.substr(6);
-		std::cout << "cokieheader: " << cookieheader << " cookie: " << cookie2 << std::endl;
+
 		std::map< std::string, unsigned int >& tokenmap = this->getRequest().getServer().getTokenMap();
 
 		if (tokenmap.count(cookie2) == 0 || cookieheader == "" || cookie2 == "") {
 			std::vector<Route> routes = this->getRequest().getServer().getConfig().getRoutes();
 			std::string returnlocation = this->getRequest().getCorrespondingRoute().getReturn();
 
-			PRINTCLN(RED, "if");
 			if (returnlocation.empty())
 				return (ErrorResponse(HTTP_BAD_REQUEST));
 			std::ostringstream oss;
-			PRINTCLN(RED, "if2");
 
 			oss << "HTTP/1.1 ";
 			oss << HTTP_FOUND << " " << HttpMessageByCode(HTTP_FOUND) << "\r\n";
 			oss << "Content-Length: 0\r\n";
 			oss << "Location: " << this->getRequest().getCorrespondingRoute().getReturn() << "\r\n\r\n";
-
-			std::cout << oss.str() << std::endl;
 			return oss.str();
 		} else {
 			tokenmap[cookie2] += 1;
-			PRINTCLN(RED, "else");
-			//int integer = tokenmap[cookie];
 			if (!this->ReadFile( route.getGuardPage().c_str(), responseFileContent, mime_type , &error_code))
 				return ( ErrorResponse( error_code ) );
 			return this->formatResponse( responseFileContent, HTTP_OK, mime_type );

@@ -53,12 +53,14 @@
           if (response.ok) {
 				alert("File created.");
           } else {
+			alert("Error, please read console.");
             console.error(
               `Erreur serveur : ${response.status} ${response.statusText}`
             );
           }
         } catch (err) {
-          console.error("Erreur réseau :", err);
+			alert("Error, please read console.");
+          	console.error("Erreur réseau :", err);
         }
       });
   </script>
